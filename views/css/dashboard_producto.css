@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;800&display=swap');
+
+.titulo{
+    text-align: center;
+    margin-top: -2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero__agg {
+    margin-top: 2rem;
+    margin-left: 70%;
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: .5rem;
+    background-color: rgb(0, 67, 252);
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+
+}
+
+.hero__agg2{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    margin-left: 0%;
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: .5rem;
+    background-color: rgb(0, 67, 252);
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+}
+
+.hero__agg3{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    margin-right: 1rem;
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: .5rem;
+    background-color: rgb(246, 16, 16);
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+}
+
+.table{
+    margin-left: 2rem;
+    width: 90%;
+    max-height: 300px; /* Ajusta la altura máxima según sea necesario */
+    overflow-y: auto; /* Habilita el desplazamiento vertical */
+    border: 1px solid #ccc; /* Opcional: agrega un borde al contenedor */
+    margin-bottom: none;
+}
+
+.div{
+    width: 100%;
+    max-height: 80%; /* Ajusta la altura máxima según sea necesario */
+    overflow-y: auto; /* Habilita el desplazamiento vertical */
+    overflow-x: hidden; /* Habilita el desplazamiento vertical */
+    border: 1px solid #ccc; /* Opcional: agrega un borde al contenedor */
+}
+
+.main{
+    width: 95%;
+}
+    
+.formulario {
+    display: block;
+    background-color: white;
+    margin-top: 1rem;
+    text-align: center;
+    align-items: center; /* Centra el formulario horizontalmente */
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin-left: auto; /* Centra el formulario en la página */
+    margin-right: auto;
+    border-radius: 10px; /* Opcional: bordes redondeados */
+    box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, .25);
+}
+
+.titulo_form {
+    margin-bottom: 1rem;
+}
+
+.entrada {
+    width: 40%; /* Hace que los inputs ocupen todo el ancho disponible */
+    margin-bottom: 10px; /* Espacio entre los inputs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+label {
+    width: 100%; /* Hace que las etiquetas ocupen todo el ancho disponible */
+    display: block; /* Asegura que cada etiqueta esté en su propia línea */
+    margin-bottom: 5px; /* Espacio entre la etiqueta y el input */
+}
+
+.error-message {
+    color: red; /* Color para mensajes de error */
+    font-size: 0.9em; /* Tamaño de fuente para mensajes de error */
+}
+
+.hero__agg2, .hero__agg3 {
+    margin-top: 10px; /* Espacio superior para botones */
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+.error-message {
+color: red;
+}
+
+.pdf{
+    margin: .5rem;
+    align-items: start;
+    margin-right: none;
+    margin-top: 0;
+    padding: .5rem;
+    border: none;
+    border-radius: 20%;
+    color: white;
+    background-color: red;
+}
+
+.full-width.tile{
+    margin: .2rem;
+    margin-left: .5rem;
+}
+
+.titulo{
+    margin-top: none;
+    margin-bottom: 10px;
+}
+
+.filtrar{
+    padding: .5rem;
+    border: none;
+    border-radius: 20%;
+    color: white;
+    background-color: green;
+}
+
+.formulario2 {
+    display: block;
+    background-color: white;
+    margin-top: 3rem;
+    text-align: center;
+    align-items: center; /* Centra el formulario horizontalmente */
+    width: 100%; /* Ancho máximo del formulario */
+    margin-left: 2rem; /* Centra el formulario en la página */
+    margin-right: auto;
+    border-radius: 10px; /* Opcional: bordes redondeados */
+    box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, .25);
+}
+
