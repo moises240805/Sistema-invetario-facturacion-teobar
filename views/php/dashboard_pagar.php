@@ -135,7 +135,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <td><?php echo $venta['fecha_cuentaPagar']; ?></td>
                 <td><?php echo $venta['monto_cuentaPagar']; ?></td>
                 <td>
-                    <a href="crud_pagar.php?action=abono&id_cuenta=<?php echo $venta['id_cuentaPagar']; ?>" class="btn btn-success btn-sm" title="Abono">Abono</a>
+                    <a onclick="abrirModal(<?php echo $venta['id_cuentaPagar']; ?>)" class="btn btn-success btn-sm" title="Abono">Abono</a>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -145,32 +145,24 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 
-<div class="modal fade show" id="abonoPagarModal" tabindex="-1" role="dialog" aria-labelledby="abonoPagarModalLabel" aria-hidden="false">
+<div class="modal fade show" id="abonoModal" tabindex="-1" role="dialog" aria-labelledby="abonoModalLabel" aria-hidden="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="titulo_form text-center" id="abonoPagarModalLabel">Abono</h1>
+                <h1 class="titulo_form text-center" id="abonoModalLabel">Abono</h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="crud_pagar.php?action=abonado" method="POST" name="form">
+            <form class="formulario" action="index.php?action=compra&a=abonado" method="POST" name="form">
                 <div class="modal-body">
-                    <?php if (!empty($message)): ?>
-                        <p class="alert alert-<?php echo ($message == "ABONADO CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                            <?php echo $message; ?>
-                        </p>
-                    <?php endif; ?>
-                    <?php
-                    $admin = $_GET["id_cuenta"];
-                    ?>
-                    <input type="hidden" name="id_cuenta" value="<?php echo $admin; ?>">
+                    <input type="hidden" name="id_cuenta" id="id_cuenta"  >
                     <div class="form-group row justify-content-center mb-4">
                         <div class="col-md-10 text-center">
                             <label for="fecha" style="font-size: 18px;">Fecha del Abono</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="date" class="form-control" name="fecha" required>
+                            <input type="date" class="form-control" name="fecha" id="fecha" required>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center mb-4">
@@ -178,12 +170,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <label for="monto" style="font-size: 18px;">Monto</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="number" step="0.01" min="0" class="form-control" name="monto" required>
+                            <input type="number" step="0.01" min="0" class="form-control" name="monto" id="monto" required>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <input class="btn btn-primary" type="submit" value="Registrar">
                 </div>
             </form>
@@ -212,7 +204,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
-    <script src="views/js/modal_tipo.js"></script>
+    <script src="views/js/modal_pagar.js"></script>
     
 </body>
 </html>

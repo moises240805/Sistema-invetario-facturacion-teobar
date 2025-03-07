@@ -76,7 +76,7 @@
                     <div class="card shadow ">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Gestionar Ventas</h6>
-            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">
+            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarVentaModal">
     Agregar Venta +
 </button>
         </div>
@@ -131,26 +131,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "models/Venta.php";
+                        require_once "controllers/VentaController.php";
 
-                $id_venta = "";
-                $id_producto = "";
-                $id_cliente = "";
-                $cantidad = "";
-                $fech_emision = "";
-                $id_modalidad_pago = "";
-                $monto = "";
-                $tipo_entrega = "";
-                $rif_banco = "";
-                $id_medida = "";
-                $valor = "";
-                $tipo_compra = "";
-                $tlf = "";
 
-                $venta = new Venta($id_venta, $tipo_compra, $tlf, $id_producto,
-                    $id_cliente, $cantidad, $fech_emision, 
-                    $id_modalidad_pago, $monto, $tipo_entrega, 
-                    $rif_banco, $id_medida, $valor);
+                $venta = new Venta();
                     
                 $venta = $venta->Mostrar_Venta();
                 
@@ -180,6 +164,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
     </table>
 </div>
 
+<?php
+                        require_once "controllers/ClienteController.php";
+
+                        require_once "controllers/ProductoController.php";
+?>
+
 
 <div class="modal fade show" id="agregarVentaModal" tabindex="-1" role="dialog" aria-labelledby="agregarVentaModalLabel" aria-hidden="false">
     <div class="modal-dialog modal-xl">
@@ -190,19 +180,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario2" action="crud_venta.php?action=agregar" method="post" name="form">
+            <form class="formulario2" action="index.php?action=venta&a=agregar" method="post" name="form">
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <?php if (!empty($message)): ?>
-                            <p class="alert alert-<?php echo ($message == "VENTA AGREGADO CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                                <?php echo $message; ?>
-                            </p>
-                        <?php endif; ?>
+
 
                         <?php
-                        require_once "models/Cliente.php";
-                        require_once "models/Venta.php";
-                        require_once "models/Producto.php";
+
 
                         $banco = new Venta;
                         $bancos = $banco->obtenerBancos();
@@ -210,39 +194,14 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         $pago = new Venta;
                         $pagos = $pago->obtenerPagos();
 
-                        $id_cliente = "";
-                        $nombre_cliente = "";
-                        $tlf_cliente = "";
-                        $direccion_cliente = "";
-                        $email_cliente = "";
-                        $tipo = "";
 
-                        $cliente = new Cliente($id_cliente, $nombre_cliente,
-                            $tlf_cliente, $direccion_cliente, $email_cliente, $tipo);
+
+                        $cliente = new Cliente();
                         $clientes = $cliente->Mostrar_Cliente();
 
-                        $id_producto = "";
-                        $nombre_producto = "";
-                        $presentacion = "";
-                        $fech_vencimiento = "";
-                        $cantidad_producto = "";
-                        $cantidad_producto2 = "";
-                        $cantidad_producto3 = "";
-                        $precio_producto = "";
-                        $precio_producto2 = "";
-                        $precio_producto3 = "";
-                        $uni_medida = "";
-                        $uni_medida2 = "";
-                        $uni_medida3 = "";
-                        $id_actualizacion = "";
-                        $marca = "";
-                        $peso = "";
-                        $peso2 = "";
-                        $peso3 = "";
 
-                        $producto = new Producto($id_producto, $nombre_producto,
-                            $presentacion, $fech_vencimiento, $cantidad_producto, $cantidad_producto2, $cantidad_producto3,
-                            $precio_producto, $precio_producto2, $precio_producto3, $uni_medida, $uni_medida2, $uni_medida3, $marca, $peso, $peso2, $peso3, $id_actualizacion);
+
+                        $producto = new Producto();
                         $productos = $producto->Mostrar_Producto2();
                         ?>
                        
@@ -384,7 +343,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                     <input class="btn btn-primary" type="submit" value="Registrar">
                 </div>
             </form>
@@ -405,14 +364,14 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
           <!-- Message will be dynamically set -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
 
 
-    <script src="views/js/modal_tipo.js"></script>
+    <script src="views/js/modal_venta.js"></script>
     <script>
 function agregarFila() {
   const tabla = document.getElementById("tablaFormulario");

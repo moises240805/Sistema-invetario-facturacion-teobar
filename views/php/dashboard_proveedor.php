@@ -76,7 +76,7 @@
                     <div class="card shadow ">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Gestionar Proveedores</h6>
-            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">
+            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarProveedorModal">
     Agregar Proveedor +
 </button>
         </div>
@@ -131,20 +131,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <?php 
                 require_once "controllers/ProveedorController.php"; // Asegúrate de que la ruta sea correcta
 
-                $id_proveedor="";
-                $nombre_proveedor="";
-                $direccion_proveedor="";
-                $tlf_proveedor="";
-                $id_representante_legal="";
-                $nombre_representante_legal="";
-                $tlf_representante_legal="";
-                $tipo="";
-                $tipo2="";
 
-                $proveedor = new Proveedor($id_proveedor, $nombre_proveedor,
-                $direccion_proveedor, $tlf_proveedor, $id_representante_legal, 
-                $nombre_representante_legal, $tlf_representante_legal,$tipo,$tipo2);
-                $proveedor = $proveedor->Mostrar_Proveedor();
+                $proveedor = $controller->Mostrar_Proveedor();
                 foreach ($proveedor as $proveedor): 
             ?>
             <tr>
@@ -156,10 +144,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <td><?php echo $proveedor['nombre_representante']; ?></td>
                 <td><?php echo $proveedor['tlf_representante']; ?></td>
                 <td>
-                    <a href="crud_proveedor.php?action=mid_form&id_proveedor=<?php echo $proveedor['id_proveedor']; ?>" title="Modificar">
+                    <a onclick="abrirModalModificar(<?php echo $proveedor['id_proveedor']; ?>)" title="Modificar">
                         <img src="views/img/edit.png" width="30px" height="30px">
                     </a>
-                    <a onclick="return eliminar()" href="crud_proveedor.php?action=eliminar&ID=<?php echo $proveedor['id_proveedor']; ?>" title="Eliminar">
+                    <a onclick="return eliminar()" href="index.php?action=proveedor&a=eliminar&ID=<?php echo $proveedor['id_proveedor']; ?>" title="Eliminar">
                         <img src="views/img/delet.png" width="30px" height="30px">
                     </a>
                 </td>
@@ -179,16 +167,11 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="crud_proveedor.php?action=agregar" method="post" name="form">
+            <form class="formulario" action="index.php?action=proveedor&a=agregar" method="post" name="form">
                 <div class="modal-body">
                     <div class="container text-center">
                         <div class="row justify-content-center">
                             <div class="col-md-10">
-                                <?php if (!empty($message)): ?>
-                                    <p class="alert alert-<?php echo ($message == "PROVEEDOR AGREGADO CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                                        <?php echo $message; ?>
-                                    </p>
-                                <?php endif; ?>
                                 <div class="form-group row justify-content-center mb-4">
                                     <div class="col-md-10 text-center">
                                         <label for="id" style="font-size: 18px;">RIF del Proveedor</label>
@@ -288,7 +271,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()" data-dismiss="modal">Cancelar</button>
                     <input onclick="return validateForm()" class="btn btn-primary" type="submit" value="Registrar">
                 </div>
             </form>
@@ -307,53 +290,45 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="crud_proveedor.php?action=actualizar" method="post" name="form">
+            <form class="formulario" action="index.php?action=proveedor&a=actualizar" method="post" name="form">
                 <div class="modal-body">
-                    <?php if (!empty($message)): ?>
-                        <p class="alert alert-<?php echo ($message == "PROVEEDOR ACTUALIZADO CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                            <?php echo $message; ?>
-                        </p>
-                    <?php endif; ?>
-                    <?php
-                    $proveedor = $controller->Obtener_Proveedor($id_proveedor);
-                    ?>
-                    <input type="hidden" name="id_proveedor" value="<?php echo $proveedor['id_proveedor']; ?>">
+                    <input type="hidden" name="id_proveedor" id="id_proveedor">
                     <div class="form-group row">
                         <label for="id_proveedor" class="col-md-3">RIF del Proveedor</label>
                         <div class="col-md-9">
                             <div class="input-group">
-                                <select name="tipo" class="form-control">
+                                <select name="tipo" id="tipo" class="form-control">
                                     <option value="J-">J-</option>
                                     <option value="G-">G-</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="id_proveedor2" value="<?php echo $proveedor['id_proveedor']; ?>" required oninput="validateId2()">
+                                <input class="entrada form-control" type="number" name="id_proveedor2" id="id_proveedor2" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Proveedor</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre" value="<?php echo $proveedor['nombre_proveedor']; ?>" required oninput="validateAddress2()">
+                            <input class="entrada form-control" type="text" name="nombre" id="nombre_proveedor" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="direccion" class="col-md-3">Dirección del Proveedor</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="direccion" value="<?php echo $proveedor['direccion']; ?>" required oninput="validateAddress()">
+                            <input class="entrada form-control" type="text" name="direccion" id="direccion_proveedor" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="tlf" class="col-md-3">Tlf del Proveedor</label>
                         <div class="col-md-9">
                             <div class="input-group">
-                                <select name="codigo_tlf" class="form-control">
+                                <select name="codigo_tlf" id="codigo_tlf" class="form-control">
                                     <option value="0412">0412</option>
                                     <option value="0416">0416</option>
                                     <option value="0426">0426</option>
                                     <option value="0414">0414</option>
                                     <option value="0424">0424</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="numero_tlf" value="<?php echo $proveedor['tlf']; ?>" required oninput="validatePhone()">
+                                <input class="entrada form-control" type="number" name="numero_tlf" id="telefono" required>
                             </div>
                         </div>
                     </div>
@@ -361,25 +336,25 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <label for="id_representante" class="col-md-3">CI del Representante Legal</label>
                         <div class="col-md-9">
                             <div class="input-group">
-                                <select name="tipo2" class="form-control">
+                                <select name="tipo2" id="tipo2" class="form-control">
                                     <option value="V-">V-</option>
                                     <option value="E-">E-</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="id_representante" value="<?php echo $proveedor['id_representante']; ?>" required oninput="validateId()">
+                                <input class="entrada form-control" type="number" name="id_representante" id="id_representante" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre_representante" class="col-md-3">Nombre del Representante Legal</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre_representante" value="<?php echo $proveedor['nombre_representante']; ?>" required oninput="validateName()">
+                            <input class="entrada form-control" type="text" name="nombre_representante" id="nombre_representante" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="tlf_representante" class="col-md-3">Tlf del Representante Legal</label>
                         <div class="col-md-9">
                             <div class="input-group">
-                                <select name="codigo_tlf_representante" class="form-control">
+                                <select name="codigo_tlf_representante" id="codigo_tlf_representante" class="form-control">
                                     <option value="0412">0412</option>
                                     <option value="0416">0416</option>
                                     <option value="0426">0426</option>
@@ -387,19 +362,20 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="0424">0424</option>
                                     <option value="0251">0251</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="numero_tlf_representante" value="<?php echo $proveedor['tlf_representante']; ?>" required oninput="validatePhone2()">
+                                <input class="entrada form-control" type="number" name="numero_tlf_representante" id="numero_tlf_representante" required>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModalModificarProveedor()">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalModificar()">Cancelar</button>
                     <input onclick="return modificar()" class="btn btn-primary" type="submit" value="Modificar">
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 
 
@@ -422,6 +398,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
-    <script src="views/js/modal_tipo.js"></script>
+    <script src="views/js/modal_prooveedor.js"></script>
+    <script src="views/js/validate2.js"></script>
 </body>
 </html>

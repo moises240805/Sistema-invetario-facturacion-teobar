@@ -20,20 +20,22 @@ class Proveedor extends Conexion{
         parent::__construct();
     }
 
-    public function setProveedorData($id_proveedor, $nombre_proveedor, $direccion_proveedor, 
-                                      $tlf_proveedor, $id_representante_legal, 
-                                      $nombre_representante_legal, $tlf_representante_legal, 
-                                      $tipo, $tipo2) {
-        $this->id_proveedor = $id_proveedor;
-        $this->nombre_proveedor = $nombre_proveedor;
-        $this->direccion_proveedor = $direccion_proveedor;
-        $this->tlf_proveedor = $tlf_proveedor;
-        $this->id_representante_legal = $id_representante_legal;
-        $this->nombre_representante_legal = $nombre_representante_legal;
-        $this->tlf_representante_legal = $tlf_representante_legal;
-        $this->tipo = $tipo;
-        $this->tipo2 = $tipo2;
+    public function setProveedorData($proveedor) {
+        if (is_string($proveedor)) {
+            $proveedor = json_decode($proveedor, true);
+        }
+    
+        $this->id_proveedor = $proveedor['id_proveedor'] ?? null;
+        $this->nombre_proveedor = $proveedor['nombre_proveedor'] ?? null;
+        $this->direccion_proveedor = $proveedor['direccion_proveedor'] ?? null;
+        $this->tlf_proveedor = $proveedor['telefono_proveedor'] ?? null;
+        $this->id_representante_legal = $proveedor['id_representante_legal'] ?? null;
+        $this->nombre_representante_legal = $proveedor['nombre_representante_legal'] ?? null;
+        $this->tlf_representante_legal = $proveedor['telefono_representante_legal'] ?? null;
+        $this->tipo = $proveedor['tipo'] ?? null;
+        $this->tipo2 = $proveedor['tipo2'] ?? null;
     }
+    
 
         // Getters
         public function getIdProveedor() {
@@ -209,7 +211,7 @@ class Proveedor extends Conexion{
     public function Eliminar_Proveedor($id_proveedor) {
         $query = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_proveedor", $this->id_proveedor, PDO::PARAM_INT);
+        $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
         $stmt->execute();
         return true;
     }

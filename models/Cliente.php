@@ -17,15 +17,18 @@ class Cliente extends Conexion{
         parent::__construct();
     }
 
-    public function setClienteData($id_cliente, $nombre_cliente, $direccion_cliente, 
-                               $tlf_cliente, $email_cliente, $tipo) {
-    $this->id_cliente = $id_cliente;
-    $this->nombre_cliente = $nombre_cliente;
-    $this->direccion_cliente = $direccion_cliente;
-    $this->tlf_cliente = $tlf_cliente;
-    $this->email_cliente = $email_cliente;
-    $this->tipo = $tipo;
-}
+    public function setClienteData($cliente) {
+        if (is_string($cliente)) {
+            $cliente = json_decode($cliente, true);
+        }
+    
+        $this->id_cliente = $cliente['id_cliente'] ?? null;
+        $this->tipo = $cliente['tipo_id'] ?? null;
+        $this->nombre_cliente = $cliente['nombre_cliente'] ?? null;
+        $this->tlf_cliente = $cliente['telefono'];
+        $this->direccion_cliente = $cliente['direccion'];
+        $this->email_cliente = $cliente['email'];
+    }
 
     // Métodos set y get
     public function setIdCliente($id_cliente) {
@@ -140,7 +143,7 @@ class Cliente extends Conexion{
             $query = "UPDATE cliente SET nombre_cliente = :nombre, tlf = :tlf, direccion = :direccion, email = :email_cliente, tipo_id = :tipo WHERE id_cliente = :id_cliente";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
-            $stmt->bindParam(":tipo", $this->tipo, PDO::PARAM_STR);
+            $stmt->bindParam(":tipo", $this->tipo_id, PDO::PARAM_STR); // Corregido aquí
             $stmt->bindParam(":nombre", $this->nombre_cliente, PDO::PARAM_STR);
             $stmt->bindParam(":tlf", $this->tlf_cliente, PDO::PARAM_STR);
             $stmt->bindParam(":direccion", $this->direccion_cliente, PDO::PARAM_STR);
@@ -151,11 +154,12 @@ class Cliente extends Conexion{
             return false;
         }
     }
+    
 
     public function Eliminar_Cliente($id_cliente) {
         $query = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
+        $stmt->bindParam(":id_cliente", $id_cliente, PDO::PARAM_INT);
         $stmt->execute();
         return true;
     }

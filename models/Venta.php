@@ -22,23 +22,25 @@ class Venta extends Conexion{
         parent::__construct();
     }
 
-    public function setVentaData($id_venta, $id_producto, $tipo_compra, $tlf, 
-    $id_cliente, $cantidad, $fech_emision, 
-    $id_modalidad_pago, $monto, $tipo_entrega, 
-    $rif_banco, $id_medida) {
-$this->id_venta = $id_venta;
-$this->id_producto = $id_producto;
-$this->tipo_compra = $tipo_compra;
-$this->tlf = $tlf;
-$this->id_cliente = $id_cliente;
-$this->cantidad = $cantidad;
-$this->fech_emision = $fech_emision;
-$this->id_modalidad_pago = $id_modalidad_pago;
-$this->monto = $monto;
-$this->tipo_entrega = $tipo_entrega;
-$this->rif_banco = $rif_banco;
-$this->id_medida = $id_medida;
-}
+    public function setVentaData($venta) {
+        if (is_string($venta)) {
+            $venta = json_decode($venta, true);
+        }
+    
+        $this->id_venta = $venta['id_venta'] ?? null;
+        $this->id_producto = $venta['productos']['id_producto'] ?? null;
+        $this->id_medida = $venta['productos']['id_medida'] ?? null;
+        $this->tipo_compra = $venta['tipo_compra'] ?? null;
+        $this->tlf = $venta['tlf'] ?? null;
+        $this->id_cliente = $venta['id_cliente'] ?? null;
+        $this->cantidad = $venta['cantidad'] ?? null;
+        $this->fech_emision = $venta['fech_emision'] ?? null;
+        $this->id_modalidad_pago = $venta['id_modalidad_pago'] ?? null;
+        $this->monto = $venta['monto'] ?? null;
+        $this->tipo_entrega = $venta['tipo_entrega'] ?? null;
+        $this->rif_banco = $venta['rif_banco'] ?? null;
+    }
+    
 
     // Getters
     public function getIdVenta() {

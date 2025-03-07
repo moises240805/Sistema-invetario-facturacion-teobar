@@ -44,7 +44,7 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL REGISTRAR... USUARIO EXISTENTE";
-    }    header("Location: index.php?action=producto"); // Redirect
+    }    header("Location: index.php?action=producto&a=d"); // Redirect
     exit();
 }
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
@@ -87,7 +87,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ACTUALIZAR EL PRODUCTO"; // Establece el mensaje de error
     }
-     header("Location: index.php?action=producto"); // Redirect
+     header("Location: index.php?action=producto&a=d"); // Redirect
     exit();
     
 }
@@ -104,13 +104,12 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ELIMINAR EL PRODUCTO"; // Establece el mensaje de error
     }
-     header("Location: index.php?action=producto"); // Redirect
+     header("Location: index.php?action=producto&a=d"); // Redirect
     exit();
 }
+elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
-else
-{
-    require_once "views/php/dashboard_producto.php";
+    require_once 'views/php/dashboard_producto.php';
 }
 
 ?>

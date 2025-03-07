@@ -43,7 +43,6 @@ function abrirModalModificar(id) {
     fetch('index.php?action=tipo&a=mid_form&id_presentacion=' + id)
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         document.getElementById('id').value = data.id_presentacion;
         document.getElementById('tipo').value = data.tipo_producto;
         document.getElementById('presen').value = data.presentacion;

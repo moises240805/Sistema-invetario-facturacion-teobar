@@ -124,7 +124,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "models/Venta.php";
+                require_once "controllers/VentaController.php";
                 $cuenta = new Venta;
                 $venta = $cuenta->obtenerCuentas();
                 foreach ($venta as $venta): 
@@ -135,7 +135,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <td><?php echo $venta['fecha_cuentaCobrar']; ?></td>
                 <td><?php echo $venta['monto_cuentaCobrar']; ?></td>
                 <td>
-                    <a href="crud_cobrar.php?action=abono&id_cuenta=<?php echo $venta['id_cuentaCobrar']; ?>" class="btn btn-success btn-sm" title="Abono">Abono</a>
+                    <a onclick="abrirModal(<?php echo $venta['id_cuentaCobrar']; ?>)" class="btn btn-success btn-sm" title="Abono">Abono</a>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -154,23 +154,15 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="crud_cobrar.php?action=abonado" method="POST" name="form">
+            <form class="formulario" action="index.php?action=venta&a=abonado" method="POST" name="form">
                 <div class="modal-body">
-                    <?php if (!empty($message)): ?>
-                        <p class="alert alert-<?php echo ($message == "ABONADO CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                            <?php echo $message; ?>
-                        </p>
-                    <?php endif; ?>
-                    <?php
-                    $admin = $_GET["id_cuenta"];
-                    ?>
-                    <input type="hidden" name="id_cuenta" value="<?php echo $admin; ?>">
+                    <input type="hidden" name="id_cuenta" id="id_cuenta"  >
                     <div class="form-group row justify-content-center mb-4">
                         <div class="col-md-10 text-center">
                             <label for="fecha" style="font-size: 18px;">Fecha del Abono</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="date" class="form-control" name="fecha" required>
+                            <input type="date" class="form-control" name="fecha" id="fecha" required>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center mb-4">
@@ -178,7 +170,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <label for="monto" style="font-size: 18px;">Monto</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="number" step="0.01" min="0" class="form-control" name="monto" required>
+                            <input type="number" step="0.01" min="0" class="form-control" name="monto" id="monto" required>
                         </div>
                     </div>
                 </div>
@@ -190,6 +182,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </div>
     </div>
 </div>
+
 
 
 
@@ -212,6 +205,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
-    <script src="views/js/modal_tipo.js"></script>
+    <script src="views/js/modal_cobrar.js"></script>
 </body>
 </html>
