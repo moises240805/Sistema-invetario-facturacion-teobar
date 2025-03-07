@@ -13,10 +13,13 @@ class Tipo extends Conexion{
         parent::__construct();
     }
 
-    public function setPresentacionData($id_presentacion, $tipo_producto, $presentacion) {
-        $this->id_presentacion = $id_presentacion;
-        $this->tipo_producto = $tipo_producto;
-        $this->presentacion = $presentacion;
+    public function setPresentacionData($tipo) {
+        if (is_string($tipo)) {
+        $tipo = json_decode($tipo, true);
+        $this->id_presentacion = $tipo['id_presentacion'] ?? null;
+        $this->tipo_producto = $tipo['tipo_producto'];
+        $this->presentacion = $tipo['presentacion'];
+    }
     }
 
     // Getters
@@ -108,7 +111,7 @@ class Tipo extends Conexion{
     public function Eliminar_Tipo($id_presentacion) {
         $query = "DELETE FROM presentacion WHERE id_presentacion = :id_presentacion";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_presentacion", $this->id_presentacion, PDO::PARAM_INT);
+        $stmt->bindParam(":id_presentacion", $id_presentacion, PDO::PARAM_INT);
         $stmt->execute();
         return true;
     }

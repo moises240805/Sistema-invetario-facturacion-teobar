@@ -100,3 +100,42 @@ function calcularCantidad() {
             }  
         }
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_registro').value = today;
+
+    // Function to validate fecha_vencimiento
+    function validarFechaVencimiento() {
+        const fechaVencimientoInput = document.getElementById('fech_venci');
+        
+        // Listen for change event on fecha_vencimiento field
+        fechaVencimientoInput.addEventListener('change', function() {
+            const fechaVencimiento = new Date(this.value);
+            const fechaActual = new Date();
+            
+            // Set minimum date as 15 days from today
+            const fechaMinima = new Date(fechaActual);
+            fechaMinima.setDate(fechaActual.getDate() + 15);
+            
+            // Validate if fecha_vencimiento is less than fecha_minima
+            if (fechaVencimiento < fechaMinima) {
+                alert('La fecha de vencimiento debe ser al menos 15 días a partir de hoy.');
+                this.value = ''; // Clear the field if not valid
+            }
+        });
+    }
+
+    // Call the function when the modal is shown
+    const modalAgregarProducto = document.getElementById('modalAgregarProducto');
+    modalAgregarProducto.addEventListener('shown.bs.modal', function() {
+        validarFechaVencimiento();
+    });
+});
+
+
+
+
+
+// Repeat similar logic for other fields...

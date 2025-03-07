@@ -71,17 +71,16 @@
     width: 95%;
 }
     
-.formulario {
+.modal-content {
     display: block;
     background-color: white;
-    margin-top: 1rem;
     text-align: center;
     align-items: center; /* Centra el formulario horizontalmente */
-    max-width: 600px; /* Ancho máximo del formulario */
-    margin-left: auto; /* Centra el formulario en la página */
-    margin-right: auto;
     border-radius: 10px; /* Opcional: bordes redondeados */
     box-shadow: .5rem .5rem 1rem rgba(0, 0, 0, .25);
+    margin: 10% auto; /* 15% from the top and centered */
+    max-width: 60%; /* Could be more or less, depending on screen size */
+    animation: animar 1s;
 }
 
 .titulo_form {

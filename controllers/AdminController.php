@@ -6,7 +6,7 @@ $controller = new Admin();
 
 $message="";
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST") 
 {
@@ -31,7 +31,7 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
                 "rol" => $usuario['rol'],
             ];
             
-            header("Location: pag_inic.php");
+            header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir
         } else {
             echo '<script type="text/javascript">
@@ -48,59 +48,60 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
 }
 elseif ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 {
-    // Obtiene los valores del formulario y los sanitiza
-    $username = htmlspecialchars($_POST['username']);
-    $pw = htmlspecialchars($_POST['pw']);
-    $rol = htmlspecialchars($_POST['rol']);
+    $user = json_encode([
+        'username' => htmlspecialchars($_POST['username']),
+        'pw' => htmlspecialchars($_POST['pw']),
+        'rol' => htmlspecialchars($_POST['rol'])
+    ]);
 
-    $controller->setUserData($username, $pw, $id, $rol);
+    // Envía el JSON al modelo
+    $controller->setUserData($user);
+
     // Llama al método guardarPersona del controlador y guarda el resultado en $message
-    if($controller->Guardar_Usuario($username, $pw, $rol))
+    if($controller->Guardar_Usuario($user))
     {
-        $message3 = "USUARIO REGISTRADO CORRECTAMENTE"; // Establece el mensaje de éxito
-        echo "<script>
-            if (confirm('$message3')) {
-                // Si el usuario acepta, permanece en el formulario
-                window.location.href = 'crud_admin.php?action=formulario'; // Usar variable PHP
-            } else {
-                // Si el usuario cancela, redirige al dashboard
-                window.location.href = 'crud_admin.php?action=d'; // Usar variable PHP
-            }
-          </script>";
+        $_SESSION['message_type'] = 'success';  // Set success flag
+        $_SESSION['message'] = "USUARIO REGISTRADO CORRECTAMENTE";
     } else {
-        $message3 = "ERROR AL REGISTRAR EL USUARIO... USUARIO EXISTENTE"; // Establece el mensaje de error
-    }require_once "views/php/dashboard_admin.php";
-}
-elseif ($action == "formulario" && $_SERVER["REQUEST_METHOD"] == "GET") {
+        $_SESSION['message_type'] = 'danger'; // Set error flag
+        $_SESSION['message'] = "ERROR AL REGISTRAR EL USUARIO... USUARIO EXISTENTE";
+    }
     
-    require_once "views/php/form_admin.php";
-    
+    header("Location: index.php?action=usuario&a=d"); // Redirect
+    exit();
 }
+
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
     $id= $_GET['ID'];
-    require_once "views/php/form_mid_admin.php";
     // Llama al controlador para mostrar el formulario de modificación
     $admin=$controller->Obtener_Usuario($id);
+    header('Content-Type: application/json');
+    echo json_encode($admin);
 }
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtiene los valores del formulario y los sanitiza 
-    $username = htmlspecialchars($_POST['usuario']); 
-    $pw = htmlspecialchars($_POST['pw']); 
-    $id = htmlspecialchars($_POST['id']);
-    $rol = htmlspecialchars($_POST['rol']);
+    $user = json_encode([
+        'username' => htmlspecialchars($_POST['usuario']),
+        'pw' => htmlspecialchars($_POST['clave']),
+        'rol' => htmlspecialchars($_POST['roles']),
+        'id' => htmlspecialchars($_POST['id'])
+    ]);
 
-    $controller->setUserData($username, $pw, $id, $rol);
+    $controller->setUserData($user);
     // Llama al método actualizar producto del controlador y guarda el resultado en $message 
-    if($controller->Actualizar_Usuario($username, $pw,$id,$rol)) 
-    { 
-        $message2 = "USUARIO ACTUALIZADO CORRECTAMENTE"; // Establece el mensaje de éxito
+    if($controller->Actualizar_Usuario($user)) 
+    {
+        $_SESSION['message_type'] = 'success';  // Set success flag
+        $_SESSION['message'] = "USUARIO ACTUALIZADO CORRECTAMENTE";
     } else {
-        $message2 = "ERROR AL ACTUALIZAR EL CLIENTE"; // Establece el mensaje de error
+        $_SESSION['message_type'] = 'danger'; // Set error flag
+        $_SESSION['message'] = "ERROR AL ACTUALIZAR EL USUARIO";
     }
 
     // Vuelve a cargar el formulario con el mensaje
-    require_once "views/php/dashboard_admin.php";
+    header("Location: index.php?action=usuario&a=d"); // Redirect
+    exit();
     
 }
 elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
@@ -110,11 +111,16 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     $admin=$controller->Eliminar_Usuario($username);
     if($admin) 
     { 
-        $message = "USUARIO ELIMINADO CORRECTAMENTE"; // Establece el mensaje de éxito
+        $_SESSION['message_type'] = 'success';
+        $_SESSION['message'] = "USUARIO ELIMINADO CORRECTAMENTE";
+        $_SESSION['modal_title'] = "Eliminación Exitosa"; //New
     } else {
-        $message = "ERROR AL ELIMINAR EL USUARIO"; // Establece el mensaje de error
+        $_SESSION['message_type'] = 'danger';
+        $_SESSION['message'] = "ERROR AL ELIMINAR EL USUARIO";
+        $_SESSION['modal_title'] = "Error de Eliminación"; //New
     }
-    require_once "views/php/dashboard_admin.php";
+    header("Location: index.php?action=usuario&a=d");
+    exit();
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
     require_once "views/php/dashboard_admin.php";

@@ -12,7 +12,7 @@ $message4="";
 $message="";//inicializa la varable donde se almasenara la el mensage error o succes
 //aqui realiza las operacion resividas de las vista donde dependiendo
 //del action realiza las llamadas al los controladores y trae las vistas
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 {

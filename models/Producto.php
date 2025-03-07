@@ -28,32 +28,34 @@ class Producto extends Conexion{
         parent::__construct();
     }
 
-    public function setProductoData($id_producto, $nombre_producto, $presentacion, 
-                                $fech_vencimiento, $fecha_registro, 
-                                $cantidad_producto, $cantidad_producto2, 
-                                $cantidad_producto3, $precio_producto, 
-                                $precio_producto2, $precio_producto3, 
-                                $uni_medida, $uni_medida2, $uni_medida3, 
-                                $id_actualizacion, $peso, $peso2, $peso3) {
-    $this->id_producto = $id_producto;
-    $this->nombre_producto = $nombre_producto;
-    $this->presentacion = $presentacion;
-    $this->fech_vencimiento = $fech_vencimiento;
-    $this->fecha_registro = $fecha_registro;
-    $this->cantidad_producto = $cantidad_producto;
-    $this->cantidad_producto2 = $cantidad_producto2;
-    $this->cantidad_producto3 = $cantidad_producto3;
-    $this->precio_producto = $precio_producto;
-    $this->precio_producto2 = $precio_producto2;
-    $this->precio_producto3 = $precio_producto3;
-    $this->uni_medida = $uni_medida;
-    $this->uni_medida2 = $uni_medida2;
-    $this->uni_medida3 = $uni_medida3;
-    $this->id_actualizacion = $id_actualizacion;
-    $this->peso = $peso;
-    $this->peso2 = $peso2;
-    $this->peso3 = $peso3;
+public function setProductoData($producto) {
+    // Si $producto es un string JSON, decodifícalo
+    if (is_string($producto)) {
+        $producto = json_decode($producto, true);
+    }
+
+    // Ahora puedes asignar los valores
+    $this->id_producto = $producto['id_producto'] ?? null;
+    $this->nombre_producto = $producto['nombre_producto'] ?? null; // Corregido el key
+    $this->presentacion = $producto['presentacion'] ?? null; // Corregido el key
+    $this->fech_vencimiento = $producto['fecha_vencimiento'] ?? null;
+    $this->fecha_registro = $producto['fecha_registro'] ?? null;
+    $this->cantidad_producto = $producto['cantidad_producto'] ?? null; // Corregido el key
+    $this->cantidad_producto2 = $producto['cantidad_producto2'] ?? null;
+    $this->cantidad_producto3 = $producto['cantidad_producto3'] ?? null;
+    $this->precio_producto = $producto['precio_producto'] ?? null; // Corregido el key
+    $this->precio_producto2 = $producto['precio_producto2'] ?? null;
+    $this->precio_producto3 = $producto['precio_producto3'] ?? null;
+    $this->uni_medida = $producto['uni_medida'] ?? null; // Corregido el key
+    $this->uni_medida2 = $producto['uni_medida2'] ?? null;
+    $this->uni_medida3 = $producto['uni_medida3'] ?? null;
+    $this->id_actualizacion = $producto['id_actualizacion'] ?? null; // Si este campo no existe, no lo asignes
+    $this->peso = $producto['peso'] ?? null;
+    $this->peso2 = $producto['peso2'] ?? null; // Si este campo no existe, no lo asignes
+    $this->peso3 = $producto['peso3'] ?? null;
 }
+
+
 
     // Getters
     public function getIdProducto() {
@@ -162,43 +164,43 @@ class Producto extends Conexion{
     }
 
     public function setPrecioProducto($precio_producto) {
-        $this->$precio_producto=  $precio_producto;  
+        $this->precio_producto=  $precio_producto;  
     }
 
     public function setPrecioProducto2($precio_producto_2) { 
-        $this->$precio_producto_2= $precio_producto_2;  
+        $this->precio_producto_2= $precio_producto_2;  
     }
     
     public function setPrecioProducto3($precio_producto_3) { 
-        $this->$precio_producto_3= $precio_producto_3;  
+        $this->precio_producto_3= $precio_producto_3;  
     }
     
     public function setUniMedida($uni_medida) { 
-        $this->$uni_medida= $uni_medida;  
+        $this->uni_medida= $uni_medida;  
     }
     
     public function setUniMedida2($uni_medida_2) { 
-        $this->$uni_medida_2= $uni_medida_2;  
+        $this->uni_medida_2= $uni_medida_2;  
     }
     
     public function setUniMedida3($uni_medida_3) { 
-        $this->$uni_medida_3= $uni_medida_3;  
+        $this->uni_medida_3= $uni_medida_3;  
     }
     
     public function setIdActualizacion($id_actualizacion) { 
-        $this->$id_actualizacion= $id_actualizacion;  
+        $this->id_actualizacion= $id_actualizacion;  
     }
     
     public function setPeso($peso) { 
-        $this->$peso= $peso;  
+        $this->peso= $peso;  
     }
     
     public function setPeso2($peso_2) { 
-        $this->$peso_2= $peso_2;  
+        $this->peso_2= $peso_2;  
     }
     
     public function setPeso3($peso_3) { 
-        $this->$peso_3= $peso_3;  
+        $this->peso_3= $peso_3;  
     }
 
     //Metodos
@@ -356,12 +358,13 @@ class Producto extends Conexion{
 
     public function Actualizar_Producto() {
         try {
-            $query = "UPDATE producto SET nombre = :nombre, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
+            $query = "UPDATE producto SET nombre = :nombre, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_producto", $this->id_producto);
             $stmt->bindParam(":nombre", $this->nombre_producto);
             $stmt->bindParam(":fecha_vencimiento", $this->fech_vencimiento);
             $stmt->bindParam(":id_actualizacion", $this->id_actualizacion);
+            $stmt->bindParam(":presentacion", $this->presentacion);
             
             $success1 = $stmt->execute();
 
@@ -418,7 +421,7 @@ WHERE id_producto = :id_producto AND id_unidad_medida IN (:uni_medida, :uni_medi
     public function Eliminar_Producto($id_producto) {
         $query = "DELETE FROM producto WHERE id_producto = :id_producto";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT);
+        $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
         $stmt->execute();
         return true;
     }

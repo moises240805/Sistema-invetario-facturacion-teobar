@@ -7,30 +7,28 @@ $controller = new Tipo();
 $message2="";
 $message3="";
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 { 
-    $tipo_producto = htmlspecialchars($_POST['tipo_producto']);
-    $presentacion = htmlspecialchars($_POST['presentacion']);
+    $tipo = json_encode([
+        'tipo_producto' => htmlspecialchars($_POST['tipo_producto']),
+        'presentacion' => htmlspecialchars($_POST['presentacion'])
+    ]);
 
 
-    $controller->setPresentacionData($id_presentacion, $tipo_producto, $presentacion);
-    if($controller->Guardar_Tipo())
+    $controller->setPresentacionData($tipo);
+    if($controller->Guardar_Tipo($tipo))
     {
-        $message3 = "PRODUCTO REGISTRADO CORRECTAMENTE"; // Establece el mensaje de éxito
-        echo "<script>
-            if (confirm('$message3')) {
-                // Si el usuario acepta, permanece en el formulario
-                window.location.href = 'crud_tipo.php?action=formulario'; // Usar variable PHP
-            } else {
-                // Si el usuario cancela, redirige al dashboard
-                window.location.href = 'crud_tipo.php'; // Usar variable PHP
-            }
-          </script>";
+        $_SESSION['message_type'] = 'success';  // Set success flag
+        $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
     } else {
-        $message3 = "ERROR AL REGISTRAR EL PRODUCTO"; // Establece el mensaje de error
-    }require_once "views/php/dashboard_tipo.php";
+        $_SESSION['message_type'] = 'danger'; // Set error flag
+        $_SESSION['message'] = "ERROR AL REGISTRAR...";
+    }
+    
+    header("Location: index.php?action=tipo&a=d"); // Redirect
+    exit();
 }
 elseif($action == "formulario" && $_SERVER["REQUEST_METHOD"] == "GET")
 {
@@ -39,42 +37,52 @@ elseif($action == "formulario" && $_SERVER["REQUEST_METHOD"] == "GET")
 elseif($action == "mid_form" && $_SERVER["REQUEST_METHOD"] == "GET")
 {
     $id_presentacion = $_GET['id_presentacion'];
-    require_once 'views/php/form_mid_tipo.php';
     $tipo=$controller->Obtener_Tipo($id_presentacion);
+    echo json_encode($tipo);
 }
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtiene los valores del formulario y los sanitiza
-    $id_presentacion = htmlspecialchars($_POST['id_presentacion']); // Asegúrate de obtener el ID
-    $tipo_producto = htmlspecialchars($_POST['tipo_producto']); 
-    $presentacion = htmlspecialchars($_POST['presentacion']); 
+    $tipo = json_encode([
+        'id_presentacion' => htmlspecialchars($_POST['id_presentacion']),
+        'tipo_producto' => htmlspecialchars($_POST['tipo_producto']),
+        'presentacion' => htmlspecialchars($_POST['presentacion'])
+    ]);
 
-    $controller->setPresentacionData($id_presentacion, $tipo_producto, $presentacion);
+    $controller->setPresentacionData($tipo);
     // Llama al método actualizar producto del controlador y guarda el resultado en $message 
-    if ($controller->Actualizar_Tipo()) { 
-        $message2 = "ACTUALIZADO CORRECTAMENTE"; // Establece el mensaje de éxito
-    } else {
-        $message2 = "ERROR AL ACTUALIZAR"; // Establece el mensaje de error
-    }
-
-    // Vuelve a cargar el formulario con el mensaje
-    require_once "views/php/dashboard_tipo.php";
+    if ($controller->Actualizar_Tipo($tipo))
+        {
+            $_SESSION['message_type'] = 'success';  // Set success flag
+            $_SESSION['message'] = "ACTUALIZADO CORRECTAMENTE";
+        } else {
+            $_SESSION['message_type'] = 'danger'; // Set error flag
+            $_SESSION['message'] = "ERROR AL ACTUALIZAR...";
+        }
+        
+        header("Location: index.php?action=tipo&a=d"); // Redirect
+        exit();
 }
 elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
     $id_presentacion = $_GET['id_presentacion'];
 
-    $controller->setPresentacionData($id_presentacion, null, null);
+    $controller->setPresentacionData($id_presentacion);
     // Llama al controlador para mostrar el formulario de modificación
     $tipo=$controller->Eliminar_Tipo($id_presentacion);
     if($tipo) 
-    { 
-        $message = "ELIMINADO CORRECTAMENTE"; // Establece el mensaje de éxito
+    {
+        $_SESSION['message_type'] = 'success';  // Set success flag
+        $_SESSION['message'] = "ELIMINADO CORRECTAMENTE";
     } else {
-        $message = "ERROR AL ELIMINAR"; // Establece el mensaje de error
+        $_SESSION['message_type'] = 'danger'; // Set error flag
+        $_SESSION['message'] = "ERROR AL ELIMINAR...";
     }
-    require_once "views/php/dashboard_tipo.php";
+    
+    header("Location: index.php?action=tipo&a=d"); // Redirect
+    exit();
 }
-else{
+elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
     require_once 'views/php/dashboard_tipo.php';
 }
 ?>

@@ -14,11 +14,12 @@ class Admin extends Conexion {
         parent::__construct();
     }
 
-    public function setUserData($username, $pw, $id, $rol) {
-        $this->username = $username;
-        $this->pw = $pw;
-        $this->id = $id;
-        $this->rol = $rol;
+    public function setUserData($user) {
+        $user = json_decode($user, true);
+        $this->username = $user['username'];
+        $this->pw = $user['pw'];
+        $this->rol = $user['rol'];
+        $this->id = $user['id'] ?? null;
     }
 
     // Métodos Getter y Setter
@@ -115,8 +116,9 @@ class Admin extends Conexion {
         }
     }
 
-    public function Actualizar_Usuario($id) {
+    public function Actualizar_Usuario($user) {
         try {
+
             // Consulta SQL para actualizar los datos del usuario
             $query = "UPDATE admin SET usuario = :username, pw = :pw, rol = :rol WHERE ID = :id";
             
@@ -130,8 +132,7 @@ class Admin extends Conexion {
             $stmt->bindParam(":username", $this->username);
             $stmt->bindParam(":pw", $hashedPassword); // Usa el hash de la nueva contraseña
             $stmt->bindParam(":rol", $this->rol);
-            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-            
+            $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
             // Ejecuta la consulta y retorna true si tiene éxito, false en caso contrario
             return $stmt->execute();
         } catch (PDOException $e) {
