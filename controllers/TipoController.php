@@ -27,12 +27,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
         $_SESSION['message'] = "ERROR AL REGISTRAR...";
     }
     
-    header("Location: index.php?action=tipo&a=d"); // Redirect
+    header("Location: index.php?action=tipo&a=t"); // Redirect
     exit();
-}
-elseif($action == "formulario" && $_SERVER["REQUEST_METHOD"] == "GET")
-{
-    require_once 'views/php/form_tipo.php';
 }
 elseif($action == "mid_form" && $_SERVER["REQUEST_METHOD"] == "GET")
 {
@@ -59,7 +55,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['message'] = "ERROR AL ACTUALIZAR...";
         }
         
-        header("Location: index.php?action=tipo&a=d"); // Redirect
+        header("Location: index.php?action=tipo&a=t"); // Redirect
         exit();
 }
 elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
@@ -78,10 +74,10 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $_SESSION['message'] = "ERROR AL ELIMINAR...";
     }
     
-    header("Location: index.php?action=tipo&a=d"); // Redirect
+    header("Location: index.php?action=tipo&a=t"); // Redirect
     exit();
 }
-elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+if ($action == 't') {
 
     require_once 'views/php/dashboard_tipo.php';
 }

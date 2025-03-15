@@ -1,13 +1,24 @@
 <?php
+session_start();
 $controlador = isset($_GET['action']) ? $_GET['action'] : '';
 $action = isset($_GET['a']) ? $_GET['a'] : '';
-session_start();
-if (!isset($_SESSION["s_usuario"]) && $controlador != 'usuario' && $action != 'ingresar') {
+if (!isset($_SESSION["s_usuario"]) && $controlador != 'usuario' && $action != 'ingresar' && $controlador != '') {
     // Si no está iniciada y no es la acción de inicio de sesión, redirige a la página de inicio de sesión
     require_once "views/php/login.php";
     exit(); // Asegúrate de que el script termine aquí
 }
+if ($controlador == '') {
+    require_once "views/php/pagina.php";
+} 
+else 
+{
 switch ($controlador) {
+        case "pagina":
+            require_once "views/php/pagina.php";
+            break;
+        case "login":
+            require_once "views/php/login.php";
+            break;
         case "dashboard":
             require_once "views/php/dashboard.php";
             break;
@@ -96,6 +107,7 @@ switch ($controlador) {
                     break;
     default:
         require_once 'controllers/AdminController.php';
+}
 }
 
 ?>

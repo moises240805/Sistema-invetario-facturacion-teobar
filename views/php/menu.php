@@ -9,7 +9,7 @@
                         <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=usuario&a=d" class="aside__link nav-link">Usuarios</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=producto&a=d" class="aside__link nav-link">Productos</a></li>
-                        <li class="aside__item nav-item"><a href="index.php?action=tipo&a=d" class="aside__link nav-link">Tipo Productos</a></li>
+                        <li class="aside__item nav-item"><a href="index.php?action=tipo&a=t" class="aside__link nav-link">Tipo Productos</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=proveedor&a=d" class="aside__link nav-link">Proveedores</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>

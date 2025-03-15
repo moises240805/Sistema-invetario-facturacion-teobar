@@ -30,9 +30,14 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
                 "usuario" => $usuario['usuario'],
                 "rol" => $usuario['rol'],
             ];
-            
+            if($usuario["rol"]=="Administrador"){
             header("Location: index.php?action=dashboard");
-            exit(); // Asegúrate de salir después de redirigir
+            exit(); // Asegúrate de salir después de redirigir 
+            }
+            if($usuario["rol"]=="Usuario"){
+                header("Location: index.php?action=pagina");
+                exit(); // Asegúrate de salir después de redirigir 
+                }
         } else {
             echo '<script type="text/javascript">
                 alert("ERROR...!! DATOS INCORRECTOS. VUELVA A INTRODUCIR LOS DATOS");
@@ -126,6 +131,6 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
     require_once "views/php/dashboard_admin.php";
 }
 else{
-    require_once "views/php/login.php";
+    //require_once "views/php/login.php";
 }
 ?>
