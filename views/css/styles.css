@@ -173,8 +173,8 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  background-color: white;
-  padding: 2em;
+  background-color: #fff;
+  padding: 1.5em;
   border: 1px solid #ddd;
   width: 300px;
   height: 100vh;
@@ -198,10 +198,11 @@ body {
   align-items: center;
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
 }
 
 .close-button {
-  font-size: 1.5em;
+  font-size: 1.2em;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -221,6 +222,8 @@ body {
 
 .cart-item-name {
   font-weight: bold;
+  flex-grow: 1;
+  margin-right: 10px;
 }
 
 .cart-item-quantity {
@@ -229,7 +232,7 @@ body {
 }
 
 .quantity-input {
-  width: 50px;
+  width: 40px;
   height: 25px;
   text-align: center;
   border: 1px solid #ccc;
@@ -242,6 +245,7 @@ body {
   background-color: #4CAF50;
   color: white;
   cursor: pointer;
+  margin: 0 5px;
 }
 
 .quantity-button:hover {
@@ -254,6 +258,7 @@ body {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .remove-from-cart:hover {
@@ -282,14 +287,25 @@ body {
   background-color: #3e8e41;
 }
 
-@keyframes fadeOut {
-  from {
-      opacity: 1;
-  }
-  to {
-      opacity: 0;
-  }
+/* Agregado para mejorar la apariencia */
+.cart-actions {
+  display: flex;
+  flex-direction: column;
 }
+
+#cart {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.cart-item-name {
+  color: #333;
+}
+
+#cart-summary {
+  font-weight: bold;
+}
+
 
 .products-section {
   padding: 2em 0;
@@ -304,14 +320,14 @@ body {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 }
 
 .product-card {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
   overflow: hidden;
   transition: transform 0.3s ease;
   position: relative;
@@ -322,8 +338,8 @@ body {
 }
 
 .product-image {
-  width: 100%;
-  height: 200px;
+  width: auto;
+  height: 300px;
   object-fit: cover;
 }
 
@@ -335,7 +351,7 @@ body {
 .product-name {
   font-size: 1.2em;
   font-weight: bold;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.1rem;
 }
 
 .product-price {

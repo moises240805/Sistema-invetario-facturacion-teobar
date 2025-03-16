@@ -255,8 +255,8 @@ public function setProductoData($producto) {
     public function Guardar_Producto2()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-    $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, presentacion) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :presentacion,:marca)"; 
+          $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
+    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion)";  
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
@@ -265,13 +265,14 @@ public function setProductoData($producto) {
     $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT); 
     $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR); 
     $stmt->bindParam(":fech_venci", $this->fech_vencimiento); 
+    $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
     // Ahora inserta en la tabla cantidad_producto
-    $query = "INSERT INTO cantidad_producto (id_producto, cantidad, precio, id_unidad_medida,peso)  
-            VALUES (:id_producto, :cantidad_producto, :precio_producto, :uni_medida,:peso)"; 
+    $query = "INSERT INTO cantidad_producto (id_producto, cantidad, precio, id_unidad_medida)  
+            VALUES (:id_producto, :cantidad_producto, :precio_producto, :uni_medida)"; 
 
     $stmt = $this->conn->prepare($query); 
 
@@ -280,7 +281,6 @@ public function setProductoData($producto) {
     $stmt->bindParam(":cantidad_producto", $this->cantidad_producto, PDO::PARAM_INT); 
     $stmt->bindParam(":precio_producto", $this->precio_producto); // Cambié a DECIMAL
     $stmt->bindParam(":uni_medida", $this->uni_medida, PDO::PARAM_INT); 
-    $stmt->bindParam(":peso", $this->peso, PDO::PARAM_INT);
 
 
     // Ejecuta la segunda consulta y retorna true si ambas tienen éxito

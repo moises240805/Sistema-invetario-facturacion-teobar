@@ -76,7 +76,8 @@
                     <div class="card shadow ">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">Gestionar Productos</h6>
-            <button class="btn btn-primary" id="myBtnAgregarProducto" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">Agregar Producto +</button>
+            <button class="btn btn-primary" id="myBtnAgregarProducto" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">Agregar Producto Complejo +</button>
+            <button class="btn btn-primary" id="myBtnAgregarProducto2" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto2">Agregar Producto Simple +</button>
 
         </div>
         <div class="card-body">
@@ -370,6 +371,95 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-9">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Registrar</button>  <!-- Submit button -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal para Agregar Producto -->
+<div id="modalAgregarProducto2" class="modal fade" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" style="max-width: 110%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form" >Agregar Producto</h1>
+            </div>
+            <div class="modal-body">
+                <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form">
+                    <?php 
+                        require_once "controllers/TipoController.php"; 
+                        $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
+                    ?>
+                    <div class="form-group row">
+                        <label for="id_producto" class="col-md-3">Código del Producto</label>
+                        <div class="col-md-9">
+                            <input type="number" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="nombre" class="col-md-3">Nombre del Producto</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="presentacion" class="col-md-3">Presentación del Producto</label>
+                        <div class="col-md-9">
+                            <select class="form-control" id="presentacion" name="presentacion">
+                                <?php foreach ($tipos as $tipo): ?>
+                                    <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="cantidad" class="col-md-3">Cantidad</label>
+                        <div class="col-md-9">
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" required oninput="validateNumber()">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="uni_medida" class="col-md-3">U.M</label>
+                        <div class="col-md-9">
+                            <select class="form-control" id="uni_medida" name="uni_medida">
+                                <option value="">...</option>
+                                <option value="1">Kilogramos</option>
+                                <option value="5">Litros</option>
+                                <option value="2">Gramos</option>
+                                <option value="6">Mililitro</option>
+                                <option value="4">Saco</option>
+                                <option value="3">Bulto</option>
+                                <option value="7">Galon</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="precio" class="col-md-3">Precio</label>
+                        <div class="col-md-9">
+                            <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fech_venci" class="col-md-3">Fecha de Vencimiento</label>
+                        <div class="col-md-9">
+                            <input class="form-control" type="date" id="fech_venci" name="fecha_vencimiento" placeholder="Fecha de Vencimiento" required oninput="validarFechaVencimiento();">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fech_registro" class="col-md-3">Fecha de Registro</label>
+                        <div class="col-md-9">
+                            <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">

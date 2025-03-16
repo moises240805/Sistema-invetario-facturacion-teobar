@@ -47,6 +47,33 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     }    header("Location: index.php?action=producto&a=d"); // Redirect
     exit();
 }
+elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST")
+{
+    // Obtiene los valores del formulario y los sanitiza
+    $producto = json_encode([
+        'id_producto' => htmlspecialchars($_POST['id_producto']),
+        'nombre_producto' => htmlspecialchars($_POST['nombre']),
+        'fecha_registro' => htmlspecialchars($_POST['fecha_registro']),
+        'presentacion' => htmlspecialchars($_POST['presentacion']),
+        'fecha_vencimiento' => htmlspecialchars($_POST['fecha_vencimiento']),
+        'cantidad_producto' => htmlspecialchars($_POST['cantidad']),
+        'precio_producto' => htmlspecialchars($_POST['precio']),
+        'uni_medida' => htmlspecialchars($_POST['uni_medida']),
+
+    ]);
+
+    $controller->setProductoData($producto);
+    // Llama al método guardarPersona del controlador y guarda el resultado en $message
+    if($controller->Guardar_Producto2($producto))
+    {
+        $_SESSION['message_type'] = 'success';  // Set success flag
+        $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
+    } else {
+        $_SESSION['message_type'] = 'danger'; // Set error flag
+        $_SESSION['message'] = "ERROR AL REGISTRAR... USUARIO EXISTENTE";
+    }    header("Location: index.php?action=producto&a=d"); // Redirect
+    exit();
+}
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
     $id_producto = $_GET['id_producto'];

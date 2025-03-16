@@ -50,28 +50,28 @@
             ?>
                 <div class="product-card">
                     <!-- Imagen del producto -->
-                    <img src="views/img/default-product.png" alt="<?php echo $producto['nombre']; ?>" class="product-image">
+                    <center><img src="views/img/productos/<?php echo $producto['nombre']; ?>.jpg" alt="<?php echo $producto['nombre']; ?>" class="product-image"></center>
                     
                     <!-- Detalles del producto -->
                     <div class="product-details">
                         <h5 class="product-name"><?php echo $producto['nombre']; ?></h5>
+                        <h6 class="product-price"><?php echo nl2br(htmlspecialchars($producto['precio'])); ?> $</h6>
                         <p class="product-description">
                             Presentación: <?php echo $producto['presentacion']; ?><br>
-                            Cantidad: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?><br>
-                            Precio: <?php echo nl2br(htmlspecialchars($producto['precio'])); ?>
+                            Cantidad Disponible: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?><br>
                         </p>
                     </div>
-
+                    
                     <!-- Botón de agregar al carrito -->
                     <div class="product-actions">
-                    <button 
-                        class="add-to-cart-button"
-                        data-id="<?php echo $producto['id_producto']; ?>" 
-                        data-name="<?php echo $producto['nombre']; ?>" 
-                        data-price="<?php echo $producto['precio']; ?>"
-                        data-presentation="<?php echo $producto['presentacion']; ?>">
-                        Agregar al carrito
-                    </button>
+                        <button 
+                            class="add-to-cart-button"
+                            data-id="<?php echo $producto['id_producto']; ?>" 
+                            data-name="<?php echo $producto['nombre']; ?>" 
+                            data-price="<?php echo $producto['precio']; ?>"
+                            data-presentation="<?php echo $producto['presentacion']; ?>">
+                            Agregar al carrito
+                        </button>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -79,20 +79,26 @@
     </div>
 </section>
 
+
 <section id="cart" style="display:none;">
     <div class="cart-header">
         <button id="close-cart" class="close-button">&times;</button>
         <h2>Carrito de Compras</h2>
     </div>
-    <div id="cart-content"></div>
+    <div id="cart-content">
+        <!-- Aquí se mostrarán los productos -->
+    </div>
     <div id="cart-summary">
         <p id="subtotal">Subtotal: $0</p>
         <p id="taxes">Impuestos (10%): $0</p>
         <p id="total">Total: $0</p>
     </div>
-    <button id="clear-cart">Vaciar carrito</button>
-    <button id="checkout">Pagar</button>
+    <div class="cart-actions">
+        <button id="clear-cart">Vaciar carrito</button>
+        <button id="checkout">Pagar</button>
+    </div>
 </section>
+
 
 
 
