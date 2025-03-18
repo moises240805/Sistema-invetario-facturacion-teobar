@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const cartButton = document.querySelector('.cart-button');
+    const cartSection = document.getElementById('cart');
+
+    cartButton.addEventListener('click', function() {
+        if (cartSection.style.display === 'none') {
+            cartSection.style.display = 'block';
+        } else {
+            cartSection.style.display = 'none';
+        }
+    });
+
+
+});
+
+document.addEventListener('DOMContentLoaded', function() {
     const addToCartButtons = document.querySelectorAll('.add-to-cart-button');
     const cartContent = document.getElementById('cart-content');
     const cartSummary = document.getElementById('cart-summary');
@@ -44,9 +59,13 @@ document.addEventListener('DOMContentLoaded', function() {
             totalProducts += product.quantity;
 
             const productHTML = `
-                <div>
-                    <p>${product.name} (${product.presentation}) x${product.quantity} - $${productTotal.toFixed(2)}</p>
-                    <input type="number" class="quantity-input" data-id="${productId}" value="${product.quantity}" min="1">
+                <div class="cart-item">
+                    <div class="cart-item-name">${product.name} (${product.presentation})</div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-button decrease" data-id="${productId}">-</button>
+                        <input type="number" class="quantity-input" data-id="${productId}" value="${product.quantity}" min="1">
+                        <button class="quantity-button increase" data-id="${productId}">+</button>
+                    </div>
                     <button class="remove-from-cart" data-id="${productId}">Eliminar</button>
                 </div>
             `;
@@ -79,17 +98,36 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Agregar evento para actualizar la cantidad de productos
-        const quantityInputs = document.querySelectorAll('.quantity-input');
-        quantityInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const productId = input.getAttribute('data-id');
-                const newQuantity = parseInt(input.value);
-                if (newQuantity < 1) {
-                    input.value = 1;
-                    newQuantity = 1;
-                }
+        // Función para actualizar la cantidad
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) {
+                delete cart[productId];
+            } else {
                 cart[productId].quantity = newQuantity;
+            }
+            updateCartUI();
+        }
+
+        // Agregar evento para aumentar la cantidad de productos
+        const increaseButtons = document.querySelectorAll('.quantity-button.increase');
+        increaseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = button.getAttribute('data-id');
+                cart[productId].quantity++;
+                updateCartUI();
+            });
+        });
+
+        // Agregar evento para disminuir la cantidad de productos
+        const decreaseButtons = document.querySelectorAll('.quantity-button.decrease');
+        decreaseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = button.getAttribute('data-id');
+                if (cart[productId].quantity > 1) {
+                    cart[productId].quantity--;
+                } else {
+                    delete cart[productId];
+                }
                 updateCartUI();
             });
         });
@@ -133,3 +171,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
