@@ -5,7 +5,7 @@ require_once "Conexion.php";
 class Bitacora extends Conexion{
     //Atributos
 
-    private $id_bitacora;
+    private $id;
     private $id_admin;
     private $movimiento;
     private $fecha;
@@ -17,26 +17,22 @@ class Bitacora extends Conexion{
         parent::__construct();
     }
 
-    public function setBitacoraData($bitacora) {
-        if (is_string($bitacora)) {
-            $bitacora = json_decode($bitacora, true);
-        }
-    
-        $this->id_bitacora = $bitacora['id_bitacora'] ?? null;
-        $this->id_admin = $bitacora['id_admin'] ?? null;
-        $this->movimiento = $bitacora['movimiento'] ?? null;
-        $this->fecha = $bitacora['fecha'] ?? null;
-        $this->modulo = $bitacora['modulo'] ?? null;
-        $this->descripcion = $bitacora['descripcion'] ?? null;
+    public function setBitacoraData($id_admin, $movimiento, $fecha, $modulo, $descripcion) {
+        $this->id_admin = $id_admin;
+        $this->movimiento = $movimiento;
+        $this->fecha = $fecha;
+        $this->modulo = $modulo;
+        $this->descripcion = $descripcion;
     }
 
+
     // Métodos set y get
-    public function setIdBitacora($id_bitacora) {
-        $this->id_bitacora = $id_bitacora;
+    public function setIdBitacora($id) {
+        $this->id = $id;
     }
 
     public function getIdBitacora() {
-        return $this->id_bitacora;
+        return $this->id;
     }
 
     public function setIdAdmin($id_admin) {
@@ -83,17 +79,6 @@ class Bitacora extends Conexion{
     public function Guardar_Bitacora()
     {
         try {
-            // Consulta SQL para verificar si el registro ya existe
-            $query = "SELECT * FROM bitacora WHERE id_bitacora = :id_bitacora";
-            // Prepara la consulta
-            $stmt = $this->conn->prepare($query);
-            // Vincula los parámetros con los valores
-            $stmt->bindParam(":id_bitacora", $this->id_bitacora);
-            // Ejecuta la consulta
-            $stmt->execute();
-    
-            // Verifica si el registro ya existe
-            if($stmt->rowCount() == 0) {
                 // Si no existe, procede a insertar un nuevo registro
                 $query = "INSERT INTO bitacora (id_admin, movimiento, fecha, modulo, descripcion) 
                           VALUES (:id_admin, :movimiento, :fecha, :modulo, :descripcion)";
@@ -107,11 +92,6 @@ class Bitacora extends Conexion{
                 $stmt->bindParam(":descripcion", $this->descripcion);
                 // Ejecuta la consulta y retorna true si tiene éxito, false en caso contrario
                 return $stmt->execute();
-            } else {
-
-                
-                return false;
-            }
         } catch(PDOException $e) {
             echo "Error en la consulta: " . $e->getMessage();
             return false;
@@ -121,7 +101,7 @@ class Bitacora extends Conexion{
     // Método para obtener la bitacora de la base de datos
     public function Mostrar_Bitacora() {
         // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM bitacora";
+        $query = "SELECT b.fecha, b.movimiento, b.modulo, b.descripcion, a.usuario as administrador FROM bitacora b INNER JOIN admin a ON a.ID=b.id_admin ORDER BY b.fecha DESC;";  
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
         // Ejecuta la consulta

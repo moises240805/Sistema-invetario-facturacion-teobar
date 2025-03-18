@@ -94,6 +94,9 @@ switch ($controlador) {
                         }
                         require_once "views/php/dashboard_reporte.php";
                     break;
+                    case 'bitacora':
+                        require_once 'controllers/BitacoraController.php';
+                    break;
     default:
         require_once 'controllers/AdminController.php';
 }

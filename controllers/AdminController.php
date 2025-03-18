@@ -28,6 +28,7 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             // Inicializa las variables de sesión
             $_SESSION["s_usuario"] = [
                 "usuario" => $usuario['usuario'],
+                "id" => $usuario['ID'],
                 "rol" => $usuario['rol'],
             ];
             
