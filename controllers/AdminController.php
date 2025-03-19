@@ -35,6 +35,10 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
             }
+            if($usuario["rol"]=="Cajero"){
+                header("Location: index.php?action=venta&a=v");
+                exit(); // Asegúrate de salir después de redirigir 
+                }
             if($usuario["rol"]=="Usuario"){
                 header("Location: index.php?action=pagina");
                 exit(); // Asegúrate de salir después de redirigir 

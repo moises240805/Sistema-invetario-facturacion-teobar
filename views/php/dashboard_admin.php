@@ -169,6 +169,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <option value="">...</option>
                         <option value="Administrador">Administrador</option>
                         <option value="Usuario">Usuario</option>
+                        <option value="Cajero">Cajero</option>
                     </select>
                 </div>
             </div>
@@ -227,6 +228,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <select class="form-control" name="roles" id="" required>
                         <option value="Administrador">Administrador</option>
                         <option value="Usuario">Usuario</option>
+                        <option value="Cajero">Cajero</option>
                     </select>
                 </div>
             </div>

@@ -11,11 +11,11 @@ date_default_timezone_set('America/Caracas');
 require_once "views/php/utils.php";
 
 // Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
+/*if (!isset($_SESSION['s_usuario'])) {
     setError("Acceso no autorizado");
     header("Location: index.php");
     exit();
-}
+}*/
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 

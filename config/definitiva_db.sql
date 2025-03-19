@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-11-2024 a las 14:38:00
+-- Tiempo de generación: 19-03-2025 a las 20:22:56
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -40,7 +40,8 @@ CREATE TABLE `admin` (
 
 INSERT INTO `admin` (`ID`, `usuario`, `rol`, `pw`) VALUES
 (2, '@admin_ca', 'Administrador', '$2y$10$wyceSs4IUq08hnu2VYm/rOHcIepYuU2SdoslpClA7GN5V5nAZV126'),
-(9, '@user_ca', 'Usuario', '$2y$10$xsww5op6EeLOaXK/XucygefHS6A1Uziz8mrzE/oJv25SPWJQXricq');
+(9, '@user_ca', 'Usuario', '$2y$10$KeSPukQrDVa8qGep.ZAXN.SNcqDHbBI573cq9XNuv12zSatxGJ0HO'),
+(13, '@cajero_ca', 'Cajero', '$2y$10$r2IqiyXhlP5QzceGgwCbL.Nu0YnPw0WmJRJj4UTkWonTf7mmmQ5gO');
 
 -- --------------------------------------------------------
 
@@ -87,6 +88,21 @@ INSERT INTO `bancos` (`ID`, `rif_banco`, `nombre_banco`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `bitacora`
+--
+
+CREATE TABLE `bitacora` (
+  `ID` int(11) NOT NULL,
+  `fecha` datetime NOT NULL,
+  `movimiento` varchar(20) NOT NULL,
+  `modulo` varchar(20) NOT NULL,
+  `descripcion` varchar(100) NOT NULL,
+  `id_admin` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `cantidad_producto`
 --
 
@@ -104,9 +120,18 @@ CREATE TABLE `cantidad_producto` (
 --
 
 INSERT INTO `cantidad_producto` (`ID`, `id_producto`, `cantidad`, `precio`, `id_unidad_medida`, `peso`) VALUES
-(60, 24, 2.00, 12.00, 3, 20.00),
+(60, 24, 11.00, 12.00, 3, 20.00),
 (61, 24, 40.00, 0.60, 1, 1.00),
-(62, 24, 40000.00, 0.30, 2, 0.50);
+(62, 24, 40000.00, 0.30, 2, 0.50),
+(72, 56, 1.00, 11.00, 3, 11.00),
+(73, 56, 1000.00, 0.86, 1, 1.00),
+(74, 56, 1000000.00, 0.43, 2, 0.50),
+(114, 17, 22.00, 7.00, 3, 0.00),
+(115, 18, 12.00, 18.00, 3, 0.00),
+(116, 19, 31.00, 45.00, 4, 0.00),
+(117, 20, 11.00, 43.00, 4, 0.00),
+(119, 21, 16.00, 39.00, 4, 0.00),
+(122, 22, 55.00, 42.00, 4, 0.00);
 
 -- --------------------------------------------------------
 
@@ -154,7 +179,10 @@ CREATE TABLE `compra` (
 --
 
 INSERT INTO `compra` (`ID`, `id_compra`, `id_producto`, `rif_proveedor`, `cantidad_compra`, `monto`, `fecha`, `pago`) VALUES
-(24, 12, 24, 1234322, 1, 12.00, '2024-11-20', 5);
+(24, 12, 24, 1234322, 1, 12.00, '2024-11-20', 5),
+(25, 1, 24, 1234322, 10, 0.00, '2025-03-06', 5),
+(26, 13, 24, 131254678, 1, 500.00, '2025-03-07', 4),
+(27, 14, 24, 131254678, 1, 10.00, '2025-03-07', 5);
 
 -- --------------------------------------------------------
 
@@ -175,7 +203,9 @@ CREATE TABLE `cuenta_por_cobrar` (
 --
 
 INSERT INTO `cuenta_por_cobrar` (`ID`, `id_cuentaCobrar`, `id_venta`, `fecha_cuentaCobrar`, `monto_cuentaCobrar`) VALUES
-(20, 11, 11, '2024-11-20', 13.92);
+(20, 11, 11, '2025-03-21', 4.94),
+(21, 14, 14, '2025-03-12', 4.92),
+(22, 16, 16, '2025-03-15', 242.44);
 
 -- --------------------------------------------------------
 
@@ -196,7 +226,9 @@ CREATE TABLE `cuenta_por_pagar` (
 --
 
 INSERT INTO `cuenta_por_pagar` (`ID`, `id_cuentaPagar`, `id_compra`, `fecha_cuentaPagar`, `monto_cuentaPagar`) VALUES
-(5, 12, 12, '2024-11-20', 12.00);
+(5, 12, 12, '2025-03-07', 10.00),
+(6, 1, 1, '2025-03-06', 0.00),
+(7, 14, 14, '2025-03-07', 10.00);
 
 -- --------------------------------------------------------
 
@@ -217,7 +249,10 @@ CREATE TABLE `detalle_compra_proveedor` (
 --
 
 INSERT INTO `detalle_compra_proveedor` (`ID`, `id_detalleCompraProveedor`, `id_facturaProveedor`, `id_producto`, `cantidad_compra`) VALUES
-(17, 12, 12, 24, 1);
+(17, 12, 12, 24, 1),
+(18, 1, 1, 24, 10),
+(19, 13, 13, 24, 1),
+(20, 14, 14, 24, 1);
 
 -- --------------------------------------------------------
 
@@ -240,7 +275,13 @@ CREATE TABLE `detalle_producto` (
 --
 
 INSERT INTO `detalle_producto` (`ID`, `id_detalle_producto`, `id_producto`, `id_venta`, `cantidad_producto`, `id_medida_especifica`, `precio`) VALUES
-(49, 11, 24, 11, 1, 3, 13.92);
+(49, 11, 24, 11, 1, 3, 13.92),
+(50, 12, 24, 12, 1, 3, 13.92),
+(51, 13, 24, 13, 1, 3, 13.92),
+(52, 14, 24, 14, 1, 3, 13.92),
+(53, 15, 17, 15, 1, 3, 8.12),
+(54, 16, 21, 16, 5, 4, 242.44),
+(55, 16, 17, 16, 2, 3, 242.44);
 
 -- --------------------------------------------------------
 
@@ -306,7 +347,13 @@ CREATE TABLE `presentacion` (
 
 INSERT INTO `presentacion` (`id_presentacion`, `tipo_producto`, `presentacion`) VALUES
 (1, 'Arroz', 'Mary Perlado Bulto 20 unidades de 1k'),
-(6, 'Harina de trigo', 'Mary Saco de 43k');
+(6, 'Harina de trigo', 'Mary Saco de 43k'),
+(20, 'Refresco', 'Refresco bulto de 6 unidades de 2lt'),
+(21, 'Refresco', 'Refresco bulto de 6 unidades de 1lt'),
+(22, 'Refresco', 'Refresco bulto de 6 unidades de 250ml'),
+(23, 'Azucar', 'Azucar Bulto 20 unidades de 1k'),
+(24, 'Azucar', 'Azucar Saco de 50k'),
+(25, 'Harina de Trigo', 'Harina de Trigo saco de 45k');
 
 -- --------------------------------------------------------
 
@@ -330,7 +377,14 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`ID`, `id_producto`, `nombre`, `fecha_registro`, `fecha_vencimiento`, `id_motivoActualizacion`, `id_inventario`, `id_presentacion`) VALUES
-(97, 24, 'Arroz', '2024-11-20', '2024-12-07', 0, 0, 1);
+(97, 24, 'Arroz', '2024-11-20', '2024-12-07', 0, 0, 1),
+(101, 56, 'avena', '2025-03-05', '2025-04-05', 2, 0, 6),
+(117, 17, 'Refresco BigCola 2lt', '2025-03-15', '2025-04-05', 1, 0, 20),
+(118, 18, 'Azucar La Pastora 1k', '2025-03-15', '2025-04-05', 0, 0, 23),
+(119, 19, 'Azucar Sabana Dulce', '2025-03-15', '2025-04-05', 0, 0, 24),
+(120, 20, 'Harina de Trigo Siseca', '2025-04-05', '2025-03-15', 0, 0, 25),
+(122, 21, 'Harina de Trigo La Especial', '2025-03-15', '2025-04-05', 0, 0, 25),
+(125, 22, 'Azucar La Nieve', '2025-03-15', '2025-04-05', 0, 0, 24);
 
 -- --------------------------------------------------------
 
@@ -357,7 +411,7 @@ CREATE TABLE `proveedor` (
 
 INSERT INTO `proveedor` (`ID`, `id_proveedor`, `nombre_proveedor`, `direccion`, `tlf`, `id_representante`, `nombre_representante`, `tlf_representante`, `tipo_id`, `tipo_id2`) VALUES
 (3, 131254678, 'Nestle', 'Zona', '4121234567', 31039711, 'moises', '04123213495', 'J-', 'V-'),
-(7, 1234322, 'especial', 'Zona', '4121321246', 32200771, 'moises', '04121235676', 'J-', 'V-');
+(7, 1234322, 'friz', 'Zona', '412321246', 32200771, 'moises', '04121235676', 'J-', 'V-');
 
 -- --------------------------------------------------------
 
@@ -411,7 +465,13 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`ID`, `id_venta`, `id_producto`, `id_cliente`, `cantidad`, `fech_emision`, `id_modalidad_pago`, `monto`, `tipo_entrega`, `rif_banco`, `venta`, `tlf`, `is_active`) VALUES
-(67, 11, 24, 31039711, 1, '2024-11-20', 1, 13.92, 'Directa', 0, 5, 0, 1);
+(67, 11, 24, 31039711, 1, '2024-11-20', 1, 13.92, 'Directa', 0, 5, 0, 1),
+(68, 12, 24, 31039711, 1, '2025-03-07', 3, 13.92, 'Directa', 102, 6, 2147483647, 1),
+(69, 13, 24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 104, 6, 2147483647, 1),
+(70, 14, 24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 108, 5, 1234567899, 1),
+(71, 15, 17, 31039711, 1, '2025-03-15', 3, 8.12, 'Directa', 102, 6, 2147483647, 1),
+(72, 16, 21, 31039711, 5, '2025-03-15', 3, 242.44, 'Delivery', 104, 5, 2147483647, 1),
+(73, 16, 17, 31039711, 2, '2025-03-15', 3, 242.44, 'Delivery', 104, 5, 2147483647, 1);
 
 --
 -- Índices para tablas volcadas
@@ -429,6 +489,13 @@ ALTER TABLE `admin`
 ALTER TABLE `bancos`
   ADD PRIMARY KEY (`ID`,`rif_banco`),
   ADD KEY `rif_banco` (`rif_banco`);
+
+--
+-- Indices de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `id_admin` (`id_admin`);
 
 --
 -- Indices de la tabla `cantidad_producto`
@@ -551,7 +618,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `bancos`
@@ -560,46 +627,52 @@ ALTER TABLE `bancos`
   MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
+-- AUTO_INCREMENT de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+
+--
 -- AUTO_INCREMENT de la tabla `cantidad_producto`
 --
 ALTER TABLE `cantidad_producto`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
 
 --
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT de la tabla `compra`
 --
 ALTER TABLE `compra`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `cuenta_por_cobrar`
 --
 ALTER TABLE `cuenta_por_cobrar`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `cuenta_por_pagar`
 --
 ALTER TABLE `cuenta_por_pagar`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_compra_proveedor`
 --
 ALTER TABLE `detalle_compra_proveedor`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT de la tabla `modalidad_de_pago`
@@ -617,19 +690,19 @@ ALTER TABLE `motivo_actualizacion`
 -- AUTO_INCREMENT de la tabla `presentacion`
 --
 ALTER TABLE `presentacion`
-  MODIFY `id_presentacion` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_presentacion` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
 --
 ALTER TABLE `proveedor`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `unidades_de_medida`
@@ -641,11 +714,17 @@ ALTER TABLE `unidades_de_medida`
 -- AUTO_INCREMENT de la tabla `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`ID`);
 
 --
 -- Filtros para la tabla `cantidad_producto`
