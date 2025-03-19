@@ -1,12 +1,15 @@
 <?php
 // Incluye el archivo del modelo Producto
 require_once "models/Tipo.php";
+require_once 'models/Bitacora.php';
 
 $controller = new Tipo();
-
+$bitacora = new Bitacora();
 $message2="";
 $message3="";
 
+$modulo = 'Tipo de Producto';
+date_default_timezone_set('America/Caracas');
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
@@ -22,6 +25,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
+        $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Agregar", date('Y-m-d H:i:s'), $modulo, "Tipo de producto: ".$_POST['tipo_producto']." con presentacion: ".$_POST['presentacion']);
+        $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL REGISTRAR...";
@@ -54,6 +59,9 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         {
             $_SESSION['message_type'] = 'success';  // Set success flag
             $_SESSION['message'] = "ACTUALIZADO CORRECTAMENTE";
+            $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Actualizar", date('Y-m-d H:i:s'), $modulo, "Tipo de producto: ".$_POST['tipo_producto']." con id: ".$_POST['id_presentacion']);  
+            $bitacora->Guardar_Bitacora();
+            
         } else {
             $_SESSION['message_type'] = 'danger'; // Set error flag
             $_SESSION['message'] = "ERROR AL ACTUALIZAR...";
@@ -73,6 +81,8 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "ELIMINADO CORRECTAMENTE";
+        $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Eliminar", date('Y-m-d H:i:s'), $modulo, "Tipo de producto con el id: ".$_GET['id_presentacion']);
+        $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ELIMINAR...";

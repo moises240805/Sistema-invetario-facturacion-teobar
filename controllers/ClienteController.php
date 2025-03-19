@@ -1,8 +1,11 @@
 <?php
 
 require_once 'models/Cliente.php';
+require_once 'models/Bitacora.php';
 $controller = new Cliente();
-
+$bitacora = new Bitacora();
+$modulo = 'Cliente';
+date_default_timezone_set('America/Caracas');
 $message="";
 $message3="";
 $message3="";
@@ -28,6 +31,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
+        $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Agregar", date('Y-m-d H:i:s'), $modulo, "Cliente con la cedula: ".$_POST['tipo_cliente']."". $_POST['id_cliente']);
+        $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL REGISTRAR...";
@@ -61,6 +66,8 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "ACTUALIZADO CORRECTAMENTE";
+        $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Actualizar", date('Y-m-d H:i:s'), $modulo, "Cliente con la cedula: ".$_POST['tipo_id']."". $_POST['id_cliente']);
+        $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ACTUALIZAR...";
@@ -81,6 +88,8 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "ELIMINADO CORRECTAMENTE";
+        $bitacora->setBitacoraData($_SESSION['s_usuario']['id'], "Eliminar", date('Y-m-d H:i:s'), $modulo, "Cliente con el id: ".$_GET['ID']);
+        $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ELIMINAR...";
