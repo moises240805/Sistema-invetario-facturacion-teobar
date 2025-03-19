@@ -15,6 +15,7 @@
                         <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=compra" class="aside__link nav-link">Compras</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>
+                        <li class="aside__item nav-item"><a href="index.php?action=bitacora" class="aside__link nav-link">Bitacora</a></li>
                         <li class="aside__item nav-item"><a href="index.php?action=reportes" class="aside__link nav-link">Reportes</a></li>
                     </ul>
                 </nav>

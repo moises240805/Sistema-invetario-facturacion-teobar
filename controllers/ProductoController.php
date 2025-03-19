@@ -1,142 +1,266 @@
 <?php
 // Incluye el archivo del modelo Producto
 require_once "models/Producto.php";
+require_once 'models/Bitacora.php';
 
 $controller = new Producto();
+$bitacora = new Bitacora();
+$modulo = 'Producto';
+date_default_timezone_set('America/Caracas');
 
-$message2="";
-$message3="";
+require_once "views/php/utils.php";
+
+// Verifica si el usuario está logueado y tiene permisos
+if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
+    setError("Acceso no autorizado");
+    header("Location: index.php");
+    exit();
+}
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
-{
+if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+    // Sanitiza y valida datos
+    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
+    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
+    $uni_medida2 = filter_input(INPUT_POST, 'uni_medida2', FILTER_SANITIZE_NUMBER_INT);
+    $uni_medida3 = filter_input(INPUT_POST, 'uni_medida3', FILTER_SANITIZE_NUMBER_INT);
+    $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    
+    // Validar que los campos obligatorios no estén vacíos
+    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+        setError("Todos los campos son requeridos");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+    
+    // Validar que los valores numéricos sean válidos
+    if (!is_numeric($cantidad_producto) || !is_numeric($precio_producto)) {
+        setError("La cantidad y el precio deben ser valores numéricos válidos");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
     // Obtiene los valores del formulario y los sanitiza
     $peso = htmlspecialchars($_POST['peso']);
     $peso2 = $peso / $peso;
     $peso3 = $peso2 * 1000;
-    $producto = json_encode([
-        'id_producto' => htmlspecialchars($_POST['id_producto']),
-        'nombre_producto' => htmlspecialchars($_POST['nombre']),
-        'fecha_registro' => htmlspecialchars($_POST['fecha_registro']),
-        'presentacion' => htmlspecialchars($_POST['presentacion']),
-        'fecha_vencimiento' => htmlspecialchars($_POST['fecha_vencimiento']),
-        'cantidad_producto' => htmlspecialchars($_POST['cantidad']),
-        'cantidad_producto2' => htmlspecialchars($_POST['cantidad2']),
-        'cantidad_producto3' => htmlspecialchars($_POST['cantidad3']),
-        'precio_producto' => htmlspecialchars($_POST['precio']),
-        'precio_producto2' => htmlspecialchars($_POST['precio2']),
-        'precio_producto3' => htmlspecialchars($_POST['precio3']),
-        'uni_medida' => htmlspecialchars($_POST['uni_medida']),
-        'uni_medida2' => htmlspecialchars($_POST['uni_medida2']),
-        'uni_medida3' => htmlspecialchars($_POST['uni_medida3']),
-        'peso' => htmlspecialchars($_POST['peso']),
-        'peso2' => htmlspecialchars($peso2),
-        'peso3' => htmlspecialchars($_POST['peso3'])
-    ]);
 
-    $controller->setProductoData($producto);
-    // Llama al método guardarPersona del controlador y guarda el resultado en $message
-    if($controller->Guardar_Producto($producto))
-    {
-        $_SESSION['message_type'] = 'success';  // Set success flag
-        $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
-    } else {
-        $_SESSION['message_type'] = 'danger'; // Set error flag
-        $_SESSION['message'] = "ERROR AL REGISTRAR... USUARIO EXISTENTE";
-    }    header("Location: index.php?action=producto&a=d"); // Redirect
+    $producto = json_encode([
+        'id_producto' => $id_producto,
+        'nombre_producto' => $nombre_producto,
+        'presentacion' => $presentacion,
+        'fecha_vencimiento' => $fecha_vencimiento,
+        'cantidad_producto' => $cantidad_producto,
+        'precio_producto' => $precio_producto,
+        'uni_medida' => $uni_medida,
+        'uni_medida2' => $uni_medida2,
+        'uni_medida3' => $uni_medida3,
+        'peso' => $peso,
+        'peso2' => $peso2,
+        'peso3' => $peso3
+    ]);
+    echo $producto;
+    $accion = "agregar";
+    $controller->manejarAccion($accion, $producto);
+    try {
+        if ($controller) {
+            setSuccess("REGISTRADO CORRECTAMENTE");
+            $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => "Agregar",
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' => "Producto: $nombre_producto"
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+        } else {
+            setError("ERROR AL REGISTRAR...");
+        }
+    } catch (Exception $e) {
+        error_log("Error al registrar: " . $e->getMessage());
+        setError("Error en operación");
+    }
+
+    header("Location: index.php?action=producto&a=d");
     exit();
 }
-elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST")
-{
-    // Obtiene los valores del formulario y los sanitiza
-    $producto = json_encode([
-        'id_producto' => htmlspecialchars($_POST['id_producto']),
-        'nombre_producto' => htmlspecialchars($_POST['nombre']),
-        'fecha_registro' => htmlspecialchars($_POST['fecha_registro']),
-        'presentacion' => htmlspecialchars($_POST['presentacion']),
-        'fecha_vencimiento' => htmlspecialchars($_POST['fecha_vencimiento']),
-        'cantidad_producto' => htmlspecialchars($_POST['cantidad']),
-        'precio_producto' => htmlspecialchars($_POST['precio']),
-        'uni_medida' => htmlspecialchars($_POST['uni_medida']),
+elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
+    // Sanitiza y valida datos
+    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+        setError("Todos los campos son requeridos");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
+    $producto = json_encode([
+        'id_producto' => $id_producto,
+        'nombre_producto' => $nombre_producto,
+        'fecha_registro' => $fecha_registro,
+        'presentacion' => $presentacion,
+        'fecha_vencimiento' => $fecha_vencimiento,
+        'cantidad_producto' => $cantidad_producto,
+        'precio_producto' => $precio_producto,
+        'uni_medida' => $uni_medida
     ]);
 
-    $controller->setProductoData($producto);
-    // Llama al método guardarPersona del controlador y guarda el resultado en $message
-    if($controller->Guardar_Producto2($producto))
-    {
-        $_SESSION['message_type'] = 'success';  // Set success flag
-        $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
-    } else {
-        $_SESSION['message_type'] = 'danger'; // Set error flag
-        $_SESSION['message'] = "ERROR AL REGISTRAR... USUARIO EXISTENTE";
-    }    header("Location: index.php?action=producto&a=d"); // Redirect
+    $accion = "agregar2";
+    $controller->manejarAccion($accion, $producto);
+    try {
+        if ($controller) {
+            setSuccess("REGISTRADO CORRECTAMENTE");
+            $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => "Agregar",
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' => "Producto: $nombre_producto"
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+        } else {
+            setError("ERROR AL REGISTRAR...");
+        }
+    } catch (Exception $e) {
+        error_log("Error al registrar: " . $e->getMessage());
+        setError("Error en operación");
+    }
+
+    header("Location: index.php?action=producto&a=d");
     exit();
 }
+
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
-    
     $id_producto = $_GET['id_producto'];
-    // Llama al controlador para mostrar el formulario de modificación
-    $producto=$controller->Obtener_Producto($id_producto);
-    header('Content-Type: application/json');
+    if (!filter_var($id_producto, FILTER_VALIDATE_INT)) {
+        setError("ID inválido");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
+    $accion = "obtener";
+    $producto = $controller->manejarAccion($accion, $id_producto);
     echo json_encode($producto);
 }
+
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtiene los valores del formulario y los sanitiza 
+    // Sanitiza y valida datos
+    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
+    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $id_actualizacion = filter_input(INPUT_POST, 'id_actualizacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+        setError("Todos los campos son requeridos");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
     $producto = json_encode([
-        'id_producto' => htmlspecialchars($_POST['id_producto']),
-        'nombre_producto' => htmlspecialchars($_POST['nombre']),
-        'presentacion' => htmlspecialchars($_POST['presentacion']),
-        'fecha_vencimiento' => htmlspecialchars($_POST['fecha_vencimiento']),
-        'cantidad_producto' => htmlspecialchars($_POST['cantidad']),
-        'cantidad_producto2' => htmlspecialchars($_POST['cantidad2']),
-        'cantidad_producto3' => htmlspecialchars($_POST['cantidad3']),
-        'precio_producto' => htmlspecialchars($_POST['precio']),
-        'precio_producto2' => htmlspecialchars($_POST['precio2']),
-        'precio_producto3' => htmlspecialchars($_POST['precio3']),
-        'uni_medida' => htmlspecialchars($_POST['uni_medida']),
-        'uni_medida2' => htmlspecialchars($_POST['uni_medida2']),
-        'uni_medida3' => htmlspecialchars($_POST['uni_medida3']),
-        'id_actualizacion' => htmlspecialchars($_POST['id_actualizacion']),
-        'peso' => htmlspecialchars($_POST['peso']),
-        'peso2' => htmlspecialchars($_POST['peso'] / $_POST['peso']),
-        'peso3' => htmlspecialchars($_POST['peso3'])
+        'id_producto' => $id_producto,
+        'nombre_producto' => $nombre_producto,
+        'presentacion' => $presentacion,
+        'fecha_vencimiento' => $fecha_vencimiento,
+        'cantidad_producto' => $cantidad_producto,
+        'precio_producto' => $precio_producto,
+        'uni_medida' => $uni_medida,
+        'id_actualizacion' => $id_actualizacion,
+        'peso' => $peso
     ]);
 
-    $controller->setProductoData($producto);
-    // Llama al método actualizar producto del controlador y guarda el resultado en $message 
-    if($controller->Actualizar_Producto()) 
-    { 
-        $_SESSION['message_type'] = 'success';  // Set success flag
-        $_SESSION['message'] = "ACTUALIZADO CORRECTAMENTE"; // Establece el mensaje de éxito
-    } else {
-        $_SESSION['message_type'] = 'danger'; // Set error flag
-        $_SESSION['message'] = "ERROR AL ACTUALIZAR EL PRODUCTO"; // Establece el mensaje de error
+    $accion = "actualizar";
+    $controller->manejarAccion($accion, $producto);
+    try {
+        if ($controller) {
+            setSuccess("ACTUALIZADO CORRECTAMENTE");
+            $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => "Modificar",
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' => "Producto: $nombre_producto"
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+        } else {
+            setError("ERROR AL ACTUALIZAR...");
+        }
+    } catch (Exception $e) {
+        error_log("Error al actualizar: " . $e->getMessage());
+        setError("Error en operación");
     }
-     header("Location: index.php?action=producto&a=d"); // Redirect
-    exit();
-    
-}
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
-    
-    $id_producto = $_GET['id_producto'];
-    // Llama al controlador para mostrar el formulario de modificación
-    $producto=$controller->Eliminar_Producto($id_producto);
-    if($producto) 
-    { 
-        $_SESSION['message_type'] = 'success';  // Set success flag
-        $_SESSION['message'] = "ELIMINADO CORRECTAMENTE"; // Establece el mensaje de éxito
-    } else {
-        $_SESSION['message_type'] = 'danger'; // Set error flag
-        $_SESSION['message'] = "ERROR AL ELIMINAR EL PRODUCTO"; // Establece el mensaje de error
-    }
-     header("Location: index.php?action=producto&a=d"); // Redirect
-    exit();
-}
-elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
+    header("Location: index.php?action=producto&a=d");
+    exit();
+}
+
+elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+    $id_producto = $_GET['id_producto'];
+    if (!filter_var($id_producto, FILTER_VALIDATE_INT)) {
+        setError("ID inválido");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
+    // Obtener los valores de nombre_producto antes de eliminar
+    $accion = "obtener";
+    $producto = $controller->manejarAccion($accion, $id_producto);
+    
+    if (!$producto) {
+        setError("El registro no existe");
+        header("Location: index.php?action=producto&a=d");
+        exit();
+    }
+
+    $nombre_producto = $producto['nombre'];
+
+    $accion = "eliminar";
+    $controller->manejarAccion($accion, $id_producto);
+    try {
+        if ($controller) {
+            setSuccess("ELIMINADO CORRECTAMENTE");
+            $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => "Eliminar",
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' => "Producto: $nombre_producto"
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+        } else {
+            setError("ERROR AL ELIMINAR...");
+        }
+    } catch (Exception $e) {
+        error_log("Error al eliminar: " . $e->getMessage());
+        setError("Error en operación");
+    }
+
+    header("Location: index.php?action=producto&a=d");
+    exit();
+}
+
+if ($action == 'd') {
     require_once 'views/php/dashboard_producto.php';
 }
-
 ?>

@@ -13,13 +13,22 @@ class Tipo extends Conexion{
         parent::__construct();
     }
 
-    public function setPresentacionData($tipo) {
+    private function setPresentacionData($tipo) {
         if (is_string($tipo)) {
-        $tipo = json_decode($tipo, true);
-        $this->id_presentacion = $tipo['id_presentacion'] ?? null;
-        $this->tipo_producto = $tipo['tipo_producto'];
-        $this->presentacion = $tipo['presentacion'];
-    }
+            $tipo = json_decode($tipo, true);
+            
+            
+            // Validación adicional para tipo_producto y presentacion
+            if (empty($tipo['tipo_producto']) || empty($tipo['presentacion'])) {
+                throw new Exception("Todos los campos son requeridos");
+            }
+            
+            $this->id_presentacion = $tipo['id_presentacion'] ?? null;
+            $this->tipo_producto = $tipo['tipo_producto'];
+            $this->presentacion = $tipo['presentacion'];
+        } else {
+            throw new Exception("Datos inválidos");
+        }
     }
 
     // Getters
@@ -49,7 +58,24 @@ class Tipo extends Conexion{
     }
 
     //Metodos
-    public function Guardar_Tipo()
+    public function manejarAccion($accion, $tipo) {
+        switch ($accion) {
+            case 'agregar':
+                $this->setPresentacionData($tipo);
+                return $this->Guardar_Tipo($tipo);
+            case 'actualizar':
+                $this->setPresentacionData($tipo);
+                return $this->Actualizar_Tipo();
+            case 'obtener':
+                return $this->Obtener_Tipo($tipo);
+            case 'eliminar':
+                return $this->Eliminar_Tipo($tipo);
+            default:
+                throw new Exception("Acción no válida");
+        }
+    }
+
+    private function Guardar_Tipo()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
     $query = "INSERT INTO presentacion (id_presentacion, tipo_producto, presentacion) 
@@ -67,7 +93,7 @@ class Tipo extends Conexion{
 
     }
 
-    public function Obtener_Tipo($id_presentacion) {
+    private function Obtener_Tipo($id_presentacion) {
         $query = "SELECT * FROM presentacion WHERE id_presentacion = :id_presentacion;";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_presentacion", $id_presentacion, PDO::PARAM_INT);
@@ -88,7 +114,7 @@ class Tipo extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC); 
     }
 
-    public function Actualizar_Tipo() {
+    private function Actualizar_Tipo() {
         try {
             $query = "UPDATE presentacion SET tipo_producto = :tipo_producto, presentacion = :presentacion WHERE id_presentacion = :id_presentacion;";
             $stmt = $this->conn->prepare($query);
@@ -108,7 +134,7 @@ class Tipo extends Conexion{
         }
     }
 
-    public function Eliminar_Tipo($id_presentacion) {
+    private function Eliminar_Tipo($id_presentacion) {
         $query = "DELETE FROM presentacion WHERE id_presentacion = :id_presentacion";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_presentacion", $id_presentacion, PDO::PARAM_INT);

@@ -132,6 +132,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <tbody>
                     <?php 
                         require_once "controllers/ProductoController.php"; 
+                        if (!function_exists('setError')) {
+                            function setError($message) {
+                                $_SESSION['message_type'] = 'danger';
+                                $_SESSION['message'] = $message;
+                            }
+                        }
                         $productos = $controller->Mostrar_Producto();
                         foreach ($productos as $producto):
                     ?>

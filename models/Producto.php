@@ -28,33 +28,32 @@ class Producto extends Conexion{
         parent::__construct();
     }
 
-public function setProductoData($producto) {
-    // Si $producto es un string JSON, decodifícalo
-    if (is_string($producto)) {
-        $producto = json_decode($producto, true);
+    private function setProductoData($producto) {
+        // Si $producto es un string JSON, decodifícalo
+        if (is_string($producto)) {
+            $producto = json_decode($producto, true);
+        }
+
+        // Ahora puedes asignar los valores
+        $this->id_producto = $producto['id_producto'] ?? null;
+        $this->nombre_producto = $producto['nombre_producto'];
+        $this->presentacion = $producto['presentacion'];
+        $this->fech_vencimiento = $producto['fecha_vencimiento'] ?? null;
+        $this->fecha_registro = $producto['fecha_registro'] ?? null;
+        $this->cantidad_producto = $producto['cantidad_producto'];
+        $this->cantidad_producto2 = $producto['cantidad_producto2'] ?? null;
+        $this->cantidad_producto3 = $producto['cantidad_producto3'] ?? null;
+        $this->precio_producto = $producto['precio_producto'];
+        $this->precio_producto2 = $producto['precio_producto2'] ?? null;
+        $this->precio_producto3 = $producto['precio_producto3'] ?? null;
+        $this->uni_medida = $producto['uni_medida'];
+        $this->uni_medida2 = $producto['uni_medida2'] ?? null;
+        $this->uni_medida3 = $producto['uni_medida3'] ?? null;
+        $this->id_actualizacion = $producto['id_actualizacion'] ?? null;
+        $this->peso = $producto['peso'] ?? null;
+        $this->peso2 = $producto['peso2'] ?? null;
+        $this->peso3 = $producto['peso3'] ?? null;
     }
-
-    // Ahora puedes asignar los valores
-    $this->id_producto = $producto['id_producto'] ?? null;
-    $this->nombre_producto = $producto['nombre_producto'] ?? null; // Corregido el key
-    $this->presentacion = $producto['presentacion'] ?? null; // Corregido el key
-    $this->fech_vencimiento = $producto['fecha_vencimiento'] ?? null;
-    $this->fecha_registro = $producto['fecha_registro'] ?? null;
-    $this->cantidad_producto = $producto['cantidad_producto'] ?? null; // Corregido el key
-    $this->cantidad_producto2 = $producto['cantidad_producto2'] ?? null;
-    $this->cantidad_producto3 = $producto['cantidad_producto3'] ?? null;
-    $this->precio_producto = $producto['precio_producto'] ?? null; // Corregido el key
-    $this->precio_producto2 = $producto['precio_producto2'] ?? null;
-    $this->precio_producto3 = $producto['precio_producto3'] ?? null;
-    $this->uni_medida = $producto['uni_medida'] ?? null; // Corregido el key
-    $this->uni_medida2 = $producto['uni_medida2'] ?? null;
-    $this->uni_medida3 = $producto['uni_medida3'] ?? null;
-    $this->id_actualizacion = $producto['id_actualizacion'] ?? null; // Si este campo no existe, no lo asignes
-    $this->peso = $producto['peso'] ?? null;
-    $this->peso2 = $producto['peso2'] ?? null; // Si este campo no existe, no lo asignes
-    $this->peso3 = $producto['peso3'] ?? null;
-}
-
 
 
     // Getters
@@ -204,7 +203,32 @@ public function setProductoData($producto) {
     }
 
     //Metodos
-    public function Guardar_Producto()
+    public function manejarAccion($accion, $producto) {
+        try {
+            switch ($accion) {
+                case 'agregar':
+                    $this->setProductoData($producto);
+                    return $this->Guardar_Producto();
+                case 'agregar2':
+                    $this->setProductoData($producto);
+                    return $this->Guardar_Producto2();
+                case 'actualizar':
+                    $this->setProductoData($producto);
+                    return $this->Actualizar_Producto();
+                case 'obtener':
+                    return $this->Obtener_Producto($producto);
+                case 'eliminar':
+                    return $this->Eliminar_Producto($producto);
+                default:
+                    throw new Exception("Acción no válida");
+            }
+        } catch (Exception $e) {
+            error_log("Error en manejarAccion: " . $e->getMessage());
+            throw $e; // Re-lanza la excepción para que el controlador pueda manejarla
+        }
+    }
+
+    private function Guardar_Producto()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
     $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
@@ -252,7 +276,7 @@ public function setProductoData($producto) {
     return false; // Si falla la primera inserción
     }
 
-    public function Guardar_Producto2()
+    private function Guardar_Producto2()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
           $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
@@ -356,7 +380,7 @@ public function setProductoData($producto) {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function Actualizar_Producto() {
+    private function Actualizar_Producto() {
         try {
             $query = "UPDATE producto SET nombre = :nombre, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
             $stmt = $this->conn->prepare($query);
@@ -418,7 +442,7 @@ WHERE id_producto = :id_producto AND id_unidad_medida IN (:uni_medida, :uni_medi
         }
     }
 
-    public function Eliminar_Producto($id_producto) {
+    private function Eliminar_Producto($id_producto) {
         $query = "DELETE FROM producto WHERE id_producto = :id_producto";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);

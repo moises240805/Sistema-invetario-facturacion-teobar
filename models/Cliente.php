@@ -17,18 +17,20 @@ class Cliente extends Conexion{
         parent::__construct();
     }
 
-    public function setClienteData($cliente) {
+    private function setClienteData($cliente) {
         if (is_string($cliente)) {
             $cliente = json_decode($cliente, true);
         }
     
-        $this->id_cliente = $cliente['id_cliente'] ?? null;
-        $this->tipo = $cliente['tipo_id'] ?? null;
-        $this->nombre_cliente = $cliente['nombre_cliente'] ?? null;
+        
+        $this->id_cliente = $cliente['id_cliente'];
+        $this->tipo = $cliente['tipo_id'];
+        $this->nombre_cliente = $cliente['nombre_cliente'];
         $this->tlf_cliente = $cliente['telefono'];
         $this->direccion_cliente = $cliente['direccion'];
         $this->email_cliente = $cliente['email'];
     }
+
 
     // Métodos set y get
     public function setIdCliente($id_cliente) {
@@ -80,7 +82,24 @@ class Cliente extends Conexion{
     }
 
     //Metodos
-    public function Guardar_Cliente()
+    public function manejarAccion($accion, $cliente) {
+        switch ($accion) {
+            case 'agregar':
+                $this->setClienteData($cliente);
+                return $this->Guardar_Cliente();
+            case 'actualizar':
+                $this->setClienteData($cliente);
+                return $this->Actualizar_Cliente();
+            case 'obtener':
+                return $this->Obtener_Cliente($cliente);
+            case 'eliminar':
+                return $this->Eliminar_Cliente($cliente);
+            default:
+                throw new Exception("Acción no válida");
+        }
+    }
+
+    private function Guardar_Cliente()
     {
         try {
             // Consulta SQL para verificar si el cliente ya existe
@@ -130,7 +149,7 @@ class Cliente extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function Obtener_Cliente($id_cliente) {
+    private function Obtener_Cliente($id_cliente) {
         $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_cliente", $id_cliente, PDO::PARAM_INT);
@@ -138,7 +157,7 @@ class Cliente extends Conexion{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function Actualizar_Cliente() {
+    private function Actualizar_Cliente() {
         try {
             $query = "UPDATE cliente SET nombre_cliente = :nombre, tlf = :tlf, direccion = :direccion, email = :email_cliente, tipo_id = :tipo WHERE id_cliente = :id_cliente";
             $stmt = $this->conn->prepare($query);
@@ -156,7 +175,7 @@ class Cliente extends Conexion{
     }
     
 
-    public function Eliminar_Cliente($id_cliente) {
+    private function Eliminar_Cliente($id_cliente) {
         $query = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_cliente", $id_cliente, PDO::PARAM_INT);

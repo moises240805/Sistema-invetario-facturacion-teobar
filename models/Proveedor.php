@@ -20,17 +20,18 @@ class Proveedor extends Conexion{
         parent::__construct();
     }
 
-    public function setProveedorData($proveedor) {
+    private function setProveedorData($proveedor) {
         if (is_string($proveedor)) {
             $proveedor = json_decode($proveedor, true);
         }
-    
+
+
         $this->id_proveedor = $proveedor['id_proveedor'] ?? null;
-        $this->nombre_proveedor = $proveedor['nombre_proveedor'] ?? null;
-        $this->direccion_proveedor = $proveedor['direccion_proveedor'] ?? null;
-        $this->tlf_proveedor = $proveedor['telefono_proveedor'] ?? null;
+        $this->nombre_proveedor = $proveedor['nombre_proveedor'];
+        $this->direccion_proveedor = $proveedor['direccion_proveedor'];
+        $this->tlf_proveedor = $proveedor['telefono_proveedor'];
         $this->id_representante_legal = $proveedor['id_representante_legal'] ?? null;
-        $this->nombre_representante_legal = $proveedor['nombre_representante_legal'] ?? null;
+        $this->nombre_representante_legal = $proveedor['nombre_representante_legal'];
         $this->tlf_representante_legal = $proveedor['telefono_representante_legal'] ?? null;
         $this->tipo = $proveedor['tipo'] ?? null;
         $this->tipo2 = $proveedor['tipo2'] ?? null;
@@ -112,7 +113,24 @@ class Proveedor extends Conexion{
         }
 
     //Metodos
-    public function Guardar_Proveedor()
+    public function manejarAccion($accion, $proveedor) {
+        switch ($accion) {
+            case 'agregar':
+                $this->setProveedorData($proveedor);
+                return $this->Guardar_Proveedor();
+            case 'actualizar':
+                $this->setProveedorData($proveedor);
+                return $this->Actualizar_Proveedor();
+            case 'obtener':
+                return $this->Obtener_Proveedor($proveedor);
+            case 'eliminar':
+                return $this->Eliminar_Proveedor($proveedor);
+            default:
+                throw new Exception("Acción no válida");
+        }
+    }
+
+    private function Guardar_Proveedor()
     {
         try {
             // Consulta SQL para verificar si el proveedor ya existe
@@ -167,7 +185,7 @@ class Proveedor extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function Obtener_Proveedor($id_proveedor) {
+    private function Obtener_Proveedor($id_proveedor) {
         $query = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
@@ -175,7 +193,7 @@ class Proveedor extends Conexion{
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    function Actualizar_Proveedor() {
+    private function Actualizar_Proveedor() {
         try {
             $query = "UPDATE proveedor
                     SET nombre_proveedor = :nombre,
@@ -208,7 +226,7 @@ class Proveedor extends Conexion{
     }
     
 
-    public function Eliminar_Proveedor($id_proveedor) {
+    private function Eliminar_Proveedor($id_proveedor) {
         $query = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
