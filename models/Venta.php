@@ -234,7 +234,7 @@ class Venta extends Conexion{
             if ($this->conn->inTransaction()) { 
                 $this->conn->rollBack(); 
             } 
-            echo "Error al registrar la venta: " . $e->getMessage(); 
+            echo "Error al registrar la venta: Cantidad no disponible " . $e->getMessage(); 
         } 
     }
     

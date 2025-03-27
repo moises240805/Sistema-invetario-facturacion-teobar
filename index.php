@@ -52,6 +52,9 @@ switch ($controlador) {
                 case "pago":
                     require_once "views/php/dashboard_pago.php";
                 break;
+                case 'movimientos':
+                    require_once 'controllers/IngresoEgresoController.php';
+                break;
                 case 'bitacora':
                     require_once 'controllers/BitacoraController.php';
                 break;

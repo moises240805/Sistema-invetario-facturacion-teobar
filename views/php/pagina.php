@@ -91,7 +91,7 @@
                 <div class="product-card">
                     <!-- Imagen del producto -->
                     <center><div class="product-image-container">
-                        <img src="views/img/productos/<?php echo $producto['nombre']; ?>.jpg" alt="<?php echo $producto['nombre']; ?>" class="product-image">
+                        <img src="<?php echo $producto['enlace']; ?>" alt="<?php echo $producto['nombre']; ?>" class="product-image">
                     </div></center>
                     
                     <!-- Detalles del producto -->
@@ -103,7 +103,6 @@
                             Cantidad Disponible: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?><br>
                         </p>
                     </div>
-                    
                     <!-- Botón de agregar al carrito -->
                     <div class="product-actions">
                         <button 

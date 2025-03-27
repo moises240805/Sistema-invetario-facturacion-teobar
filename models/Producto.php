@@ -22,6 +22,7 @@ class Producto extends Conexion{
     private $peso;
     private $peso2;
     private $peso3;
+    private $imagen;
 
     // Constructor
     public function __construct() {
@@ -53,12 +54,17 @@ class Producto extends Conexion{
         $this->peso = $producto['peso'] ?? null;
         $this->peso2 = $producto['peso2'] ?? null;
         $this->peso3 = $producto['peso3'] ?? null;
+        $this->imagen = $producto['imagen'] ?? null;
     }
 
 
     // Getters
     public function getIdProducto() {
         return $this->id_producto;
+    }
+
+    public function getImg() {
+        return $this->imagen;
     }
 
     public function getNombreProducto() {
@@ -132,6 +138,10 @@ class Producto extends Conexion{
     // Setters
     public function setIdProducto($id_producto) {
         $this->id_producto =  $id_producto;  
+    }
+
+    public function setImg($imagen) {
+        $this->imagen =  $imagen;  
     }
 
     public function setNombreProducto($nombre_producto) {
@@ -279,8 +289,8 @@ class Producto extends Conexion{
     private function Guardar_Producto2()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-          $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion)";  
+          $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
+    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion, :imagen)";  
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
@@ -291,6 +301,7 @@ class Producto extends Conexion{
     $stmt->bindParam(":fech_venci", $this->fech_vencimiento); 
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
+    $stmt->bindParam(":imagen", $this->imagen); 
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
@@ -321,6 +332,7 @@ class Producto extends Conexion{
                     p.id_producto,
                     p.fecha_registro, 
                     p.nombre,
+                    p.enlace,
                     p.id_presentacion, 
                     MAX(p.fecha_vencimiento) AS fecha_vencimiento, 
                     GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad, 

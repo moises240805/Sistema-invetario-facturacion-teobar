@@ -101,6 +101,54 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
     $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $imagen = $_FILES['imagen'];
+
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+        $imagen = $_FILES['imagen'];
+
+        // Validación básica de la imagen
+        $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+        $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+
+        if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+            setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+            header("Location: index.php?action=producto&a=d");
+            exit();
+        }
+    
+
+
+        // Validación básica de la imagen
+        if (!empty($imagen['name'])) {
+            $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+            $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+    
+            if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+                setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                header("Location: index.php?action=producto&a=d");
+                exit();
+            }
+        }
+
+     // Subir la imagen al directorio destino
+     $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
+ 
+     if (!empty($imagen['name'])) {
+         $nombreArchivo = basename($imagen['name']);
+         $rutaSubida = $directorioSubida . $nombreArchivo;
+ 
+         if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
+             // La imagen se ha subido correctamente
+             $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
+         } else {
+             setError("Error al subir la imagen.");
+             header("Location: index.php?action=producto&a=d");
+             exit();
+         }
+     } 
+    } else {
+         $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
+     }
 
     if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
         setError("Todos los campos son requeridos");
@@ -116,7 +164,8 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'fecha_vencimiento' => $fecha_vencimiento,
         'cantidad_producto' => $cantidad_producto,
         'precio_producto' => $precio_producto,
-        'uni_medida' => $uni_medida
+        'uni_medida' => $uni_medida,
+        'imagen' => $rutaSubida
     ]);
 
     $accion = "agregar2";
@@ -143,6 +192,7 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
 
     header("Location: index.php?action=producto&a=d");
     exit();
+
 }
 
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {

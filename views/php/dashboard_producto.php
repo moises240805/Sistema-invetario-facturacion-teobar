@@ -400,7 +400,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <h1 class="titulo_form" >Agregar Producto</h1>
             </div>
             <div class="modal-body">
-                <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form">
+                <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form" enctype="multipart/form-data">
                     <?php 
                         require_once "controllers/TipoController.php"; 
                         $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
@@ -465,6 +465,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <div class="col-md-9">
                             <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
                         </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="imagen" class="col-md-3">Imagen del Producto</label>
+                    <div class="col-md-9">
+                    <input type="file" class="form-control" id="imagen" name="imagen" ">
+                    </div>
                     </div>
                     <div class="form-group row">
                         <div class="col-md-3"></div>
