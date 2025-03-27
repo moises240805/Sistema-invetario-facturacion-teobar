@@ -211,7 +211,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <td>
                                         <div class="form-group">
                                             <label for="id_venta">Nro Venta</label>
-                                            <input type="number" class="form-control" name="id_venta" placeholder="Nro VENTA" required oninput="validateInput(this)">
+                                            <input type="text" class="form-control" name="id_venta" placeholder="Nro VENTA"  maxlength= "11"  required oninput="validateInput(this)">
                                         </div>
                                     </td>
                                     <td>
@@ -272,7 +272,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <td>
                                         <div class="form-group">
                                             <label for="tlf">Tlf o Nro.F</label>
-                                            <input type="number" id="tlf" name="tlf" class="form-control" oninput="validatePhoneNumber(this)">
+                                            <input type="text" id="tlf" name="tlf" class="form-control" maxlength="11" onkeypress="return SoloNumeros(event)" oninput="validatePhoneNumber(this)">
                                         </div>
                                     </td>
                                     <td>
@@ -312,13 +312,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <td>
                                         <div class="form-group">
                                             <label>Cantidad</label>
-                                            <input type="number" name="cantidad[]" class="form-control" placeholder="cantidad" required oninput="obtenerPrecioProducto()">
+                                            <input type="text" name="cantidad[]" class="form-control" placeholder="cantidad" maxlength="10"  onkeypress="return SoloNumeros(event)" required oninput="obtenerPrecioProducto()">
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
                                             <label>Monto</label>
-                                            <input type="number" step="0.01" name="monto" class="form-control" placeholder="monto" required readonly>
+                                            <input type="text" step="0.01" name="monto" class="form-control" placeholder="monto" maxlength="10" onkeypress="return SoloNumeros(event)" required readonly>
                                         </div>
                                     </td>
                                     <td>
@@ -338,7 +338,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <p><b>+ IVA 16%.</b></p>
                         <div class="form-group">
                             <label for="monto">Total</label>
-                            <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" required readonly>
+                            <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" maxlength="10" required readonly>  
                         </div>
                     </div>
                 </div>
@@ -452,5 +452,6 @@ const today = new Date().toISOString().split('T')[0];
 document.getElementById('fecha_registro').value = today;
 
 </script>
+<script src="views/js/validate2.js"></script>
 </body>
 </html>

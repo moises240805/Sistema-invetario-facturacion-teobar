@@ -165,7 +165,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="tipo_producto" style="font-size: 18px;">Tipo Producto</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="tipo_producto" name="tipo_producto" required>
+                                        <input type="text" class="form-control" id="tipo_producto" name="tipo_producto"  maxlength="50"  onkeypress="return onlyLetters(event)" required>
                                     </div>
                                 </div>
                                 <div class="form-group row justify-content-center mb-4">
@@ -173,7 +173,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="presentacion" style="font-size: 18px;">Presentación</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="presentacion" name="presentacion" required>
+                                        <input type="text" class="form-control" id="presentacion" name="presentacion"  maxlength="50" required>
                                     </div>
                                 </div>
                             </div>
@@ -206,13 +206,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="tipo_producto" class="col-md-3">Tipo Producto</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="tipo_producto" id="tipo" required>
+                            <input class="entrada form-control" type="text" name="tipo_producto" id="tipo"  maxlength="50"  onkeypress="return onlyLetters(event)" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="presentacion" class="col-md-3">Presentación</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="presentacion" id="presen" required>
+                            <input class="entrada form-control" type="text" name="presentacion" id="presen"  maxlength="50" required>
                         </div>
                     </div>
                 </div>
@@ -248,5 +248,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
     <script src="views/js/modal_tipo.js"></script>
+    <script src="views/js/validate.js"></script>
 </body>
 </html>

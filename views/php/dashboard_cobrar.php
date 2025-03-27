@@ -170,7 +170,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <label for="monto" style="font-size: 18px;">Monto</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="number" step="0.01" min="0" class="form-control" name="monto" id="monto" required>
+                            <input type="text" step="0.01" min="0" class="form-control" name="monto" id="monto"  maxlength = "11" required>
                         </div>
                     </div>
                 </div>
@@ -206,5 +206,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
     <script src="views/js/modal_cobrar.js"></script>
+    <script src="views/js/validate.js"></script>
 </body>
 </html>
