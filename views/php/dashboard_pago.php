@@ -113,7 +113,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-md-4 mb-4">
-                    <a href="index.php?action=venta&a=cobrar" style="text-decoration: none;">
+                    <a href="index.php?action=cobrar&a=v" style="text-decoration: none;">
                         <div class="card shadow">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Cuentas por Cobrar</h5>
@@ -124,7 +124,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <a href="index.php?action=compra&a=pagar" style="text-decoration: none;">
+                    <a href="index.php?action=pagar&a=v" style="text-decoration: none;">
                         <div class="card shadow">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Cuentas por Pagar</h5>

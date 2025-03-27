@@ -124,8 +124,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "models/Compra.php";
-                $cuenta = new Compra;
+                require_once "controllers/PagarController.php";
+                $cuenta = new Pagar;
                 $venta = $cuenta->obtenerCuentas2();
                 foreach ($venta as $venta): 
             ?>
@@ -154,7 +154,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="index.php?action=compra&a=abonado" method="POST" name="form">
+            <form class="formulario" action="index.php?action=pagar&a=abonado" method="POST" name="form">
                 <div class="modal-body">
                     <input type="hidden" name="id_cuenta" id="id_cuenta"  >
                     <div class="form-group row justify-content-center mb-4">

@@ -40,9 +40,15 @@ switch ($controlador) {
             case "venta":
                     require_once 'controllers/VentaController.php';
                 break;
+            case "cobrar":
+                require_once 'controllers/CobrarController.php';
+                break;
             case "compra":
                     require_once 'controllers/CompraController.php';
                 break;
+                case "pagar":
+                    require_once 'controllers/PagarController.php';
+                    break;
                 case "pago":
                     require_once "views/php/dashboard_pago.php";
                 break;
