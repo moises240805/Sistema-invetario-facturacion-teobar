@@ -159,7 +159,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="username" class="col-md-3">Usuario</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <input type="text" class="form-control" id="username" name="username" maxlength="30" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -176,7 +176,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input type="password" class="form-control" id="pw" name="pw" required oninput="Password()">
+                    <input type="password" class="form-control" id="pw" name="pw"  maxlength="9" required oninput="Password()">
                     <span id="Error" class="error-message"></span>
                 </div>
             </div>
@@ -213,13 +213,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="usuario" class="col-md-3">Usuario</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="usuario" value="<?php echo $admin['usuario']; ?>" required>
+                    <input class="form-control" type="text" name="usuario" value="<?php echo $admin['usuario']; ?>" maxlength="30" required>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="password" name="clave" value="<?php echo $admin['pw']; ?>" required>
+                    <input class="form-control" type="password" name="clave" value="<?php echo $admin['pw']; ?>" maxlength="9" required>
                 </div>
             </div>
             <div class="form-group row">

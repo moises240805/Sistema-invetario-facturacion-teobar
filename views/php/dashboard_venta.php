@@ -228,136 +228,136 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <input type="number" step="0.01" name="monto" class="form-control montoInput" placeholder="monto" required readonly>
+                                            <label for="id_venta">Nro Venta</label>
+                                            <input type="number" class="form-control" name="id_venta" placeholder="Nro VENTA" required oninput="validateInput(this)">
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <button type="button" style="display:none;" class="btn btn-danger eliminarFilaBtn" onclick="eliminarFila(this)">Eliminar</button>
+                                            <label for="id_cliente">Cliente</label>
+                                            <div class="input-group">
+                                                <select name="id_cliente" class="form-control">
+                                                    <option value="">Seleccione Cliente</option>
+                                                    <?php foreach ($clientes as $cliente): ?>
+                                                        <option value="<?php echo $cliente['id_cliente']; ?>">
+                                                            <?php echo $cliente['id_cliente'] . ' ' . $cliente['nombre_cliente']; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <a class="btn btn-success" style="text-decoration: none;" href="crud_cliente.php?action=formulario">+</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label>Tipo de pago</label>
+                                            <select name="id_modalidad_pago" class="form-control">
+                                                <option value="5">Selecione pago</option>
+                                                <option value="1">Divisas</option>
+                                                <option value="2">Efectivo</option>
+                                                <option value="3">Pago Movil</option>
+                                                <option value="4">Transferencia</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label>Tipo de Compra</label>
+                                            <select name="tipo_compra" class="form-control">
+                                                <option value="">Selecione</option>
+                                                <option value="5">Credito</option>
+                                                <option value="6">Descontado</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="id_banco">Banco</label>
+                                            <select id="banco" name="rif_banco" class="form-control">
+                                                <option value="">Seleccione Banco</option>
+                                                <?php foreach ($bancos as $banco): ?>
+                                                    <option value="<?php echo $banco['rif_banco']; ?>">
+                                                        <?php echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="tlf">Tlf o Nro.F</label>
+                                            <input type="number" id="tlf" name="tlf" class="form-control" oninput="validatePhoneNumber(this)">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="fech_emision">F/E</label>
+                                            <input type="date" id="fecha_registro" name="fech_emision" class="form-control" placeholder="fecha_emision" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="tipo_entrega">Tipo entrega</label>
+                                            <select name="tipo_entrega" class="form-control">
+                                                <option value="">...</option>
+                                                <option value="Directa">Directa</option>
+                                                <option value="Delivery">Delivery</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4"><hr></td>
+                                </tr>
+                                <tr id="filaTemplate">
+                                    <td>
+                                        <div class="form-group">
+                                            <label>Producto</label>
+                                            <select name="id_producto[]" class="form-control" oninput="obtenerPrecioProducto()">
+                                                <option>Seleccione un producto</option>
+                                                <?php foreach ($productos as $producto): ?>
+                                                    <option value="<?php echo htmlspecialchars(json_encode(['id_producto' => $producto['id_producto'], 'precio' => $producto['precio'], 'id_unidad_medida' => $producto['id_unidad_medida']])); ?>">
+                                                        <?php echo $producto['nombre'] . ' ' . $producto['presentacion'] . ' ' . $producto['nombre_medida'] . ' - $' . number_format($producto['precio'], 2); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label>Cantidad</label>
+                                            <input type="number" name="cantidad[]" class="form-control" placeholder="cantidad" required oninput="obtenerPrecioProducto()">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <label>Monto</label>
+                                            <input type="number" step="0.01" name="monto" class="form-control" placeholder="monto" required readonly>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="button" class="btn btn-danger" value="Eliminar" onclick="eliminarFila(this)">
+                                            <input type="button" class="btn btn-success" value="Agregar fila" onclick="agregarFila()">
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
-                        <button type="button" class="btn btn-success" onclick="agregarFila()">Agregar Producto</button>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="subtotal">Sub Total</label>
-                                    <input type="number" name="subtotal" class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="iva">IVA (16%)</label>
-                                    <input type="number" name="iva" class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="monto">Total</label>
-                                    <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" required readonly>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="subtotal">Sub Total</label>
+                            <input type="number" name="subtotal" class="form-control" readonly>
                         </div>
-                        <hr>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="id_venta">Nro Venta</label>
-                                    <input type="number" class="form-control" name="id_venta" placeholder="Nro VENTA" required oninput="validateInput(this)">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="id_cliente">Cliente</label>
-                                    <div class="input-group">
-                                        <select name="id_cliente" class="form-control">
-                                            <option value="">Seleccione Cliente</option>
-                                            <?php foreach ($clientes as $cliente): ?>
-                                                <option value="<?php echo $cliente['id_cliente']; ?>">
-                                                    <?php echo $cliente['id_cliente'] . ' ' . $cliente['nombre_cliente']; ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <div class="input-group-append">
-                                            <a class="btn btn-success" style="text-decoration: none;" href="crud_cliente.php?action=formulario">+</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <p><b>+ IVA 16%.</b></p>
+                        <div class="form-group">
+                            <label for="monto">Total</label>
+                            <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" required readonly>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Tipo de Compra</label>
-                                    <select name="tipo_compra" class="form-control">
-                                        <option value="">Selecione</option>
-                                        <option value="5">Credito</option>
-                                        <option value="6">Descontado</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Tipo de pago</label>
-                                    <select name="id_modalidad_pago" class="form-control">
-                                        <option value="">Selecione pago</option>
-                                        <option value="1">Divisas</option>
-                                        <option value="2">Efectivo</option>
-                                        <option value="3">Pago Movil</option>
-                                        <option value="4">Transferencia</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="id_banco">Banco</label>
-                                    <select id="banco" name="rif_banco" class="form-control">
-                                        <option value="">Seleccione Banco</option>
-                                        <?php foreach ($bancos as $banco): ?>
-                                            <option value="<?php echo $banco['rif_banco']; ?>">
-                                                <?php echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tlf">Tlf o Nro.F</label>
-                                    <input type="number" id="tlf" name="tlf" class="form-control" oninput="validatePhoneNumber(this)">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fech_emision">F/E</label>
-                                    <input type="date" id="fecha_registro" name="fech_emision" class="form-control" placeholder="fecha_emision" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="tipo_entrega">Tipo entrega</label>
-                                    <select name="tipo_entrega" class="form-control">
-                                        <option value="">...</option>
-                                        <option value="Directa">Directa</option>
-                                        <option value="Delivery">Delivery</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr>
-
-
                     </div>
                 </div>
                 <div class="modal-footer justify-content-center">
@@ -570,5 +570,6 @@ document.addEventListener('DOMContentLoaded', () => {
     manejarTipoPago();
 });
 </script>
+<script src="views/js/validate2.js"></script>
 </body>
 </html>

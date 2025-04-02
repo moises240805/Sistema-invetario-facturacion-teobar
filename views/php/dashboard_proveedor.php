@@ -182,7 +182,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="J-">J-</option>
                                                 <option value="G-">G-</option>
                                             </select>
-                                            <input type="number" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" required oninput="validateId2()">
+                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="7" required oninput="validateId2()">
                                         </div>
                                         <span id="idError2" class="error-message"></span>
                                     </div>
@@ -192,7 +192,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="nombre" style="font-size: 18px;">Nombre del Proveedor</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="nombrep" name="nombre" placeholder="Nombre del Proveedor" required oninput="validateAddress2()">
+                                        <input type="text" class="form-control" id="nombrep" name="nombre" placeholder="Nombre del Proveedor" maxlength="40" onkeypress="return onlyLetters(event)" required oninput="validateAddress2()">
                                         <span id="addressError2" class="error-message"></span>
                                     </div>
                                 </div>
@@ -201,7 +201,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="direccion" style="font-size: 18px;">Dirección del Proveedor</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Dirección del Proveedor" required oninput="validateAddress()">
+                                        <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Dirección del Proveedor" maxlength="100" required oninput="validateAddress()">
                                         <span id="addressError" class="error-message"></span>
                                     </div>
                                 </div>
@@ -218,7 +218,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="0414">0414</option>
                                                 <option value="0424">0424</option>
                                             </select>
-                                            <input type="number" class="form-control" id="numero_tlf" name="numero_tlf" placeholder="Tlf del Proveedor" required oninput="validatePhone()">
+                                            <input type="text" class="form-control" id="numero_tlf" name="numero_tlf" placeholder="Tlf del Proveedor" maxlength="7"onkeypress="return SoloNumeros(event)" required oninput="validatePhone()">
                                         </div>
                                         <span id="phoneError" class="error-message"></span>
                                     </div>
@@ -233,7 +233,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="V-">V-</option>
                                                 <option value="E-">E-</option>
                                             </select>
-                                            <input type="number" class="form-control" id="id" name="id_representante" placeholder="CI o RIF" required oninput="validateId()">
+                                            <input type="text" class="form-control" id="id" name="id_representante" placeholder="CI o RIF" maxlength="8" required oninput="validateId()" onkeypress="return SoloNumeros(event)"> 
                                         </div>
                                         <span id="idError" class="error-message"></span>
                                     </div>
@@ -243,7 +243,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="nombre_representante" style="font-size: 18px;">Nombre del Representante Legal</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="nombre" name="nombre_representante" placeholder="Nombre" required oninput="validateName()">
+                                        <input type="text" class="form-control" id="nombre" name="nombre_representante" placeholder="Nombre" maxlength="40" required oninput="validateName()">
                                         <span id="nameError" class="error-message"></span>
                                     </div>
                                 </div>
@@ -261,7 +261,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="0424">0424</option>
                                                 <option value="0251">0251</option>
                                             </select>
-                                            <input type="number" class="form-control" id="numero_tlf2" name="numero_tlf_representante" placeholder="Tlf del representante" required oninput="validatePhone2()">
+                                            <input type="text" class="form-control" id="numero_tlf2" name="numero_tlf_representante" placeholder="Tlf del representante" maxlength="7" onkeypress="return SoloNumeros(event)" required oninput="validatePhone2()">
                                         </div>
                                         <span id="phoneError2" class="error-message"></span>
                                     </div>
@@ -301,20 +301,20 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="J-">J-</option>
                                     <option value="G-">G-</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="id_proveedor2" id="id_proveedor2" required>
+                                <input class="entrada form-control" type="text" name="id_proveedor2" id="id_proveedor2" maxlength="10" onkeypress="return SoloNumeros(event)" required>
                             </div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Proveedor</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre" id="nombre_proveedor" required>
+                            <input class="entrada form-control" type="text" name="nombre" id="nombre_proveedor" maxlength="50" onkeypress="return onlyLetters(event)" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="direccion" class="col-md-3">Dirección del Proveedor</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="direccion" id="direccion_proveedor" required>
+                            <input class="entrada form-control" type="text" name="direccion" id="direccion_proveedor" maxlength="100" required oninput="validateAddress()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -328,7 +328,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="0414">0414</option>
                                     <option value="0424">0424</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="numero_tlf" id="telefono" required>
+                                <input class="entrada form-control" type="text" name="numero_tlf" id="telefono" maxlength="7" onkeypress="return SoloNumeros(event)" required oninput="validatePhone2()">
                             </div>
                         </div>
                     </div>
@@ -340,14 +340,14 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="V-">V-</option>
                                     <option value="E-">E-</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="id_representante" id="id_representante" required>
+                                <input class="entrada form-control" type="text" name="id_representante" id="id_representante" maxlength="8" onkeypress="return SoloNumeros(event)" required oninput="validateId2()">
                             </div>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre_representante" class="col-md-3">Nombre del Representante Legal</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre_representante" id="nombre_representante" required>
+                            <input class="entrada form-control" type="text" name="nombre_representante" id="nombre_representante" maxlength="40" onkeypress="return onlyLetters(event)" required oninput="validateName2()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -362,7 +362,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="0424">0424</option>
                                     <option value="0251">0251</option>
                                 </select>
-                                <input class="entrada form-control" type="number" name="numero_tlf_representante" id="numero_tlf_representante" required>
+                                <input class="entrada form-control" type="text" name="numero_tlf_representante" id="numero_tlf_representante" maxlength="7" pattern="[0-9]{8}"onkeypress="return SoloNumeros(event)" required oninput="validatePhone()" required>
                             </div>
                         </div>
                     </div>
@@ -400,5 +400,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
     <script src="views/js/modal_prooveedor.js"></script>
     <script src="views/js/validate2.js"></script>
+    <script src="views/js/validate.js"></script>
 </body>
 </html>

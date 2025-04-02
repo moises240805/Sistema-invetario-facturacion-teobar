@@ -202,7 +202,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <td>
                                         <div class="form-group">
                                             <label for="id_venta">Nro Compra</label>
-                                            <input type="number" class="form-control" name="id_venta" placeholder="Nro Compra" required oninput="validateInput(this)">
+                                            <input type="text" class="form-control" name="id_venta" placeholder="Nro Compra" maxlength="11"required oninput="validateInput(this)">
                                         </div>
                                     </td>
                                     <td>
@@ -288,13 +288,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <td>
                                         <div class="form-group">
                                             <label>Cantidad</label>
-                                            <input type="number" name="cantidad[]" class="form-control" placeholder="cantidad" required oninput="obtenerPrecioProducto()">
+                                            <input type="text" name="cantidad[]" class="form-control" placeholder="cantidad" maxlength="11" required oninput="obtenerPrecioProducto()">
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
                                             <label>Monto</label>
-                                            <input type="number" step="0.01" name="monto" class="form-control" placeholder="monto" required>
+                                            <input type="text" step="0.01" name="monto" class="form-control" placeholder="monto" maxlength="11" required>
                                         </div>
                                     </td>
                                     <td>
@@ -308,11 +308,11 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         </table>
                         <div class="form-group">
                             <label for="subtotal">Sub Total</label>
-                            <input type="number" name="subtotal" class="form-control">
+                            <input type="text" name="subtotal" class="form-control" maxlength="11"> 
                         </div>
                         <div class="form-group">
                             <label for="monto">Total</label>
-                            <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" required>
+                            <input type="text" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" maxlength="11" required>
                         </div>
                     </div>
                 </div>
@@ -424,5 +424,6 @@ function validateInput(input) {
 }
 
 </script>
+<script src="views/js/validate.js"></script>
 </body>
 </html>

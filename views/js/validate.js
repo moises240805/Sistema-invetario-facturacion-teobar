@@ -1,3 +1,41 @@
+function SoloNumeros(evt) {
+    const charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+}
+
+function SoloLetras(evt) {
+    const charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode <= 32 || (charCode >= 37 && charCode <= 40)) {
+        return true;
+    }
+    if (charCode >= 65 && charCode <= 90) {
+        return true;
+    }
+    if (charCode >= 97 && charCode <= 122) {
+        return true;
+    }
+    if (charCode >= 192 && charCode <= 255) {
+        return true;
+    }
+    if (charCode === 32) {
+        return true;
+    }
+    return false;
+}
+function onlyLetters(e) {
+    const char = String.fromCharCode(e.keyCode || e.which);
+    const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s]$/;
+    
+    if (!regex.test(char)) {
+        e.preventDefault();
+        return false;
+    }
+    return true;
+}
+
 function validateId() { 
     const idInput = document.getElementById('id'); 
     const idError = document.getElementById('idError'); 

@@ -510,5 +510,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 <script src="views/js/modal_producto.js"></script>
 <script src="views/js/calculator.js"></script>
 <script src="views/js/calculator2.js"></script>
+<script src="views/js/validate.js"></script>
 </body>
 </html>
