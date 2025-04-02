@@ -99,7 +99,7 @@
                 <td><?php echo $bitacora['movimiento']; ?></td>
                 <td><?php echo $bitacora['modulo']; ?></td>
                 <td><?php echo $bitacora['descripcion']; ?></td>
-                <td><?php echo $bitacora['id_admin']; ?></td>
+                <td><?php echo $bitacora['usuario']; ?></td>
 
             </tr>
             <?php endforeach; ?>

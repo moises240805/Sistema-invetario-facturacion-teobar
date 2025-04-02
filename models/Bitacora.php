@@ -105,7 +105,8 @@ class Bitacora extends Conexion{
     // Método para obtener la bitacora de la base de datos
     public function Mostrar_Bitacora() {
         // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM bitacora";
+        $query = "SELECT * FROM bitacora b 
+        LEFT JOIN admin a ON b.id_admin=a.ID";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
         // Ejecuta la consulta

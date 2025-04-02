@@ -117,7 +117,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Productos</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf"><b>PDF</b></button>
                                 </div>
@@ -141,7 +141,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Clientes</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf2"><b>PDF</b></button>
                                 </div>
@@ -163,7 +163,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Proveedor</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf3"><b>PDF</b></button>
                                 </div>
@@ -187,7 +187,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Ventas</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf4"><b>PDF</b></button>
                                 </div>
@@ -211,7 +211,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Cuentas por Cobrar</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf5"><b>PDF</b></button>
                                 </div>
@@ -232,7 +232,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Compras</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf6"><b>PDF</b></button>
                                 </div>
@@ -258,7 +258,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Cuentas por Pagar</h4>
-                            <form method="POST" action="reportes.php">
+                            <form method="POST" action="index.php?action=reportes">
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-block" type="submit" name="generar_pdf7"><b>PDF</b></button>
                                 </div>
