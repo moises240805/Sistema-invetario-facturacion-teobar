@@ -1,6 +1,8 @@
 <?php
 // Incluye el archivo del modelo venta
 require_once "models/Compra.php";
+require_once "models/IngresoEgreso.php";
+$ingreso = new IngresoEgreso();
 $controller = new Compra();
 
 $message2="";
@@ -40,14 +42,37 @@ foreach ($_POST['id_producto'] as $item) {
     $compra['productos']['id_medida'][] = $producto->id_unidad_medida;
 }
 
+$id_modalidad_pago = $compra['id_modalidad_pago'];
+$fech_emision = $compra['fech_emision'];
+$monto = $compra['monto'];
+
+if ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) {
+    $id_cajas = 1;
+} else {
+    $id_cajas = 2;
+}
+
+$ingreso_data = json_encode([
+    'id_cajas' => $id_cajas,
+    'movimiento' => "Egreso",
+    'fecha' => $fech_emision,
+    'monto' => $monto,
+    'id_pago' => $id_modalidad_pago,
+    'descripcion' => "Compra de productos de productos"
+]);
+
 // Convertir nuevamente a JSON
 $compra = json_encode($compra);
 
 $controller->setCompraData($compra);
+$ingreso->setIngresoEgresoData($ingreso_data);
 // Llama al método guardar compra del controlador y guarda el resultado en $message
 if ($controller->Guardar_Compra($compra)) {
     $_SESSION['message_type'] = 'success';  // Set success flag
     $_SESSION['message'] = "REGISTRADA CORRECTAMENTE";
+
+
+    $ingreso->Guardar_IngresoEgreso($ingreso_data); 
 } else {
     $_SESSION['message_type'] = 'danger'; // Set error flag
     $_SESSION['message'] = "ERROR AL REGISTRAR...";

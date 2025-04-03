@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagos</title>
+    <title>Movimientos</title>
     <?php 
         require_once "link.php";
     ?>
@@ -18,7 +18,7 @@
 
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            
+
         <?php 
             require_once "menu.php";
         ?>
@@ -62,82 +62,79 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
+
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard/ Pagos</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Movimientos</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
-
-                    <!-- Content Row -->
-                    <div class="row mx-3">
-
-        
-        <div class="card-body">
-        <?php
-
-if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
-    $message = $_SESSION['message'];
-    $message_type = $_SESSION['message_type'];
-
-    // Pass PHP values to JavaScript variables
-    echo "<script>";
-    echo "var js_message = '" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "var js_message_type = '" . htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "</script>";
-
-    echo '<script>
-        $(document).ready(function() {
-            // Set Modal Title and Body
-            if (js_message_type === "success") {
-                $("#successModal .modal-title").text("Exitoso");
-                $("#successModal .modal-body").text(js_message);
-            } else {
-                $("#successModal .modal-title").text("Error");
-                $("#successModal .modal-body").text(js_message);
-            }
-
-            // Show the Modal
-            $("#successModal").modal("show");
-        });
-    </script>';
-
-    unset($_SESSION['message']); // Clear the message
-    unset($_SESSION['message_type']); // Clear the type
-}
+                    <?php
+require_once "controllers/CajaController.php";
 ?>
-        <main class="main">
-    <section class="full-width text-center" style="padding: 20px;">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-md-4 mb-4">
-                    <a href="index.php?action=cobrar&a=v" style="text-decoration: none;">
-                        <div class="card shadow">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Cuentas por Cobrar</h5>
-                                <h2 class="card-text">15</h2>
-                                <img src="views/img/cobrar.png" width="65rem" height="65rem" alt="Cuentas por Cobrar">
-                            </div>
-                        </div>
-                    </a>
+<!-- Contenedor de tarjetas -->
+<center><div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
+    <?php foreach ($caja as $caja): ?>
+        <!-- Tarjeta -->
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3>Manjeo de cajas</h3>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <a href="index.php?action=pagar&a=v" style="text-decoration: none;">
-                        <div class="card shadow">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Cuentas por Pagar</h5>
-                                <h2 class="card-text">3</h2>
-                                <img src="views/img/pagar.png" width="65rem" height="65rem" alt="Cuentas por Pagar">
-                            </div>
-                        </div>
-                    </a>
+                <div class="card-body">
+                    <h4 class="card-title"><?php echo $caja["nombre_caja"]; ?></h4>
+                    <p class="card-text"><?php echo $caja["saldo_caja"]; ?></p>
                 </div>
             </div>
         </div>
-    </section>
-</main>
+    <?php endforeach; ?>
+</div></center><br>
+
+                    <!-- Content Row -->
+                    <div class="row mx-3">
+                    <div class="card shadow ">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Gestionar Movimientos</h6>
+
+        </div>
+    
+        <div class="card-body">
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+        <thead class="thead-light">
+            <tr>
+                <th>Nro de movimiento</th>
+                <th>Caja</th>
+                <th>Tipo de movimiento</th>
+                <th>Monto</th>
+                <th>Tipo de pago</th>
+                <th>Descripcion</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php 
+                foreach ($movimiento as $movimiento): 
+            ?>
+            <tr>
+                <td><?php echo $movimiento['ID']; ?></td>
+                <td><?php echo $movimiento["nombre_caja"]; ?></td>
+                <td><?php echo $movimiento['tipo_movimiento']; ?></td>
+                <td><?php echo $movimiento['monto_movimiento']; ?></td>
+                <td><?php echo $movimiento['nombre_modalidad']; ?></td>
+                <td><?php echo $movimiento['concepto']; ?></td>
+                <td><?php echo $movimiento['fecha']; ?></td>
+
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+
+
 
 </body>
 </html>
