@@ -1,8 +1,11 @@
 <?php
 // Incluye el archivo del modelo venta
 require_once "models/Venta.php";
-
+require "models/Notificacion.php";
+require "models/DetalleProducto.php";
 $controller = new Venta();
+$notificacion = new Notificacion();
+$detalle_producto = new DetalleProducto();
 
 
 $message2="";
@@ -14,7 +17,7 @@ $message="";//inicializa la varable donde se almasenara la el mensage error o su
 //del action realiza las llamadas al los controladores y trae las vistas
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
+if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") 
 {
     // Obtiene los valores del formulario y los sanitiza
     $venta = json_encode([
@@ -33,25 +36,43 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
             'id_medida' => []
         ]
     ]);
-    
+
     // Procesar los productos
     $venta = json_decode($venta, true);
-    
+    $productos_vendidos = [];
+
     foreach ($_POST['id_producto'] as $item) {
         $producto = json_decode($item);
-    
+        
         $venta['productos']['id_producto'][] = $producto->id_producto;
         $venta['productos']['id_medida'][] = $producto->id_unidad_medida;
+        
+        // Guardamos info del producto con cantidad vendida
+        $productos_vendidos[] = [
+            'id_producto' => $producto->id_producto
+        ];
     }
-    
+
     // Convertir nuevamente a JSON
     $venta = json_encode($venta);
-    
-
     $controller->setVentaData($venta);
-    // Llama al método guardar venta del controlador y guarda el resultado en $message
+        // Llama al método guardar venta del controlador y guarda el resultado en $message
     if($controller->Guardar_Venta($venta))
     {
+        // Verificar stock después de la venta
+        foreach ($productos_vendidos as $producto) {
+            $stock_actual = $detalle_producto->obtenerStockProducto($producto['id_producto']);
+
+            if ($stock_actual <= 0) {
+                // Notificar al administrador
+                $id_admin = $_SESSION['s_usuario']['id']; // Cambia esto si el admin tiene un ID diferente
+                $mensaje = "El producto  se ha agotado.";
+                $enlace = "index.php?action=producto&a=d";
+
+                $notificacion->insert($enlace,$mensaje, $id_admin, "Sin leer");
+            }
+        }
+
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
     } else {
