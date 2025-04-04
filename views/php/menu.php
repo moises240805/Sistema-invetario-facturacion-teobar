@@ -28,6 +28,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
                 <li class="aside__item nav-item"><a href="index.php?action=bitacora" class="aside__link nav-link">Bitacora</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=movimientos" class="aside__link nav-link">Cajas Ingreso Egreso</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=reportes" class="aside__link nav-link">Reportes</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=notificacion" class="aside__link nav-link">Notificaciones</a></li>
 
             <?php elseif ($rol == 'Cajero'): ?>
                 <!-- Limited Menu for Cajero -->
