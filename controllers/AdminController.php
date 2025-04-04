@@ -1,10 +1,11 @@
 <?php
 // Incluye el archivo del modelo Producto
 require_once "models/Admin.php";
-
+require_once 'models/Bitacora.php';
 $controller = new Admin();
-
-$message="";
+$bitacora = new Bitacora();
+$modulo = 'Admin';
+date_default_timezone_set('America/Caracas');
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
@@ -49,6 +50,17 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
                 window.location.href="index.php";
                 </script>';
         }
+
+        $biacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Iniciar Session',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$_POST['usuario']['usuario']. " " . 'ha iniciado session'
+        ]);
+        $bitacora->setBitacoraData($bitacora_data);
+        $bitacora->Guardar_Bitacora();
+
     } else {
         echo '<script type="text/javascript">
             alert("ERROR...!! USUARIO NO ENCONTRADO");
