@@ -1,12 +1,9 @@
 <?php
 
+echo"hola";
 
-require_once '../models/notificacion.php';
-$controller = new Notificacion();
-$controller->index();
-
-$lista new notificacion();
-require_once '../views/notificacion.php';   
+require_once 'views/php/dashboard_notificacion.php';
+  
 
 ?>
 

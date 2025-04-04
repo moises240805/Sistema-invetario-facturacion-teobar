@@ -58,6 +58,9 @@ switch ($controlador) {
                 case 'bitacora':
                     require_once 'controllers/BitacoraController.php';
                 break;
+                case 'notificacion':
+                    require_once 'controllers/NotificacionController.php';
+                break;
                 case "reportes":
                     require_once 'controllers/ReportController.php';
                         $controller = new ReporteController();
