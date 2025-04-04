@@ -454,6 +454,26 @@ WHERE id_producto = :id_producto AND id_unidad_medida IN (:uni_medida, :uni_medi
         }
     }
 
+    public function obtenerStockProducto($id_producto) {
+        $sql = "SELECT  
+                    GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad
+                  FROM 
+                    producto p  
+                  LEFT JOIN 
+                    motivo_actualizacion a ON p.id_motivoActualizacion = a.ID   
+                  LEFT JOIN 
+                    cantidad_producto cp ON p.id_producto = cp.id_producto  
+                  LEFT JOIN 
+                    unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
+                  LEFT JOIN 
+                    presentacion s ON s.id_presentacion = p.id_presentacion
+                   WHERE p.id_producto = :id_producto";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id_producto", $id_producto);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
     private function Eliminar_Producto($id_producto) {
         $query = "DELETE FROM producto WHERE id_producto = :id_producto";
         $stmt = $this->conn->prepare($query);

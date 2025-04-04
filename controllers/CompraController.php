@@ -2,16 +2,15 @@
 // Incluye el archivo del modelo venta
 require_once "models/Compra.php";
 require_once "models/IngresoEgreso.php";
+require_once 'models/Bitacora.php';
+date_default_timezone_set('America/Caracas');
+$bitacora = new Bitacora();
 $ingreso = new IngresoEgreso();
 $controller = new Compra();
 
-$message2="";
-$message3="";
-$message4="";
+$modulo = 'Compra';
 
-$message="";//inicializa la varable donde se almasenara la el mensage error o succes
-//aqui realiza las operacion resividas de las vista donde dependiendo
-//del action realiza las llamadas al los controladores y trae las vistas
+
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
@@ -71,6 +70,16 @@ if ($controller->Guardar_Compra($compra)) {
     $_SESSION['message_type'] = 'success';  // Set success flag
     $_SESSION['message'] = "REGISTRADA CORRECTAMENTE";
 
+    $bitacora_data = json_encode([
+        'id_admin' => $_SESSION['s_usuario']['id'],
+        'movimiento' => 'Abono',
+        'fecha' => date('Y-m-d H:i:s'),
+        'modulo' => $modulo,
+        'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " " . 'ha registrado una compra de producto'
+        ]);
+        $bitacora->setBitacoraData($bitacora_data);
+        $bitacora->Guardar_Bitacora();
+
 
     $ingreso->Guardar_IngresoEgreso($ingreso_data); 
 } else {
@@ -79,29 +88,6 @@ if ($controller->Guardar_Compra($compra)) {
 }
 header("Location: index.php?action=compra");
 exit();
-}
-elseif ($action == 'abono' && $_SERVER["REQUEST_METHOD"] == "GET") {
-    $id_cuenta = $_GET['id_cuenta'];
-    // Llama al controlador para mostrar el formulario de modificación
-} elseif ($action == "abonado" && $_SERVER["REQUEST_METHOD"] == "POST") {
-    $compra = json_encode([
-        'id_compra' => htmlspecialchars($_POST['id_cuenta']),
-        'fech_emision' => htmlspecialchars($_POST['fecha']),
-        'monto' => floatval($_POST['monto']) // Si es decimal, usa floatval()
-        // 'monto' => intval($_POST['monto']) // Si es entero, usa intval()
-    ]);
-
-    $controller->setCompraData($compra);
-    // Llama al método actualizar compra del controlador y guarda el resultado en $message
-    if ($controller->Actualizar_Compra()) {
-        $_SESSION['message_type'] = 'success';  // Set success flag
-        $_SESSION['message'] = "ABONADO CORRECTAMENTE";
-    } else {
-        $_SESSION['message_type'] = 'danger'; // Set error flag
-        $_SESSION['message'] = "ERROR AL ABONAR...";
-    }
-    header("Location: index.php?action=compra&a=pagar");
-    exit();
 } elseif ($action == 'pagar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     require_once "views/php/dashboard_pagar.php";
 } else {

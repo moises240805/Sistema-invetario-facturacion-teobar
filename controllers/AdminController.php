@@ -4,7 +4,7 @@ require_once "models/Admin.php";
 require_once 'models/Bitacora.php';
 $controller = new Admin();
 $bitacora = new Bitacora();
-$modulo = 'Admin';
+$modulo = 'Usuario';
 date_default_timezone_set('America/Caracas');
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
@@ -32,6 +32,17 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
                 "usuario" => $usuario['usuario'],
                 "rol" => $usuario['rol'],
             ];
+
+            $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Iniciar Sesion',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$username. " " . 'ha iniciado session'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+
             if($usuario["rol"]=="Administrador"){
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
@@ -50,17 +61,6 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
                 window.location.href="index.php";
                 </script>';
         }
-
-        $biacora_data = json_encode([
-            'id_admin' => $_SESSION['s_usuario']['id'],
-            'movimiento' => 'Iniciar Session',
-            'fecha' => date('Y-m-d H:i:s'),
-            'modulo' => $modulo,
-            'descripcion' =>'El usuario: '.$_POST['usuario']['usuario']. " " . 'ha iniciado session'
-        ]);
-        $bitacora->setBitacoraData($bitacora_data);
-        $bitacora->Guardar_Bitacora();
-
     } else {
         echo '<script type="text/javascript">
             alert("ERROR...!! USUARIO NO ENCONTRADO");
@@ -84,6 +84,18 @@ elseif ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "USUARIO REGISTRADO CORRECTAMENTE";
+
+
+            $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Agregar',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$username. " " . 'ha agregado un nuevo usuario'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL REGISTRAR EL USUARIO... USUARIO EXISTENTE";
@@ -116,6 +128,19 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "USUARIO ACTUALIZADO CORRECTAMENTE";
+
+
+            $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Modificar',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$username. " " . 'ha modificado un usuario'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+
+
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ACTUALIZAR EL USUARIO";
@@ -136,6 +161,18 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $_SESSION['message_type'] = 'success';
         $_SESSION['message'] = "USUARIO ELIMINADO CORRECTAMENTE";
         $_SESSION['modal_title'] = "Eliminación Exitosa"; //New
+
+        $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Eliminar',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$username. " " . 'elimino un usuario'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
+
+
     } else {
         $_SESSION['message_type'] = 'danger';
         $_SESSION['message'] = "ERROR AL ELIMINAR EL USUARIO";

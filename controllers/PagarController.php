@@ -1,6 +1,9 @@
 <?php
 require_once "models/Pagar.php";
+require_once 'models/Bitacora.php';
+date_default_timezone_set('America/Caracas');
 
+$bitacora = new Bitacora();
 $controller = new Pagar();
 $a = isset($_GET['a']) ? $_GET['a'] : '';
 
@@ -25,6 +28,16 @@ elseif ($a == "abonado" && $_SERVER["REQUEST_METHOD"] == "POST")
     {
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "ABONADO CORRECTAMENTE";
+
+        $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Pagar',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " " . 'ha registrado un pago a proveedor de una cuanta a pagar pendiente'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
     } else {
         $_SESSION['message_type'] = 'danger'; // Set error flag
         $_SESSION['message'] = "ERROR AL ABONAR...";
