@@ -2,6 +2,7 @@
 session_start();
 $controlador = isset($_GET['action']) ? $_GET['action'] : '';
 $action = isset($_GET['a']) ? $_GET['a'] : '';
+require_once 'config/Route.php';
 if (!isset($_SESSION["s_usuario"]) && $controlador != 'usuario' && $action != 'ingresar' && $controlador != '') {
     // Si no está iniciada y no es la acción de inicio de sesión, redirige a la página de inicio de sesión
     require_once "views/php/login.php";
@@ -9,63 +10,15 @@ if (!isset($_SESSION["s_usuario"]) && $controlador != 'usuario' && $action != 'i
 }
 if ($controlador == '') {
     require_once "views/php/pagina.php";
-} 
-else 
-{
-switch ($controlador) {
-        case "pagina":
-            require_once "views/php/pagina.php";
-            break;
-        case "login":
-            require_once "views/php/login.php";
-            break;
-        case "dashboard":
-            require_once "views/php/dashboard.php";
-            break;
-        case "usuario":
-                require_once 'controllers/AdminController.php'; 
-            break;
-            case "producto":
-                   require_once 'controllers/ProductoController.php';
-                break;
-            case "tipo":
-                    require_once 'controllers/TipoController.php';
-                break;
-        case "cliente":
-                    require_once 'controllers/ClienteController.php';
-            break;
-        case "proveedor":
-                require_once 'controllers/ProveedorController.php';
-            break;
-            case "venta":
-                    require_once 'controllers/VentaController.php';
-                break;
-            case "cobrar":
-                require_once 'controllers/CobrarController.php';
-                break;
-            case "compra":
-                    require_once 'controllers/CompraController.php';
-                break;
-                case "pagar":
-                    require_once 'controllers/PagarController.php';
-                    break;
-                case "pago":
-                    require_once "views/php/dashboard_pago.php";
-                break;
-                case 'movimientos':
-                    require_once 'controllers/IngresoEgresoController.php';
-                break;
-                case 'bitacora':
-                    require_once 'controllers/BitacoraController.php';
-                break;
-                case 'notificacion':
-                    require_once 'controllers/NotificacionController.php';
-                break;
-                case "reportes":
-                    require_once 'controllers/ReportController.php';
-                        $controller = new ReporteController();
-                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                            $option = htmlspecialchars($_POST['option']);
+} else {
+    if (isset($rutas[$controlador])) {
+        require_once $rutas[$controlador];
+        
+        // Manejo especial para reportes
+        if ($controlador == 'reportes') {
+            $controller = new ReporteController();
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $option = htmlspecialchars($_POST['option']);
                         { if ($option == "tipo_producto") {
                                 $controller->generarPDF8();
                             }
@@ -119,10 +72,11 @@ switch ($controlador) {
                             }
                         }
                         require_once "views/php/dashboard_reporte.php";
-                    break;
-    default:
-        require_once 'controllers/AdminController.php';
-}
+                
+                } else {
+                    require_once 'controllers/AdminController.php';
+                }
+            }
 }
 
 ?>
