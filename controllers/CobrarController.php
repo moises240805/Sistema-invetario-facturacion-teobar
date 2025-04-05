@@ -5,11 +5,15 @@ date_default_timezone_set('America/Caracas');
 
 $bitacora = new Bitacora();
 $controller = new Cobrar();
+
+$modulo = 'Cuenta Cobrar';
 $a = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($a == 'abono' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
     $id_cuenta = $_GET['id_cuenta'];
+    $cuenta=$controller->obtenerCuentasID($id_cuenta);
+    echo json_encode($cuenta);
     // Llama al controlador para mostrar el formulario de modificación
 } 
 elseif ($a == "abonado" && $_SERVER["REQUEST_METHOD"] == "POST")
@@ -17,6 +21,7 @@ elseif ($a == "abonado" && $_SERVER["REQUEST_METHOD"] == "POST")
     $cuenta = json_encode([
         'id_cuenta' => htmlspecialchars($_POST['id_cuenta']),
         'fech_emision' => htmlspecialchars($_POST['fecha']),
+        'id_pago' => htmlspecialchars($_POST['id_pago']),
         'monto' => floatval($_POST['monto']) // Si es decimal, usa floatval()
         // 'monto' => intval($_POST['monto']) // Si es entero, usa intval()
     ]);

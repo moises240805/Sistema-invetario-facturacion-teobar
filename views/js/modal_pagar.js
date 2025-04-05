@@ -47,12 +47,12 @@ function abrirModal(id) {
     document.getElementById('id_cuenta').value = id;
 
     // Si necesitas obtener datos adicionales para llenar otros campos, puedes hacerlo mediante AJAX
-     fetch('index.php?action=venta&a=abono&id_cuenta=' + id)
+     fetch('index.php?action=pagar&a=abono&id_cuenta=' + id)
         .then(response => response.json())
-        .then(data => {console.log(data);
+        .then(data => {
            // Llenar los campos del formulario con los datos obtenidos
-           document.getElementById('id_cuenta').value = data.id_cuenta;
-           document.getElementById('monto').value = data.monto;
+           document.getElementById('id_cuenta').value = data[0].id_cuentaPagar;
+           document.getElementById('proveedor').value = data[0].nombre_proveedor + ' ' + data[0].rif_proveedor;
        })
        .catch(error => console.error('Error:', error));
 }

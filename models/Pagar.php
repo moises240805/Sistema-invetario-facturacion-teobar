@@ -33,7 +33,7 @@ class Pagar extends Conexion{
         $this->id_cliente = $venta['id_cliente'] ?? null;
         $this->cantidad = $venta['cantidad'] ?? null;
         $this->fech_emision = $venta['fech_emision'] ?? null;
-        $this->id_modalidad_pago = $venta['id_modalidad_pago'] ?? null;
+        $this->id_modalidad_pago = $venta['id_pago'] ?? null;
         $this->monto = $venta['monto'] ?? null;
         $this->tipo_entrega = $venta['tipo_entrega'] ?? null;
         $this->rif_banco = $venta['rif_banco'] ?? null;
@@ -145,12 +145,13 @@ class Pagar extends Conexion{
                 $nuevoMonto = $currentMonto - $montoArestar;
     
                 // Paso 4: Actualizar la tabla con el nuevo monto
-                $queryUpdate = "UPDATE cuenta_por_pagar SET monto_cuentaPagar = :monto, fecha_cuentaPagar = :fech_emision WHERE id_cuentaPagar = :id_compra";
+                $queryUpdate = "UPDATE cuenta_por_pagar SET monto_cuentaPagar = :monto, fecha_cuentaPagar = :fech_emision, id_pago = :id_modalidad_pago WHERE id_cuentaPagar = :id_compra";
                 $stmtUpdate = $this->conn->prepare($queryUpdate);
     
                 // Vincula los parámetros
                 $stmtUpdate->bindParam(":id_compra", $this->id_compra);
                 $stmtUpdate->bindParam(":fech_emision", $this->fech_emision);
+                $stmtUpdate->bindParam(":id_modalidad_pago", $this->id_modalidad_pago);
                 $stmtUpdate->bindParam(":monto", $nuevoMonto);
     
                 if ($stmtUpdate->execute()) {
@@ -182,6 +183,7 @@ class Pagar extends Conexion{
                     c.monto_cuentaPagar,
                     p.nombre_proveedor, 
                     v.rif_proveedor,
+                    m.nombre_modalidad,
                     GROUP_CONCAT(v.id_compra SEPARATOR '\n ') AS id_venta,
                     GROUP_CONCAT(v.fecha SEPARATOR '\n ') AS fechas_ventas,
                     GROUP_CONCAT(v.monto SEPARATOR ' $ Bs\n ') AS montos_ventas
@@ -190,6 +192,7 @@ class Pagar extends Conexion{
                   LEFT JOIN 
                     compra v ON c.id_cuentaPagar = v.id_compra
                   LEFT JOIN proveedor p ON p.id_proveedor = v.rif_proveedor
+                  LEFT JOIN modalidad_de_pago m ON c.id_pago = m.id_modalidad_pago
                   GROUP BY 
                     c.id_cuentaPagar"; 
     
@@ -200,5 +203,30 @@ class Pagar extends Conexion{
         // Retorna los resultados como un arreglo asociativo
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+public function obtenerCuentasID2($id_cuenta) {
+    $query = "SELECT 
+                c.id_cuentaPagar, 
+                c.fecha_cuentaPagar, 
+                c.monto_cuentaPagar,
+                p.nombre_proveedor, 
+                v.rif_proveedor
+              FROM 
+                cuenta_por_pagar c
+              LEFT JOIN 
+                compra v ON c.id_cuentaPagar = v.id_compra
+              LEFT JOIN proveedor p ON p.id_proveedor = v.rif_proveedor
+              WHERE id_cuentaPagar=:id_cuenta
+              GROUP BY 
+                c.id_cuentaPagar"; 
+
+    // Prepara la consulta
+    $stmt = $this->conn->prepare($query);
+    $stmt->bindParam(':id_cuenta', $id_cuenta, PDO::PARAM_INT);
+    // Ejecuta la consulta
+    $stmt->execute();
+    // Retorna los resultados como un arreglo asociativo
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }
 ?>

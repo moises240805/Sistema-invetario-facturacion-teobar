@@ -185,7 +185,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="nombre" class="col-md-3">Nombre del Producto</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="nombre" value="<?php echo $producto['nombre']; ?>" required>
+                    <input class="form-control" type="text" name="nombre" maxlength='50' value="<?php echo $producto['nombre']; ?>" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -201,7 +201,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="cantidad" class="col-md-3">Cantidad</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad" value="<?php echo $producto['cantidad']; ?>" required>
+                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad" maxlength value="<?php echo $producto['cantidad']; ?>" required>
                     <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" required>
                     <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" required>
                 </div>
@@ -209,7 +209,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="precio" class="col-md-3">Precio</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio" maxlength='10' value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
                     <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
                     <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
                 </div>
@@ -292,13 +292,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" required>
+                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -314,7 +314,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
                             <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
                             <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
                         </div>
@@ -323,7 +323,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Precio</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                             <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                             <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                         </div>
@@ -376,7 +376,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
                         </div>
                     </div>
-
+                    <div class="form-group row">
+                        <label for="imagen" class="col-md-3">Imagen del Producto</label>
+                    <div class="col-md-9">
+                    <input type="file" class="form-control" id="imagen" name="imagen" required">
+                    </div>
+                    </div>
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
@@ -408,13 +413,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" required>
+                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -430,7 +435,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" required oninput="validateNumber()">
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -451,7 +456,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Precio</label>
                         <div class="col-md-9">
-                            <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" maxlength='10' required oninput="validateNumber()"><b> $ Bs</b>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -469,7 +474,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="imagen" class="col-md-3">Imagen del Producto</label>
                     <div class="col-md-9">
-                    <input type="file" class="form-control" id="imagen" name="imagen" ">
+                    <input type="file" class="form-control" id="imagen" name="imagen" required">
                     </div>
                     </div>
                     <div class="form-group row">

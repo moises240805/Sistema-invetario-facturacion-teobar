@@ -119,6 +119,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <th>Proveedor</th>
                 <th>F/E</th>
                 <th>Monto</th>
+                <th>Tipo pago</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -134,6 +135,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <td><?php echo $venta['rif_proveedor'] . " " . $venta['nombre_proveedor']; ?></td>
                 <td><?php echo $venta['fecha_cuentaPagar']; ?></td>
                 <td><?php echo $venta['monto_cuentaPagar']; ?></td>
+                <td><?php echo $venta['nombre_modalidad']; ?></td>
                 <td>
                     <a onclick="abrirModal(<?php echo $venta['id_cuentaPagar']; ?>)" class="btn btn-success btn-sm" title="Abono">Abono</a>
                 </td>
@@ -173,9 +175,29 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <input type="text" step="0.01" min="0" class="form-control" name="monto" id="monto" maxlength = "11" required>
                         </div>
                     </div>
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="monto" style="font-size: 18px;">Proveedor</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text"  class="form-control" name="cliente" id="proveedor"  maxlength = "11" required>
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="monto" style="font-size: 18px;">Tipo de pago</label>
+                            <select name="id_pago" id="" class="form-control" required>
+                                <option value=""></option>
+                                <option value="1">Divisas</option>
+                                <option value="2">Efectivo</option>
+                                <option value="3">Pago Movil</option>
+                                <option value="4">Transferencia</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <input class="btn btn-primary" type="submit" value="Registrar">
                 </div>
             </form>
