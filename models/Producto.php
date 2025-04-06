@@ -241,8 +241,8 @@ class Producto extends Conexion{
     private function Guardar_Producto()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-    $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion)"; 
+    $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
+    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion, :imagen)"; 
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
@@ -253,6 +253,7 @@ class Producto extends Conexion{
     $stmt->bindParam(":fech_venci", $this->fech_vencimiento); 
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
+    $stmt->bindParam(":imagen", $this->imagen);
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
@@ -278,6 +279,7 @@ class Producto extends Conexion{
     $stmt->bindParam(":peso", $this->peso );
     $stmt->bindParam(":peso2", $this->peso2);
     $stmt->bindParam(":peso3", $this->peso3);
+    
 
     // Ejecuta la segunda consulta y retorna true si ambas tienen éxito
     return $stmt->execute(); 
