@@ -82,8 +82,8 @@ class Notificacion extends Conexion {
         return $query->fetch();
     }
 
-    public function mostrarNotificacion($id) {
-        $sql = "SELECT * FROM notificacion";
+    public function mostrarNotificacion() {
+        $sql = "SELECT n.id_notificacion, n.fecha, n.mensaje, n.enlace, a.usuario FROM notificacion n INNER JOIN admin a ON n.id_admin=a.ID";
         $query = $this->conn->prepare($sql);
         $query->execute();
         return $query->fetchAll();

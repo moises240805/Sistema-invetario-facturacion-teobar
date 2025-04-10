@@ -7,6 +7,7 @@ class Producto extends Conexion{
     private $id_producto;
     private $nombre_producto;
     private $presentacion;
+    private $marca;
     private $fech_vencimiento;
     private $fecha_registro;
     private $cantidad_producto;
@@ -39,6 +40,7 @@ class Producto extends Conexion{
         $this->id_producto = $producto['id_producto'] ?? null;
         $this->nombre_producto = $producto['nombre_producto'];
         $this->presentacion = $producto['presentacion'];
+        $this->marca = $producto['marca'];
         $this->fech_vencimiento = $producto['fecha_vencimiento'] ?? null;
         $this->fecha_registro = $producto['fecha_registro'] ?? null;
         $this->cantidad_producto = $producto['cantidad_producto'];
@@ -73,6 +75,10 @@ class Producto extends Conexion{
 
     public function getPresentacion() {
         return $this->presentacion;
+    }
+
+    public function getMarca() {
+        return $this->marca;
     }
 
     public function getFechVencimiento() {
@@ -150,6 +156,10 @@ class Producto extends Conexion{
 
     public function setPresentacion($presentacion) {
         $this->presentacion =  $presentacion;  
+    }
+
+    public function setMarca($marca) {
+        $this->marca =  $marca;  
     }
 
     public function setFechVencimiento($fech_vencimiento) {
@@ -241,15 +251,16 @@ class Producto extends Conexion{
     private function Guardar_Producto()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-    $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion)"; 
+    $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion) 
+    VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion)"; 
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
 
     // Vincula los parámetros con los valores 
     $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT); 
-    $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR); 
+    $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
+    $stmt->bindParam(":marca", $this->marca, PDO::PARAM_STR);
     $stmt->bindParam(":fech_venci", $this->fech_vencimiento); 
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
@@ -289,15 +300,16 @@ class Producto extends Conexion{
     private function Guardar_Producto2()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-          $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion, :imagen)";  
+          $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
+    VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen)";  
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
 
     // Vincula los parámetros con los valores 
     $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT); 
-    $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR); 
+    $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
+    $stmt->bindParam(":marca", $this->marca, PDO::PARAM_STR);
     $stmt->bindParam(":fech_venci", $this->fech_vencimiento); 
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
@@ -333,7 +345,8 @@ class Producto extends Conexion{
                     p.fecha_registro, 
                     p.nombre,
                     p.enlace,
-                    p.id_presentacion, 
+                    p.id_presentacion,
+                    p.marca, 
                     MAX(p.fecha_vencimiento) AS fecha_vencimiento, 
                     GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad, 
                     GROUP_CONCAT(cp.precio SEPARATOR ' $ Bs\n ') AS precio, 
@@ -369,7 +382,8 @@ class Producto extends Conexion{
         LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.ID  
         LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
         LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
-        LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion";
+        LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+        LEFT JOIN marca m ON m.id_marca = p.id_marca";
       // Prepara la consulta
       $stmt = $this->conn->prepare($query);
       // Ejecuta la consulta
@@ -394,13 +408,14 @@ class Producto extends Conexion{
 
     private function Actualizar_Producto() {
         try {
-            $query = "UPDATE producto SET nombre = :nombre, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
+            $query = "UPDATE producto SET nombre = :nombre, id_presentacion = :presentacion, marca = :marca, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_producto", $this->id_producto);
             $stmt->bindParam(":nombre", $this->nombre_producto);
             $stmt->bindParam(":fecha_vencimiento", $this->fech_vencimiento);
             $stmt->bindParam(":id_actualizacion", $this->id_actualizacion);
             $stmt->bindParam(":presentacion", $this->presentacion);
+            $stmt->bindParam(":marca", $this->marca);
             
             $success1 = $stmt->execute();
 

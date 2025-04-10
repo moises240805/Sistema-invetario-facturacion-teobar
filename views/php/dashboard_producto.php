@@ -66,7 +66,7 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard/ Producto</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Producto</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
@@ -119,6 +119,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <tr>
                         <th>Nombre</th>
                         <th>Presentación</th>
+                        <th>Marca</th>
                         <th>F.R</th>
                         <th>F.V</th>
                         <th>Cantidad</th>
@@ -144,6 +145,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <tr>
                             <td><?php echo $producto['nombre']; ?></td>
                             <td><?php echo $producto['presentacion']; ?></td>
+                            <td><?php echo $producto['marca']; ?></td>
                             <td><?php echo $producto['fecha_registro']; ?></td>
                             <td><?php echo $producto['fecha_vencimiento']; ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?></td>
@@ -180,38 +182,46 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
            <?php
                 require_once "controllers/TipoController.php"; 
                 $tipos = $controller->Mostrar_Tipo();
+               // $marcas = $controller->Mostrar_Marca();
             ?>
             <input class="form-control" type="hidden" name="id_producto" value="<?php echo $producto['id_producto']; ?>" required>
             <div class="form-group row">
                 <label for="nombre" class="col-md-3">Nombre del Producto</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="nombre" value="<?php echo $producto['nombre']; ?>" required>
+                    <input class="form-control" type="text" name="nombre" value="<?php echo $producto['nombre']; ?>"  maxlength="50"  required oninput="validateName()">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="presentacion" class="col-md-3">Presentación del Producto</label>
+                <label for="presentacion" class="col-md-3">Presentacion de Producto</label>
                 <div class="col-md-9">
                     <select class="form-control" name="presentacion">
                         <?php foreach ($tipos as $tipo): ?> 
-                            <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['id_presentacion'] == $producto['id_presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
+                            <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['presentacion'] == $producto['presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label for="marca" class="col-md-3">Marca</label>
+                <div class="col-md-9">
+                    <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="cantidad" class="col-md-3">Cantidad</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad" value="<?php echo $producto['cantidad']; ?>" required>
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" required>
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" required>
+                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad" value="<?php echo $producto['cantidad']; ?>"  maxlength="15" onkeypress="return soloNumeros(event)" required >
+                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required >
+                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="precio" class="col-md-3">Precio</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)"  required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required><b> $ Bs</b>
                 </div>
             </div>
             <div class="form-group row">
@@ -292,13 +302,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" required>
+                            <input type="text" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateId()">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto"maxlength="50"  required oninput="validateName()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -309,6 +319,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca</label>
+                        <div class="col-md-9">
+                            <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
                         </div>
                     </div>
                     <div class="form-group row">
@@ -404,17 +421,18 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <?php 
                         require_once "controllers/TipoController.php"; 
                         $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
+                       // $marcas = $controller->Mostrar_Marca(); // Assuming this gets the list of presentaciones
                     ?>
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" required>
+                            <input type="text" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateId()">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" required>
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" maxlength="50" required oninput="validateName()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -426,11 +444,16 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca</label>
+                        <div class="col-md-9">
+                            <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
+                        </div>
                     </div>
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9">
-                            <input type="number" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" required oninput="validateNumber()">
+                            <input type="text" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateNumber()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -451,7 +474,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Precio</label>
                         <div class="col-md-9">
-                            <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input type="text" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateNumber()"><b> $ Bs</b>
                         </div>
                     </div>
                     <div class="form-group row">

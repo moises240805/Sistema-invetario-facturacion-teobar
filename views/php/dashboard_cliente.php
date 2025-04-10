@@ -180,7 +180,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="nombre_cliente" class="col-md-3">Nombre del Cliente</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre_cliente" id="nombre_cliente" maxlength="50" required>
+                            <input class="entrada form-control" type="text" name="nombre_cliente" id="nombre_cliente" maxlength="50" onkeypress="return onlyLetters(event)" required oninput="validateName()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -255,7 +255,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                         <label for="nombre" style="font-size: 18px;">Nombre del Cliente</label>
                                     </div>
                                     <div class="col-md-10">
-                                        <input type="text" class="form-control" id="nombre" name="nombre_cliente" placeholder="Nombre"  maxlength="50"required oninput="validateName()">
+                                        <input type="text" class="form-control" id="nombre" name="nombre_cliente" placeholder="Nombre"  maxlength="50"onkeypress="return onlyLetters(event)" required oninput="validateName()">
                                         <span id="nameError" class="error-message"></span>
                                     </div>
                                 </div>

@@ -182,7 +182,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="J-">J-</option>
                                                 <option value="G-">G-</option>
                                             </select>
-                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="7" required oninput="validateId2()">
+                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="10" required oninput="validateId2()">
                                         </div>
                                         <span id="idError2" class="error-message"></span>
                                     </div>

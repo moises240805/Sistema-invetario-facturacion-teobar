@@ -35,6 +35,7 @@ function abrirModalModificar(id_producto) {
             // Establecer los campos del formulario con los datos recibidos
             document.getElementsByName('id_producto')[0].value = data.id_producto;
             document.getElementsByName('nombre')[0].value = data.nombre;
+            document.getElementsByName('marca')[0].value = data.marca;
             document.getElementsByName('presentacion')[0].value = data.id_presentacion;
 
             // Cantidad y precio para diferentes variantes
@@ -60,6 +61,13 @@ function abrirModalModificar(id_producto) {
             for (var i = 0; i < selectPresentacion.options.length; i++) {
                 if (selectPresentacion.options[i].value === data.id_presentacion) {
                     selectPresentacion.options[i].selected = true;
+                }
+            }
+
+            var selectMarca = document.getElementsByName('marca')[0];
+            for (var i = 0; i < selectMarca.options.length; i++) {
+                if (selectMarca.options[i].value === data.id_marca) {
+                    selectMarca.options[i].selected = true;
                 }
             }
 
