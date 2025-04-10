@@ -47,6 +47,7 @@
                     <img src="views/img/avatar-male.png" alt="user" class="user-avatar">
                     <span class="user-name"><?php echo $_SESSION['s_usuario']['usuario']; ?></span>
                     <a href="views/php/logout.php" class="logout-button">Cerrar Sesión</a>
+                    <a href="index.php?action=dashboard" class="cart-button aside__link nav-link">Home</a>
                 </div>
             <?php else: ?>
                 <a href="index.php?action=login" class="login-button">Iniciar Sesión</a>
@@ -188,6 +189,6 @@
 </footer>
 
     <script src="views/js/carrusel.js"></script>
-    <script src="views/js/scripts.js"></script>
+    <script src="views/js/carrito.js"></script>
 </body>
 </html>

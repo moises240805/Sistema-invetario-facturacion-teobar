@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-03-2025 a las 14:35:42
+-- Tiempo de generación: 05-04-2025 a las 20:49:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -121,7 +121,11 @@ INSERT INTO `bitacora` (`ID`, `fecha`, `movimiento`, `modulo`, `descripcion`, `i
 (53, '2025-03-27 16:43:38', 'Agregar', 'Producto', 'Producto: pasta', 2),
 (54, '2025-03-27 17:14:22', 'Agregar', 'Producto', 'Producto: Refresco BigCola 2lt', 2),
 (55, '2025-03-27 17:19:03', 'Agregar', 'Producto', 'Producto: Azucar La Pastora 1k', 2),
-(56, '2025-03-27 17:20:26', 'Agregar', 'Producto', 'Producto: Azucar Sabana Dulce', 2);
+(56, '2025-03-27 17:20:26', 'Agregar', 'Producto', 'Producto: Azucar Sabana Dulce', 2),
+(57, '2025-04-05 13:35:45', 'Agregar', 'Venta', 'El usuario: @admin_ca ha registrado una venta', 2),
+(58, '2025-04-05 13:36:34', 'Abono', 'Cuenta Cobrar', 'El usuario: @admin_ca ha registrado un pago de una cuenta a cobrar pendiente', 2),
+(59, '2025-04-05 14:38:16', 'Pagar', 'Cuenta Pagar', 'El usuario: @admin_ca ha registrado un pago a proveedor de una cuanta a pagar pendiente', 2),
+(60, '2025-04-05 14:39:02', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2);
 
 -- --------------------------------------------------------
 
@@ -141,7 +145,7 @@ CREATE TABLE `cajas` (
 
 INSERT INTO `cajas` (`ID`, `nombre_caja`, `saldo_caja`) VALUES
 (1, 'Caja Principal efectivos y divisas', 240.16),
-(2, 'Caja Secundaria transferencias y pago movil', 341.04);
+(2, 'Caja Secundaria transferencias y pago movil', 354.96);
 
 -- --------------------------------------------------------
 
@@ -163,7 +167,7 @@ CREATE TABLE `cantidad_producto` (
 --
 
 INSERT INTO `cantidad_producto` (`ID`, `id_producto`, `cantidad`, `precio`, `id_unidad_medida`, `peso`) VALUES
-(60, 24, 2.00, 12.00, 3, 20.00),
+(60, 24, 1.00, 12.00, 3, 20.00),
 (61, 24, 40.00, 0.60, 1, 1.00),
 (62, 24, 39999.00, 0.30, 2, 0.50),
 (117, 20, 11.00, 43.00, 4, 0.00),
@@ -243,6 +247,7 @@ CREATE TABLE `cuenta_por_cobrar` (
   `ID` int(255) NOT NULL,
   `id_cuentaCobrar` int(255) NOT NULL,
   `id_venta` int(255) NOT NULL,
+  `id_pago` int(11) DEFAULT NULL,
   `fecha_cuentaCobrar` date NOT NULL,
   `monto_cuentaCobrar` decimal(20,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
@@ -251,11 +256,11 @@ CREATE TABLE `cuenta_por_cobrar` (
 -- Volcado de datos para la tabla `cuenta_por_cobrar`
 --
 
-INSERT INTO `cuenta_por_cobrar` (`ID`, `id_cuentaCobrar`, `id_venta`, `fecha_cuentaCobrar`, `monto_cuentaCobrar`) VALUES
-(20, 11, 11, '2025-03-21', 4.94),
-(21, 14, 14, '2025-03-12', 4.92),
-(22, 16, 16, '2025-03-26', 196.44),
-(23, 26, 26, '2025-03-27', 0.35);
+INSERT INTO `cuenta_por_cobrar` (`ID`, `id_cuentaCobrar`, `id_venta`, `id_pago`, `fecha_cuentaCobrar`, `monto_cuentaCobrar`) VALUES
+(20, 11, 11, NULL, '2025-03-21', 4.94),
+(21, 14, 14, NULL, '2025-03-12', 4.92),
+(22, 16, 16, 1, '2025-04-05', 188.44),
+(23, 26, 26, NULL, '2025-03-27', 0.35);
 
 -- --------------------------------------------------------
 
@@ -264,9 +269,9 @@ INSERT INTO `cuenta_por_cobrar` (`ID`, `id_cuentaCobrar`, `id_venta`, `fecha_cue
 --
 
 CREATE TABLE `cuenta_por_pagar` (
-  `ID` int(255) NOT NULL,
   `id_cuentaPagar` int(255) NOT NULL,
   `id_compra` int(255) NOT NULL,
+  `id_pago` int(11) DEFAULT NULL,
   `fecha_cuentaPagar` date NOT NULL,
   `monto_cuentaPagar` decimal(20,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
@@ -275,10 +280,10 @@ CREATE TABLE `cuenta_por_pagar` (
 -- Volcado de datos para la tabla `cuenta_por_pagar`
 --
 
-INSERT INTO `cuenta_por_pagar` (`ID`, `id_cuentaPagar`, `id_compra`, `fecha_cuentaPagar`, `monto_cuentaPagar`) VALUES
-(5, 12, 12, '2025-03-07', 10.00),
-(6, 1, 1, '2025-03-06', 0.00),
-(7, 14, 14, '2025-03-26', 9.00);
+INSERT INTO `cuenta_por_pagar` (`id_cuentaPagar`, `id_compra`, `id_pago`, `fecha_cuentaPagar`, `monto_cuentaPagar`) VALUES
+(1, 1, NULL, '2025-03-06', 0.00),
+(12, 12, 1, '2025-04-05', 9.00),
+(14, 14, NULL, '2025-03-26', 9.00);
 
 -- --------------------------------------------------------
 
@@ -365,7 +370,8 @@ INSERT INTO `detalle_producto` (`ID`, `id_detalle_producto`, `id_producto`, `id_
 (79, 1, 22, 1, 1, 4, 48.72),
 (80, 2, 22, 2, 1, 4, 48.72),
 (81, 3, 22, 3, 1, 4, 48.72),
-(82, 4, 22, 4, 1, 4, 48.72);
+(82, 4, 22, 4, 1, 4, 48.72),
+(83, 30, 24, 30, 1, 3, 13.92);
 
 -- --------------------------------------------------------
 
@@ -448,7 +454,30 @@ INSERT INTO `movimientos` (`ID`, `id_cajas`, `tipo_movimiento`, `monto_movimient
 (12, 1, 'Ingreso', 48.72, 'Venta de productos', '2025-03-27', 1),
 (13, 1, 'Egreso', 2.00, 'Venta de productos', '2025-03-27', 1),
 (14, 1, 'Egreso', 2.00, 'Venta de productos', '2025-03-27', 1),
-(15, 1, 'Egreso', 6.00, 'Compra de productos de productos', '2025-03-27', 1);
+(15, 1, 'Egreso', 6.00, 'Compra de productos de productos', '2025-03-27', 1),
+(16, 2, 'Ingreso', 13.92, 'Venta de productos', '2025-04-05', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificacion`
+--
+
+CREATE TABLE `notificacion` (
+  `id_notificacion` int(11) NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id_admin` int(11) NOT NULL,
+  `mensaje` varchar(200) NOT NULL,
+  `enlace` varchar(100) NOT NULL,
+  `estatus` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `notificacion`
+--
+
+INSERT INTO `notificacion` (`id_notificacion`, `fecha`, `id_admin`, `mensaje`, `enlace`, `estatus`) VALUES
+(1, '2025-04-02 15:47:27', 9, 'El producto  se ha agotado.', 'index.php?action=producto&a=d', 'Sin leer');
 
 -- --------------------------------------------------------
 
@@ -499,7 +528,7 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`ID`, `id_producto`, `nombre`, `fecha_registro`, `fecha_vencimiento`, `id_motivoActualizacion`, `id_inventario`, `id_presentacion`, `enlace`) VALUES
-(97, 24, 'Arroz', '2024-11-20', '2024-12-07', 0, 0, 1, ''),
+(97, 24, 'Arroz', '2024-11-20', '2024-12-07', 1, 0, 1, ''),
 (101, 56, 'avena', '2025-03-05', '2025-04-05', 2, 0, 6, ''),
 (120, 20, 'Harina de Trigo Siseca', '2025-04-05', '2025-03-15', 0, 0, 25, 'views/img/productos/Harina de Trigo Siseca.jpg'),
 (122, 21, 'Harina de Trigo La Especial', '2025-03-15', '2025-04-05', 0, 0, 25, 'views/img/productos/Harina de Trigo La Especial.jpg'),
@@ -621,7 +650,8 @@ INSERT INTO `venta` (`ID`, `id_venta`, `id_producto`, `id_cliente`, `cantidad`, 
 (97, 1, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
 (98, 2, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
 (99, 3, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
-(100, 4, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1);
+(100, 4, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
+(105, 30, 24, 31039711, 1, '2025-04-05', 3, 13.92, 'Directa', 102, 6, 2147483647, 1);
 
 --
 -- Índices para tablas volcadas
@@ -689,7 +719,7 @@ ALTER TABLE `cuenta_por_cobrar`
 -- Indices de la tabla `cuenta_por_pagar`
 --
 ALTER TABLE `cuenta_por_pagar`
-  ADD PRIMARY KEY (`ID`,`id_cuentaPagar`),
+  ADD PRIMARY KEY (`id_cuentaPagar`),
   ADD KEY `id_compra` (`id_compra`);
 
 --
@@ -731,6 +761,12 @@ ALTER TABLE `movimientos`
   ADD PRIMARY KEY (`ID`),
   ADD KEY `id_cajas` (`id_cajas`),
   ADD KEY `id_pago` (`id_pago`);
+
+--
+-- Indices de la tabla `notificacion`
+--
+ALTER TABLE `notificacion`
+  ADD PRIMARY KEY (`id_notificacion`);
 
 --
 -- Indices de la tabla `presentacion`
@@ -794,7 +830,7 @@ ALTER TABLE `bancos`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
@@ -827,12 +863,6 @@ ALTER TABLE `cuenta_por_cobrar`
   MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT de la tabla `cuenta_por_pagar`
---
-ALTER TABLE `cuenta_por_pagar`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
 -- AUTO_INCREMENT de la tabla `detalle_compra_proveedor`
 --
 ALTER TABLE `detalle_compra_proveedor`
@@ -842,7 +872,7 @@ ALTER TABLE `detalle_compra_proveedor`
 -- AUTO_INCREMENT de la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT de la tabla `modalidad_de_pago`
@@ -860,7 +890,13 @@ ALTER TABLE `motivo_actualizacion`
 -- AUTO_INCREMENT de la tabla `movimientos`
 --
 ALTER TABLE `movimientos`
-  MODIFY `ID` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ID` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `notificacion`
+--
+ALTER TABLE `notificacion`
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `presentacion`
@@ -890,7 +926,7 @@ ALTER TABLE `unidades_de_medida`
 -- AUTO_INCREMENT de la tabla `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
 -- Restricciones para tablas volcadas

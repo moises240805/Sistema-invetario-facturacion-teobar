@@ -334,6 +334,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
     <script src="views/js/modal_cliente.js"></script>
-    <script src="views/js/validate.js"></script>
+    <script src="views/js/validate_cliente.js"></script>
 </body>
 </html>

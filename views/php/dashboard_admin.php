@@ -73,7 +73,7 @@ if (!isset($_SESSION["s_usuario"])) {
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard/ Usuario</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Usuario</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
@@ -159,7 +159,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="username" class="col-md-3">Usuario</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control" id="username" name="username" maxlength="30" required>
+                    <input type="text" class="form-control" id="username" name="username" maxlength="15" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -176,7 +176,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input type="password" class="form-control" id="pw" name="pw"  maxlength="9" required oninput="Password()">
+                    <input type="password" class="form-control" id="password" name="pw"  maxlength="9" required oninput="Password()">
                     <span id="Error" class="error-message"></span>
                 </div>
             </div>
@@ -219,7 +219,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="password" name="clave" value="<?php echo $admin['pw']; ?>" maxlength="9" required>
+                    <input class="form-control" type="password" id='password2' name="clave" value="<?php echo $admin['pw']; ?>" maxlength="9" oninput='Password()' required>
+                    <span id="Error2" class="error-message"></span>
                 </div>
             </div>
             <div class="form-group row">
@@ -267,5 +268,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 <button type="button" id="openModalBtn" style="display: none;" data-bs-toggle="modal" data-bs-target="#successModal"></button>
 
 <script src="views/js/modal_user.js"></script>
+<script src="views/js/validate_usuario.js"></script>
 </body>
 </html>

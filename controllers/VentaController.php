@@ -2,13 +2,18 @@
 // Incluye el archivo del modelo venta
 require_once "models/Venta.php";
 require "models/Notificacion.php";
-require "models/DetalleProducto.php";
+require "models/Producto.php";
 require_once "models/IngresoEgreso.php";
-$ingreso = new IngresoEgreso();
+require_once 'models/Bitacora.php';
+date_default_timezone_set('America/Caracas');
 
+$ingreso = new IngresoEgreso();
 $controller = new Venta();
 $notificacion = new Notificacion();
-$detalle_producto = new DetalleProducto();
+$bitacora = new Bitacora();
+$detalle_producto = new Producto();
+
+$modulo = 'Venta';
 
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
@@ -93,6 +98,16 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 
         $_SESSION['message_type'] = 'success';  // Set success flag
         $_SESSION['message'] = "REGISTRADO CORRECTAMENTE";
+
+        $bitacora_data = json_encode([
+            'id_admin' => $_SESSION['s_usuario']['id'],
+            'movimiento' => 'Agregar',
+            'fecha' => date('Y-m-d H:i:s'),
+            'modulo' => $modulo,
+            'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " " . 'ha registrado una venta'
+            ]);
+            $bitacora->setBitacoraData($bitacora_data);
+            $bitacora->Guardar_Bitacora();
 
 
         $ingreso->Guardar_IngresoEgreso($ingreso_data); 

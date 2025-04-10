@@ -331,7 +331,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
                             <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
                             <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
                         </div>
@@ -340,7 +340,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Precio</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                             <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                             <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                         </div>
@@ -393,7 +393,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
                         </div>
                     </div>
-
+                    <div class="form-group row">
+                        <label for="imagen" class="col-md-3">Imagen del Producto</label>
+                    <div class="col-md-9">
+                    <input type="file" class="form-control" id="imagen" name="imagen" required">
+                    </div>
+                    </div>
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
@@ -492,7 +497,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="imagen" class="col-md-3">Imagen del Producto</label>
                     <div class="col-md-9">
-                    <input type="file" class="form-control" id="imagen" name="imagen" ">
+                    <input type="file" class="form-control" id="imagen" name="imagen" required">
                     </div>
                     </div>
                     <div class="form-group row">
