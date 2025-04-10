@@ -307,16 +307,17 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                             <select class="form-control" id="presentacion" name="presentacion">
                                 <?php foreach ($tipos as $tipo): ?>
                                     <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-bs-toggle="modal" data-target="#agregarTipoModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()"><b> (B/Sc/gal)  </b>
+                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()"><b> (Kg/L)  </b>
+                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()"><b> (G/ml)  </b>
                         </div>
                     </div>
 
@@ -494,6 +495,51 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 
+<div class="modal fade show" id="agregarTipoModal" tabindex="-1" role="dialog" aria-labelledby="agregarTipoModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarTipoModalLabel">Agregar Tipo Producto</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=tipo&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-21">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tipo_producto" style="font-size: 18px;">Tipo Producto</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="tipo_producto" name="tipo_producto"  maxlength="50"  onkeypress="return onlyLetters(event)" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="presentacion" style="font-size: 18px;">Presentación</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="presentacion" name="presentacion"  maxlength="50" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -513,6 +559,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 <script src="views/js/modal_producto.js"></script>
+<script src="views/js/modal_tipo.js"></script>
 <script src="views/js/calculator.js"></script>
 <script src="views/js/calculator2.js"></script>
 <script src="views/js/validate.js"></script>

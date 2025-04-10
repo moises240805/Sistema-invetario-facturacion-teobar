@@ -30,7 +30,7 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             $_SESSION["s_usuario"] = [
                 "id" => $usuario['ID'],
                 "usuario" => $usuario['usuario'],
-                "rol" => $usuario['rol'],
+                "rol" => $usuario['nombre_rol'],
             ];
 
             $bitacora_data = json_encode([
@@ -43,15 +43,15 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
 
-            if($usuario["rol"]=="Administrador"){
+            if($usuario["nombre_rol"]=="Administrador"){
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
             }
-            if($usuario["rol"]=="Cajero"){
+            if($usuario["nombre_rol"]=="Vendedor"){
                 header("Location: index.php?action=venta&a=v");
                 exit(); // Asegúrate de salir después de redirigir 
                 }
-            if($usuario["rol"]=="Usuario"){
+            if($usuario["nombre_rol"]=="Usuario"){
                 header("Location: index.php?action=pagina");
                 exit(); // Asegúrate de salir después de redirigir 
                 }

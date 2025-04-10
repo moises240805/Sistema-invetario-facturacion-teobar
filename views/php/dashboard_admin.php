@@ -135,7 +135,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         ?>
                             <tr>
                                 <td><?php echo $ad['usuario']; ?></td>
-                                <td><?php echo $ad['rol']; ?></td>
+                                <td><?php echo $ad['nombre_rol']; ?></td>
                                 <td>
                                     <a onclick="abrirModalModificar(<?php echo $ad['ID']; ?>)" title="Modificar"><img src="views/img/edit.png" width="30px" height="30px"></a>
                                     <a onclick="return eliminar()" href="index.php?action=usuario&a=eliminar&ID=<?php echo $ad['ID']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
@@ -167,9 +167,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <div class="col-md-9">
                     <select class="form-control" name="rol" id="rol" required>
                         <option value="">...</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Usuario">Usuario</option>
-                        <option value="Cajero">Cajero</option>
+                        <option value="2">Administrador</option>
+                        <option value="3">Usuario</option>
+                        <option value="4">Vendedor</option>
                     </select>
                 </div>
             </div>
@@ -227,9 +227,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <label for="rol" class="col-md-3">Rol</label>
                 <div class="col-md-9">
                     <select class="form-control" name="roles" id="" required>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Usuario">Usuario</option>
-                        <option value="Cajero">Cajero</option>
+                        <option value="2">Administrador</option>
+                        <option value="3">Usuario</option>
+                        <option value="4">Vendedor</option>
                     </select>
                 </div>
             </div>

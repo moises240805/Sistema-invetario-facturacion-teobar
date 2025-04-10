@@ -59,7 +59,7 @@ class Admin extends Conexion {
     public function Guardar_Usuario() {
         try {
             // Consulta para verificar si el nombre de usuario ya existe
-            $query = "SELECT * FROM admin WHERE usuario=:username";
+            $query = "SELECT * FROM usuarios WHERE usuario=:username";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":username", $this->username);
             $stmt->execute();
@@ -70,7 +70,7 @@ class Admin extends Conexion {
                 $hashedPassword = password_hash($this->pw, PASSWORD_DEFAULT);
                 
                 // Consulta SQL para insertar un nuevo registro en la tabla admin
-                $query = "INSERT INTO admin (usuario, pw, rol) VALUES (:username, :pw, :rol)";
+                $query = "INSERT INTO usuarios (usuario, pw, id_rol) VALUES (:username, :pw, :rol)";
                 // Prepara la consulta
                 $stmt = $this->conn->prepare($query);
                 // Vincula los parámetros con los valores
@@ -92,7 +92,7 @@ class Admin extends Conexion {
     // Método para obtener todas las personas de la base de datos
     public function Mostrar_Usuario() {
         // Consulta SQL para seleccionar todos los registros de la tabla admin
-        $query = "SELECT * FROM admin";
+        $query = "SELECT * FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
         // Ejecuta la consulta
@@ -120,7 +120,7 @@ class Admin extends Conexion {
         try {
 
             // Consulta SQL para actualizar los datos del usuario
-            $query = "UPDATE admin SET usuario = :username, pw = :pw, rol = :rol WHERE ID = :id";
+            $query = "UPDATE usuarios SET usuario = :username, pw = :pw, rol = :rol WHERE ID = :id";
             
             // Prepara la consulta
             $stmt = $this->conn->prepare($query);
@@ -143,7 +143,7 @@ class Admin extends Conexion {
 
    public function Eliminar_Usuario($id) { 
        try { 
-           $query = "DELETE FROM admin WHERE ID = :ID"; 
+           $query = "DELETE FROM usuarios WHERE ID = :ID"; 
            $stmt = $this->conn->prepare($query); 
            $stmt->bindParam(":ID", $id, PDO::PARAM_INT); 
            $stmt->execute(); 
@@ -157,7 +157,7 @@ class Admin extends Conexion {
    public function Iniciar_Sesion($username) {
     // Asegúrate de que la sesión esté iniciada
     // Consulta SQL para seleccionar el registro del usuario
-    $query = "SELECT * FROM admin WHERE usuario = :username";
+    $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
     // Prepara la consulta
     $stmt = $this->conn->prepare($query);
     
