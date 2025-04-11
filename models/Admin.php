@@ -103,7 +103,7 @@ class Admin extends Conexion {
 
     public function Obtener_Usuario($id) {
         try {
-            $query = "SELECT * FROM admin WHERE ID = :ID";
+            $query = "SELECT * FROM usuarios WHERE ID = :ID";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":ID", $id, PDO::PARAM_INT);
             if ($stmt->execute()) {
