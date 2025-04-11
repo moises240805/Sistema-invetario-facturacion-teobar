@@ -86,7 +86,7 @@ class IngresoEgreso extends Conexion{
     public function Guardar_IngresoEgreso()
     {
         try {
-            $query = "INSERT INTO movimientos (id_cajas, tipo_movimiento, monto_movimiento, concepto, fecha, id_pago)
+            $query = "INSERT INTO movimientos_caja (id_cajas, tipo_movimiento, monto_movimiento, concepto, fecha, id_pago)
                       VALUES (:id_cajas, :movimiento, :monto, :descripcion, :fecha, :id_pago)";
             
             $stmt = $this->conn->prepare($query);
@@ -140,7 +140,7 @@ class IngresoEgreso extends Conexion{
 
     public function Mostrar_IngresoEgreso() {
         // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM movimientos m
+        $query = "SELECT * FROM movimientos_caja m
         LEFT JOIN cajas c ON m.id_cajas=c.ID
         LEFT JOIN modalidad_de_pago p ON m.id_pago=p.id_modalidad_pago";
         // Prepara la consulta
@@ -155,7 +155,7 @@ class IngresoEgreso extends Conexion{
     public function ObtenerMontosIngresos($id_pago)
     {
         try {
-            $query = "SELECT monto_movimiento FROM movimientos WHERE tipo_movimiento = 'ingreso' AND id_pago = :id_pago";
+            $query = "SELECT monto_movimiento FROM movimientos_caja WHERE tipo_movimiento = 'ingreso' AND id_pago = :id_pago";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_pago", $id_pago, PDO::PARAM_INT); // Vincular el parámetro id_pago

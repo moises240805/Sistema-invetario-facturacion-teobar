@@ -118,6 +118,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <thead class="thead-light">
                     <tr>
                         <th>Nombre</th>
+                        <th>Marca</th>
                         <th>Presentación</th>
                         <th>F.R</th>
                         <th>F.V</th>
@@ -143,6 +144,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     ?>
                         <tr>
                             <td><?php echo $producto['nombre']; ?></td>
+                            <td><?php echo $producto['marca']; ?></td>
                             <td><?php echo $producto['presentacion']; ?></td>
                             <td><?php echo $producto['fecha_registro']; ?></td>
                             <td><?php echo $producto['fecha_vencimiento']; ?></td>
@@ -186,6 +188,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <label for="nombre" class="col-md-3">Nombre del Producto</label>
                 <div class="col-md-9">
                     <input class="form-control" type="text" name="nombre" maxlength='50' value="<?php echo $producto['nombre']; ?>" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="marca" class="col-md-3">Marca del Producto</label>
+                <div class="col-md-9">
+                    <input class="form-control" type="text" name="marca" maxlength='50' value="<?php echo $producto['marca']; ?>" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -299,6 +307,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
                             <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="marca" name="marca" maxlength='50' placeholder="Marca del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -421,6 +435,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
                             <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="marca2" name="marca" maxlength='50' placeholder="Marca del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -559,7 +579,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 <script src="views/js/modal_producto.js"></script>
-<script src="views/js/modal_tipo.js"></script>
+
 <script src="views/js/calculator.js"></script>
 <script src="views/js/calculator2.js"></script>
 <script src="views/js/validate.js"></script>

@@ -23,6 +23,7 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitiza y valida datos
     $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
@@ -112,7 +113,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'peso' => $peso,
         'peso2' => $peso2,
         'peso3' => $peso3,
-        'imagen' => $rutaSubida
+        'imagen' => $rutaSubida,
+        'marca' => $marca
     ]);
     echo $producto;
     $accion = "agregar";
@@ -144,6 +146,7 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitiza y valida datos
     $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -214,7 +217,8 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'cantidad_producto' => $cantidad_producto,
         'precio_producto' => $precio_producto,
         'uni_medida' => $uni_medida,
-        'imagen' => $rutaSubida
+        'imagen' => $rutaSubida,
+        'marca' => $marca
     ]);
 
     $accion = "agregar2";
@@ -261,6 +265,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitiza y valida datos
     $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
     $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -284,7 +289,8 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'precio_producto' => $precio_producto,
         'uni_medida' => $uni_medida,
         'id_actualizacion' => $id_actualizacion,
-        'peso' => $peso
+        'peso' => $peso,
+        'marca' => $marca
     ]);
 
     $accion = "actualizar";

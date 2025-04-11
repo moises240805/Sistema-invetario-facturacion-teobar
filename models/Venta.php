@@ -264,7 +264,7 @@ class Venta extends Conexion{
                   LEFT JOIN 
                     bancos b ON b.rif_banco = v.rif_banco
                   LEFT JOIN 
-                    modalidad_de_pago m ON m.ID = v.id_modalidad_pago
+                    modalidad_de_pago m ON m.id_modalidad_pago = v.id_modalidad_pago
                   GROUP BY 
                     v.id_venta"; 
     

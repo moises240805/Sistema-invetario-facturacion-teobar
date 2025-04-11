@@ -23,6 +23,7 @@ class Producto extends Conexion{
     private $peso2;
     private $peso3;
     private $imagen;
+    private $marca;
 
     // Constructor
     public function __construct() {
@@ -61,6 +62,10 @@ class Producto extends Conexion{
     // Getters
     public function getIdProducto() {
         return $this->id_producto;
+    }
+
+    public function getMarcaProducto() {
+        return $this->marca;
     }
 
     public function getImg() {
@@ -142,6 +147,10 @@ class Producto extends Conexion{
 
     public function setImg($imagen) {
         $this->imagen =  $imagen;  
+    }
+
+    public function setMarca($marca) {
+        $this->marca =  $marca;  
     }
 
     public function setNombreProducto($nombre_producto) {
@@ -241,8 +250,8 @@ class Producto extends Conexion{
     private function Guardar_Producto()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-    $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion, :imagen)"; 
+    $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
+    VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen)"; 
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
@@ -254,6 +263,7 @@ class Producto extends Conexion{
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
     $stmt->bindParam(":imagen", $this->imagen);
+    $stmt->bindParam(":marca", $this->marca);
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
@@ -291,8 +301,8 @@ class Producto extends Conexion{
     private function Guardar_Producto2()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-          $query = "INSERT INTO producto (id_producto, nombre, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
-    VALUES (:id_producto, :nombre_producto, :fech_venci, :fecha_registro, :presentacion, :imagen)";  
+          $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
+    VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen)";  
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
@@ -304,6 +314,7 @@ class Producto extends Conexion{
     $stmt->bindParam(":fecha_registro", $this->fecha_registro); 
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
     $stmt->bindParam(":imagen", $this->imagen); 
+    $stmt->bindParam(":marca", $this->marca); 
 
     // Ejecuta la consulta
     if ($stmt->execute()) {
@@ -331,11 +342,7 @@ class Producto extends Conexion{
     public function Mostrar_Producto() { 
         // Consulta SQL para seleccionar todos los registros de la tabla producto
         $query = "SELECT 
-                    p.id_producto,
-                    p.fecha_registro, 
-                    p.nombre,
-                    p.enlace,
-                    p.id_presentacion, 
+                    p.*, 
                     MAX(p.fecha_vencimiento) AS fecha_vencimiento, 
                     GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad, 
                     GROUP_CONCAT(cp.precio SEPARATOR ' $ Bs\n ') AS precio, 
@@ -346,7 +353,7 @@ class Producto extends Conexion{
                   FROM 
                     producto p  
                   LEFT JOIN 
-                    motivo_actualizacion a ON p.id_motivoActualizacion = a.ID   
+                    motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                   LEFT JOIN 
                     cantidad_producto cp ON p.id_producto = cp.id_producto  
                   LEFT JOIN 

@@ -232,7 +232,7 @@ class Compra extends Conexion{
                   LEFT JOIN 
                     proveedor c ON c.id_proveedor = v.rif_proveedor
                   LEFT JOIN 
-                    modalidad_de_pago m ON m.ID = v.pago
+                    modalidad_de_pago m ON m.id_modalidad_pago = v.pago
                   GROUP BY 
                     v.id_compra"; 
     

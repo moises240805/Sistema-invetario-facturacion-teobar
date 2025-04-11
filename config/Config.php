@@ -1,7 +1,7 @@
 <?php
 // Configuración de la base de datos
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'venta');
+define('DB_NAME', 'teobar');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
