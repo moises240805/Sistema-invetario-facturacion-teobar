@@ -220,7 +220,7 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'imagen' => $rutaSubida,
         'marca' => $marca
     ]);
-
+echo $producto;
     $accion = "agregar2";
     $controller->manejarAccion($accion, $producto);
     try {

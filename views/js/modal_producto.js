@@ -35,6 +35,7 @@ function abrirModalModificar(id_producto) {
             // Establecer los campos del formulario con los datos recibidos
             document.getElementsByName('id_producto')[0].value = data.id_producto;
             document.getElementsByName('nombre')[0].value = data.nombre;
+            document.getElementsByName('marca')[0].value = data.marca;
             document.getElementsByName('presentacion')[0].value = data.id_presentacion;
 
             // Cantidad y precio para diferentes variantes

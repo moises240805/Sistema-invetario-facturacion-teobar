@@ -56,6 +56,7 @@ class Producto extends Conexion{
         $this->peso2 = $producto['peso2'] ?? null;
         $this->peso3 = $producto['peso3'] ?? null;
         $this->imagen = $producto['imagen'] ?? null;
+        $this->marca = $producto['marca'] ?? null;
     }
 
 
@@ -388,9 +389,9 @@ class Producto extends Conexion{
   }
 
     public function Obtener_Producto($id_producto) {
-        $query = "SELECT p.*, a.nombre_motivo, cp.cantidad, cp.precio,cp.peso, s.presentacion, m.nombre_medida AS nombre_medida 
+        $query = "SELECT p.*, a.nombre_motivo, cp.cantidad AS cantidad, cp.precio,cp.peso, s.presentacion, m.nombre_medida AS nombre_medida 
           FROM producto p  
-          LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.ID   
+          LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
           LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
           LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida  
           LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
@@ -403,10 +404,11 @@ class Producto extends Conexion{
 
     private function Actualizar_Producto() {
         try {
-            $query = "UPDATE producto SET nombre = :nombre, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
+            $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_producto", $this->id_producto);
             $stmt->bindParam(":nombre", $this->nombre_producto);
+            $stmt->bindParam(":marca", $this->marca);
             $stmt->bindParam(":fecha_vencimiento", $this->fech_vencimiento);
             $stmt->bindParam(":id_actualizacion", $this->id_actualizacion);
             $stmt->bindParam(":presentacion", $this->presentacion);
@@ -469,7 +471,7 @@ WHERE id_producto = :id_producto AND id_unidad_medida IN (:uni_medida, :uni_medi
                   FROM 
                     producto p  
                   LEFT JOIN 
-                    motivo_actualizacion a ON p.id_motivoActualizacion = a.ID   
+                    motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                   LEFT JOIN 
                     cantidad_producto cp ON p.id_producto = cp.id_producto  
                   LEFT JOIN 
