@@ -23,6 +23,29 @@ function cerrarModalAgregarProducto() {
 
 
 
+var modalAgregarProducto2 = document.getElementById("modalAgregarProducto2");
+
+// Get the button that opens the modal
+var btnAgregarProducto2 = document.getElementById("myBtnAgregarProducto2");
+
+// When the user clicks the button, open the modal 
+btnAgregarProducto2.onclick = function() {
+    modalAgregarProducto2.style.display = "block";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modalAgregarProducto2) {
+        modalAgregarProducto2.style.display = "none";
+    }
+}
+
+function cerrarModalAgregarProducto2() {
+    var modalAgregarProducto2 = document.getElementById("modalAgregarProducto2");
+    modalAgregarProducto2.style.display = "none";
+}
+
+
 
 function abrirModalModificar(id_producto) {
     // Abrir el modal
@@ -86,6 +109,35 @@ function abrirModalModificar(id_producto) {
             }
         })
         .catch(error => console.error('Error:', error));
+}
+
+
+
+
+// Get the modal
+var modal2 = document.getElementById("agregarTipoModal");
+
+// Get the button that opens the modal
+// Asegúrate de que el botón tenga el id "myBtn"
+// Si no, cambia "myBtn" por el id real del botón
+var btn2 = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span2 = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn2.onclick = function() {
+    modal2.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span2.onclick = function() {
+    modal2.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+function cerrarModal() {
+    document.getElementById("agregarTipoModal").style.display = "none";
 }
 
 

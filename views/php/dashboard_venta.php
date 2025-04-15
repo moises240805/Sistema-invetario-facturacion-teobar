@@ -164,6 +164,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
     </table>
 </div>
 
+
 <?php
                         require_once "controllers/ClienteController.php";
 

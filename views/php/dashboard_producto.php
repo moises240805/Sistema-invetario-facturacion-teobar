@@ -285,7 +285,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 <!-- Modal para Agregar Producto -->
-<div id="modalAgregarProducto" class="modal fade" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+<div id="modalAgregarProducto" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -317,60 +317,52 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </div>
                     <div class="form-group row">
                         <label for="presentacion" class="col-md-3">Presentación del Producto</label>
-                        <div class="col-md-9">
-                            <select class="form-control" id="presentacion" name="presentacion">
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="presentacion" name="presentacion">
                                 <?php foreach ($tipos as $tipo): ?>
                                     <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button type="button" id="myBtn" class="btn btn-primary" data-bs-toggle="modal" data-target="#agregarTipoModal">+</button>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
                         </div>
                     </div>
+                    <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
                     <div class="form-group row">
-                        <label for="cantidad" class="col-md-3">Cantidad</label>
+                        <label for="cantidad" class="col-md-3" >Bulto o Saco</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()"><b> (B/Sc/gal)  </b>
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()"><b> (Kg/L)  </b>
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()"><b> (G/ml)  </b>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="precio" class="col-md-3">Precio</label>
-                        <div class="col-md-9 d-flex justify-content-between">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
                             <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="uni_medida" class="col-md-3">U.M</label>
-                        <div class="col-md-9 d-flex justify-content-between">
-                            <div style="margin-right: 10px;">
-                                <input style="width: 3rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <select class="form-control" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
-                                    <option value="">...</option>
+                            <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
+                            <select class="form-control"  style="width: 5rem;" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
                                     <option value="4">Saco</option>
                                     <option value="3">Bulto</option>
                                     <option value="7">Galon</option>
                                 </select>
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <select class="form-control" id="uni_medida2" name="uni_medida2" readOnly>
-                                    <option value="">...</option>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="precio" class="col-md-3">Kilogramo o Litros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b>$ Bs</b>
+                            <select class="form-control"  style="width: 10rem;" id="uni_medida2" name="uni_medida2" readOnly>
                                     <option value="1">Kilogramos</option>
                                     <option value="5">Litros</option>
                                 </select>
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <input style="width: 3rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="uni_medida" class="col-md-3">Gramos o mililitros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                        <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                        <div style="margin-right: 10px;">
+                                <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
                             </div>
                             <div>
                                 <select class="form-control" id="uni_medida3" name="uni_medida3" readOnly>
-                                    <option value="">...</option>
                                     <option value="2">Gramos</option>
                                     <option value="6">Mililitro</option>
                                 </select>
@@ -400,7 +392,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModalAgregarProducto()">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Registrar</button>  <!-- Submit button -->
                         </div>
                     </div>
@@ -413,7 +405,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 <!-- Modal para Agregar Producto -->
-<div id="modalAgregarProducto2" class="modal fade" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+<div id="modalAgregarProducto2" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -445,12 +437,13 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </div>
                     <div class="form-group row">
                         <label for="presentacion" class="col-md-3">Presentación del Producto</label>
-                        <div class="col-md-9">
+                        <div class="col-md-9" style="display:flex">
                             <select class="form-control" id="presentacion" name="presentacion">
                                 <?php foreach ($tipos as $tipo): ?>
                                     <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -501,7 +494,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModalAgregarProducto2()">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Registrar</button>  <!-- Submit button -->
                         </div>
                     </div>
@@ -514,7 +507,48 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 
-
+<div class="modal fade show" id="agregarTipoModal" tabindex="-1" role="dialog" aria-labelledby="agregarTipoModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarTipoModalLabel">Agregar Tipo Producto</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=tipo&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-21">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tipo_producto" style="font-size: 18px;">Tipo Producto</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="tipo_producto" name="tipo_producto"  maxlength="50"  onkeypress="return onlyLetters(event)" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="presentacion" style="font-size: 18px;">Presentación</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="presentacion" name="presentacion"  maxlength="50" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <!-- Modal -->

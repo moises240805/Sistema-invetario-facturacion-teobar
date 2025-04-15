@@ -376,7 +376,7 @@ class Producto extends Conexion{
       // Consulta SQL para seleccionar todos los registros de la tabla personas
       $query = "SELECT *
         FROM producto p 
-        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.ID  
+        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
         LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
         LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
         LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion";

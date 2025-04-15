@@ -19,6 +19,10 @@ span.onclick = function() {
     modal.style.display = "none";
 }
 
+function abrirModal() {
+    document.getElementById("agregarVentaModal").style.display = "block";
+}
+
 // When the user clicks anywhere outside of the modal, close it
 function cerrarModal() {
     document.getElementById("agregarVentaModal").style.display = "none";
