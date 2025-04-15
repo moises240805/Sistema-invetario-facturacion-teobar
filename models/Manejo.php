@@ -2,7 +2,7 @@
 
 require_once "Conexion.php";
 
-class IngresoEgreso extends Conexion{
+class Manejo extends Conexion{
     //Atributos
 
     private $id;
@@ -138,7 +138,7 @@ class IngresoEgreso extends Conexion{
     
 
 
-    public function Mostrar_IngresoEgreso() {
+    public function Mostrar_Movimiento() {
         // Consulta SQL para seleccionar todos los registros de la tabla bitacora
         $query = "SELECT * FROM movimientos_caja m
         LEFT JOIN cajas c ON m.id_cajas=c.ID

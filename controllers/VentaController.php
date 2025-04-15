@@ -3,11 +3,11 @@
 require_once "models/Venta.php";
 require "models/Notificacion.php";
 require "models/Producto.php";
-require_once "models/IngresoEgreso.php";
+require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 date_default_timezone_set('America/Caracas');
 
-$ingreso = new IngresoEgreso();
+$ingreso = new Manejo();
 $controller = new Venta();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
