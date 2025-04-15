@@ -58,13 +58,13 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
         } else {
             echo '<script type="text/javascript">
                 alert("ERROR...!! DATOS INCORRECTOS. VUELVA A INTRODUCIR LOS DATOS");
-                window.location.href="index.php";
+            window.location.href="index.php?action=login";
                 </script>';
         }
     } else {
         echo '<script type="text/javascript">
             alert("ERROR...!! USUARIO NO ENCONTRADO");
-            window.location.href="index.php";
+            window.location.href="index.php?action=login";
             </script>';
     }
 }
@@ -182,7 +182,15 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     exit();
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
-    require_once "views/php/dashboard_admin.php";
+    
+    if($_SESSION["s_usuario"]["rol"]=="Usuario"){
+        header("Location: index.php?action=pagina");
+        exit(); // Asegúrate de salir después de redirigir 
+        }
+        else
+        {
+            require_once "views/php/dashboard_admin.php";
+        }
 }
 else{
     //require_once "views/php/login.php";
