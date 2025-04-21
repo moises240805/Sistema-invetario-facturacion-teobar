@@ -230,7 +230,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="index.php?action=cliente&a=agregar" method="post" name="form" id="miFormulario">
+            <form class="formulario" action="index.php?action=cliente&a=agregar" method="post" name="form" id="miFormulario" onsubmit="return validateForm()">
                 <div class="modal-body">
                     <div class="container text-center">
                         <div class="row justify-content-center">
@@ -335,5 +335,21 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
     <script src="views/js/modal_cliente.js"></script>
     <script src="views/js/validate_cliente.js"></script>
+
+    <style>
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.input-group > .form-control {
+    z-index: 1; /* Corrige superposición de bordes */
+}
+</style>
 </body>
 </html>

@@ -1,12 +1,15 @@
 <?php
-
+//Se llama al modelo cliente y bitacoras
 require_once 'models/Cliente.php';
 require_once 'models/Bitacora.php';
-$controller = new Cliente();
 
+//Se instancia los modelos
+$controller = new Cliente();
 $bitacora = new Bitacora();
+
+//esta variables es para definir el modulo en la bitacora para cuando se cree el json 
 $modulo = 'Cliente';
-date_default_timezone_set('America/Caracas');
+date_default_timezone_set('America/Caracas');//Zona horaria
 
 // Función para generar mensaje de error
 function setError($message) {
@@ -26,6 +29,7 @@ if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administ
 
 }
 
+//Esta variable manejara de forma dinamica las solicitudes http ya sean post o get
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
@@ -38,12 +42,14 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     $direccion = filter_input(INPUT_POST, 'direccion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+    //Verifica si todos los campos existen y no esta vacios
     if (empty($tipo_id) || empty($id_cliente) || empty($nombre_cliente) || empty($telefono) || empty($direccion) || empty($email)) {
         setError("Todos los campos son requeridos");
         header("Location: index.php?action=cliente&a=d");
         exit();
     }
 
+    //Se crea el objeto json de cliente con todos los valores necesarios
     $cliente = json_encode([
         'tipo_id' => $tipo_id,
         'id_cliente' => $id_cliente,
@@ -52,24 +58,38 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
         'direccion' => $direccion,
         'email' => $email
     ]);
-    $accion = "agregar";
-    $controller->manejarAccion($accion, $cliente);
+
+
     try {
-        if ($controller) {
-            setSuccess("REGISTRADO CORRECTAMENTE");
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion($action, $cliente);
+    
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+            
+            //se crea un json de los datos qe tendra la bitacora
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Agregar",
                 'fecha' => date('Y-m-d H:i:s'),
                 'modulo' => $modulo,
-                'descripcion' => "Cliente con la cedula: ".$_POST['tipo_cliente']." ".$_POST['id_cliente']
+                'descripcion' => "Cliente con la cedula: " . ($_POST['tipo_cliente'] ?? '') . " " . ($_POST['id_cliente'] ?? '')
             ]);
+            //Llama las funciones para registrar la bitacora
             $bitacora->setBitacoraData($bitacora_data);
-            $bitacora->Guardar_Bitacora();            
+            $bitacora->Guardar_Bitacora();
+    
         } else {
-           setError("ERROR AL REGISTRAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al registrar: " . $e->getMessage());
         setError("Error en operación");
     }
@@ -105,12 +125,6 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    if (strlen($nombre_cliente) > 30 || strlen($telefono) > 12 || strlen($direccion) > 200 || strlen($email) > 100) {
-        setError("Límite de caracteres excedido");
-        header("Location: index.php?action=cliente&a=d");
-        exit();
-    }
-
     $cliente = json_encode([
         'id_cliente' => $id_cliente,
         'tipo_id' => $tipo_id,
@@ -120,11 +134,19 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'email' => $email
     ]);
     
-    $accion = "actualizar";
-    $controller->manejarAccion($accion, $cliente);
+
     try {
-        if ($controller->manejarAccion($accion, $cliente)) {
-            setSuccess("ACTUALIZADO CORRECTAMENTE");
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion($action, $cliente);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+
+            //se crea un json de los datos qe tendra la bitacora
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Modificar",
@@ -132,12 +154,17 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
                 'modulo' => $modulo,
                 'descripcion' => "Cliente con la cedula: $tipo_id $id_cliente"
             ]);
+
+            //Llama las funciones para registrar la bitacora
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL ACTUALIZAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ACTUALIZAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al actualizar: " . $e->getMessage());
         setError("Error en operación");
     }
@@ -167,11 +194,19 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     $tipo_id = $cliente['tipo_id'];
     $nombre_cliente = $cliente['nombre_cliente'];
 
-    $accion = "eliminar";
-    $controller->manejarAccion($accion, $id_cliente);
+
     try {
-        if ($controller) {
-            setSuccess("ELIMINADO CORRECTAMENTE");
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion($action, $id_cliente);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+
+            //se crea un json de los datos qe tendra la bitacora
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Eliminar",
@@ -182,9 +217,12 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();            
         } else {
-            setError("ERROR AL ELIMINAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al eliminar: " . $e->getMessage());
         setError("Error en operación");
     }
