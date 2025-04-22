@@ -30,6 +30,7 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             $_SESSION["s_usuario"] = [
                 "id" => $usuario['ID'],
                 "usuario" => $usuario['usuario'],
+                "id_rol" => $usuario['id_rol'],
                 "rol" => $usuario['nombre_rol'],
             ];
 

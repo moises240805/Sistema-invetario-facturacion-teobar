@@ -174,5 +174,32 @@ class Admin extends Conexion {
     
     return null; // Retorna null si no se encontró el usuario
 }
+
+
+
+public function verificarPermiso($modulo, $action, $id_rol) {
+    try {
+        $query = "SELECT p.nombre_permiso 
+                  FROM accesos a
+                  JOIN modulos m ON a.id_modulo = m.id_modulo
+                  JOIN permisos p ON a.id_permiso = p.id_permiso
+                  WHERE a.id_rol = :id_rol
+                  AND m.nombre_modulo = :modulo
+                  AND p.nombre_permiso = :permiso";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id_rol", $id_rol, PDO::PARAM_INT);
+        $stmt->bindParam(":modulo", $modulo, PDO::PARAM_STR);
+        $stmt->bindParam(":permiso", $action, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        return $stmt->rowCount() > 0;
+        
+    } catch(PDOException $e) {
+        error_log("Error de permisos: " . $e->getMessage());
+        return false;
+    }
+}
+
 }
 ?>
