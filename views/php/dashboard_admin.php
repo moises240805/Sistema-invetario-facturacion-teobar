@@ -184,7 +184,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <div class="col-md-3"></div>
                 <div class="col-md-9">
                     <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                    <input type="submit" class="btn btn-primary" onclick="return Password()" value="Registrar">
+                    <input type="submit" class="btn btn-primary"  value="Registrar">
                 </div>
             </div>
         </form>

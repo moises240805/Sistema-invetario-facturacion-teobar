@@ -14,13 +14,83 @@ class Admin extends Conexion {
         parent::__construct();
     }
 
-    public function setUserData($user) {
-        $user = json_decode($user, true);
-        $this->username = $user['username'];
-        $this->pw = $user['pw'];
-        $this->rol = $user['rol'];
-        $this->id = $user['id'] ?? null;
+    private function setUserData($user) {
+        if (is_string($user)) {
+            $user = json_decode($user, true);
+            if ($user === null) {
+                return ['status' => false, 'msj' => 'JSON inválido'];
+            }
+        }
+    
+        // Expresiones regulares actualizadas
+        $exp_username = "/^@[a-zA-Z0-9_]{1,19}$/";
+        $exp_pw = "/^(?=.*[A-Z])(?=.*\.)[A-Za-z0-9\.]{6,9}$/";
+        $exp_rol = "/^\d+$/";
+    
+        // Validar username
+        $username = trim($user['username'] ?? '');
+        if (!preg_match($exp_username, $username)) {
+            return ['status' => false, 'msj' => 'Nombre de usuario inválido. Debe tener hasta 20 caracteres y puede incluir letras, números y signos permitidos.'];
+        }
+        $this->username = $username;
+    
+        // Validar contraseña
+        $pw = trim($user['pw'] ?? '');
+        if (!preg_match($exp_pw, $pw)) {
+            return ['status' => false, 'msj' => 'Contraseña inválida. Debe tener entre 6 y 9 caracteres, incluir al menos una letra mayúscula y un punto.'];
+        }
+        $this->pw = $pw;
+    
+        // Validar rol numérico
+        $rol = trim($user['rol'] ?? '');
+        if (!preg_match($exp_rol, $rol)) {
+            return ['status' => false, 'msj' => 'Rol inválido. Debe ser un número.'];
+        }
+        $this->rol = (int)$rol;
+    
+        // Validar id (opcional)
+        if (isset($user['id'])) {
+            if (!is_numeric($user['id'])) {
+                return ['status' => false, 'msj' => 'ID inválido'];
+            }
+            $this->id = (int)$user['id'];
+        } else {
+            $this->id = null;
+        }
+    
+        return ['status' => true, 'msj' => 'Datos de usuario validados correctamente'];
     }
+
+    private function setValideId($user){
+
+        // Validar id (opcional)
+        if (isset($user['id'])) {
+            if (!is_numeric($user['id'])) {
+                return ['status' => false, 'msj' => 'ID inválido'];
+            }
+            $this->id = (int)$user['id'];
+        } else {
+            $this->id = null;
+        }
+    
+        return ['status' => true, 'msj' => 'Datos de usuario validados correctamente'];
+    }
+
+    private function setValide($username){
+
+        // Expresiones regulares actualizadas
+        $exp_username = "/^@[a-zA-Z0-9_]{1,19}$/";
+
+    
+        // Validar username
+        $username = trim($user['username'] ?? '');
+        if (!preg_match($exp_username, $username)) {
+            return ['status' => false, 'msj' => 'Nombre de usuario inválido. Debe tener hasta 20 caracteres y puede incluir letras, números y signos permitidos.'];
+        }
+        $this->username = $username;
+        return ['status' => true, 'msj' => 'Datos de usuario validados correctamente'];
+    }
+    
 
     // Métodos Getter y Setter
     public function getUsername() {
@@ -56,38 +126,98 @@ class Admin extends Conexion {
     }
 
     // Métodos
-    public function Guardar_Usuario() {
+        //Metodos
+
+    //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setUser data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $usuario) {
+        switch ($accion) {
+
+            case 'agregar':
+                $validacion=$this->setUserData($usuario);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Guardar_Usuario();
+                }
+                break;
+
+            case 'actualizar':
+                $validacion=$this->setUserData($usuario);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Actualizar_Usuario(); 
+                }
+
+            case 'obtener':
+                $validacion=$this->setValideId($usuario);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Obtener_Usuario($usuario);
+                }
+
+            case 'eliminar':
+                $validacion=$this->setValideId($usuario);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Eliminar_Usuario($usuario);
+                }
+
+            case 'ingresar':
+                //$validacion=$this->setValide($username);
+                //if(!$validacion['status']){
+                //    return $validacion;
+                //}else{
+                    return $this->Iniciar_Sesion($username);
+                //}
+
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
+        }
+    }
+
+
+
+    private function Guardar_Usuario() {
         try {
             // Consulta para verificar si el nombre de usuario ya existe
-            $query = "SELECT * FROM usuarios WHERE usuario=:username";
+            $query = "SELECT * FROM usuarios WHERE usuario = :username";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":username", $this->username);
             $stmt->execute();
             
-            // Verifica si el nombre de usuario ya está en uso
             if ($stmt->rowCount() == 0) {
                 // Hash de la contraseña antes de almacenarla
                 $hashedPassword = password_hash($this->pw, PASSWORD_DEFAULT);
                 
-                // Consulta SQL para insertar un nuevo registro en la tabla admin
+                // Consulta SQL para insertar un nuevo registro en la tabla usuarios
                 $query = "INSERT INTO usuarios (usuario, pw, id_rol) VALUES (:username, :pw, :rol)";
-                // Prepara la consulta
                 $stmt = $this->conn->prepare($query);
-                // Vincula los parámetros con los valores
                 $stmt->bindParam(":username", $this->username);
-                $stmt->bindParam(":pw", $hashedPassword); // Usa el hash de la contraseña
+                $stmt->bindParam(":pw", $hashedPassword);
                 $stmt->bindParam(":rol", $this->rol);
                 
-                // Ejecuta la consulta y retorna true si tiene éxito, false en caso contrario
-                return $stmt->execute();
+                if ($stmt->execute()) {
+                    return ['status' => true, 'msj' => 'Usuario guardado correctamente'];
+                } else {
+                    return ['status' => false, 'msj' => 'Error al guardar el usuario'];
+                }
             } else {
-                return false; // Usuario ya existe
+                return ['status' => false, 'msj' => 'El usuario ya existe'];
             }
         } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
-            return false;
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         }
     }
+    
 
     // Método para obtener todas las personas de la base de datos
     public function Mostrar_Usuario() {
@@ -101,7 +231,7 @@ class Admin extends Conexion {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function Obtener_Usuario($id) {
+    private function Obtener_Usuario($id) {
         try {
             $query = "SELECT * FROM usuarios WHERE ID = :ID";
             $stmt = $this->conn->prepare($query);
@@ -116,43 +246,52 @@ class Admin extends Conexion {
         }
     }
 
-    public function Actualizar_Usuario($user) {
+    private function Actualizar_Usuario() {
         try {
-
             // Consulta SQL para actualizar los datos del usuario
-            $query = "UPDATE usuarios SET usuario = :username, pw = :pw, rol = :rol WHERE ID = :id";
+            $query = "UPDATE usuarios SET usuario = :username, pw = :pw, id_rol = :rol WHERE ID = :id";
             
             // Prepara la consulta
             $stmt = $this->conn->prepare($query);
             
-            // Hash de la nueva contraseña si se está actualizando
+            // Hash de la nueva contraseña
             $hashedPassword = password_hash($this->pw, PASSWORD_DEFAULT);
             
             // Vincula los parámetros con los valores
-            $stmt->bindParam(":username", $this->username);
-            $stmt->bindParam(":pw", $hashedPassword); // Usa el hash de la nueva contraseña
-            $stmt->bindParam(":rol", $this->rol);
+            $stmt->bindParam(":username", $this->username, PDO::PARAM_STR);
+            $stmt->bindParam(":pw", $hashedPassword, PDO::PARAM_STR);
+            $stmt->bindParam(":rol", $this->rol, PDO::PARAM_INT);
             $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-            // Ejecuta la consulta y retorna true si tiene éxito, false en caso contrario
-            return $stmt->execute();
+            
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Usuario actualizado correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al actualizar el usuario'];
+            }
         } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
-            return false;
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         }
     }
+    
 
-   public function Eliminar_Usuario($id) { 
-       try { 
-           $query = "DELETE FROM usuarios WHERE ID = :ID"; 
-           $stmt = $this->conn->prepare($query); 
-           $stmt->bindParam(":ID", $id, PDO::PARAM_INT); 
-           $stmt->execute(); 
-           return true; 
-       } catch (PDOException $e) { 
-           echo "Error en la consulta: " . $e->getMessage(); 
-           return false; 
-       } 
-   }
+    private function Eliminar_Usuario($id) { 
+        try { 
+            $query = "DELETE FROM usuarios WHERE ID = :ID"; 
+            $stmt = $this->conn->prepare($query); 
+            $stmt->bindParam(":ID", $id, PDO::PARAM_INT); 
+    
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Usuario eliminado correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al eliminar el usuario'];
+            }
+        } catch (PDOException $e) { 
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } 
+    }
+    
 
    public function Iniciar_Sesion($username) {
     // Asegúrate de que la sesión esté iniciada
