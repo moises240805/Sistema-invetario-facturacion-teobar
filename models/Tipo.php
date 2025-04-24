@@ -78,14 +78,14 @@ class Tipo extends Conexion{
     private function Guardar_Tipo()
     {
           // Consulta SQL para insertar un nuevo registro en la tabla producto 
-    $query = "INSERT INTO presentacion (id_presentacion, tipo_producto, presentacion) 
-    VALUES (:id_presentacion, :tipo_producto, :presentacion)"; 
+    $query = "INSERT INTO presentacion (tipo_producto, presentacion) 
+    VALUES ( :tipo_producto, :presentacion)"; 
 
     // Prepara la consulta 
     $stmt = $this->conn->prepare($query); 
 
     // Vincula los parámetros con los valores 
-    $stmt->bindParam(":id_presentacion", $this->id_presentacion, PDO::PARAM_INT); 
+
     $stmt->bindParam(":tipo_producto", $this->tipo_producto, PDO::PARAM_STR);  
     $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
 

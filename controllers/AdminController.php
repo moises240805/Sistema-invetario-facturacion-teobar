@@ -2,9 +2,11 @@
 // Incluye el archivo del modelo admin y bitacora
 require_once "models/Admin.php";
 require_once 'models/Bitacora.php';
+require_once 'models/Roles.php';
 
 //se instancia los objetos admin y bitacora
 $controller = new Admin();
+$permiso = new Roles();
 $bitacora = new Bitacora();
 
 //se defini en modulo se esta trabajando
@@ -71,6 +73,10 @@ if ($action == 'ingresar' && $_SERVER["REQUEST_METHOD"] == "POST")
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
 
+            if($usuario["nombre_rol"]=="Superusuario"){
+            header("Location: index.php?action=dashboard");
+            exit(); // Asegúrate de salir después de redirigir 
+            }
             if($usuario["nombre_rol"]=="Administrador"){
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
@@ -149,7 +155,7 @@ elseif ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     }
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
+    require_once 'views/php/dashboard_admin.php';
     exit();
     
 }
@@ -157,10 +163,11 @@ elseif ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
 
+    
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($permiso->verificarPermiso($modulo, "Consultar", $_SESSION['s_usuario']['id_rol'])) {
+    //if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
         $id= $_GET['ID'];
@@ -175,11 +182,9 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $admin=$controller->manejarAccion($accion,$id);
         header('Content-Type: application/json');
         echo json_encode($admin);
-    }
-    //muestra un modal de info que dice acceso no permitido
-    setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
-    exit();
+    ////setError("Error accion no permitida ");
+    //require_once 'views/php/dashboard_admin.php';
+    //exit();
 }
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -234,7 +239,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     }
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
+    require_once 'views/php/dashboard_admin.php';
     exit();
     
 }
@@ -289,7 +294,7 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     }
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
+    require_once 'views/php/dashboard_admin.php';
     exit();
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {

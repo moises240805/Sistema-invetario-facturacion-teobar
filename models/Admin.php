@@ -318,13 +318,14 @@ class Admin extends Conexion {
 
 public function verificarPermiso($modulo, $action, $id_rol) {
     try {
-        $query = "SELECT p.nombre_permiso 
+        $query = "SELECT a.estatus, p.nombre_permiso 
                   FROM accesos a
                   JOIN modulos m ON a.id_modulo = m.id_modulo
                   JOIN permisos p ON a.id_permiso = p.id_permiso
                   WHERE a.id_rol = :id_rol
                   AND m.nombre_modulo = :modulo
-                  AND p.nombre_permiso = :permiso";
+                  AND p.nombre_permiso = :permiso
+                  LIMIT 1";  // Opcional para optimizar
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_rol", $id_rol, PDO::PARAM_INT);
@@ -332,7 +333,14 @@ public function verificarPermiso($modulo, $action, $id_rol) {
         $stmt->bindParam(":permiso", $action, PDO::PARAM_STR);
         $stmt->execute();
         
-        return $stmt->rowCount() > 0;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result && isset($result['estatus'])) {
+            return $result['estatus'] == 1;
+        } else {
+            // No existe el permiso o no está activo
+            return false;
+        }
         
     } catch(PDOException $e) {
         error_log("Error de permisos: " . $e->getMessage());

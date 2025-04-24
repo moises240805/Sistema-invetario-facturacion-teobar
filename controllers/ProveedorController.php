@@ -20,12 +20,7 @@ function setSuccess($message) {
     $_SESSION['message'] = $message;
 }
 
-// Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-    setError("Acceso no autorizado");
-    header("Location: index.php");
-    exit();
-}
+
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 

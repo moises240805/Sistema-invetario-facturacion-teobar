@@ -19,6 +19,7 @@ $rutas = [
     'bitacora' => 'controllers/BitacoraController.php',
     'notificacion' => 'controllers/NotificacionController.php',
     'reportes' => 'controllers/ReportController.php',
+    'roles' => 'controllers/RolesController.php',
 ];
 
 ?>

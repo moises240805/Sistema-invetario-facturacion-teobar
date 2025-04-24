@@ -170,6 +170,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <option value="2">Administrador</option>
                         <option value="3">Usuario</option>
                         <option value="4">Vendedor</option>
+                        <option value="5">Contador</option>
                     </select>
                 </div>
             </div>
@@ -230,6 +231,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <option value="2">Administrador</option>
                         <option value="3">Usuario</option>
                         <option value="4">Vendedor</option>
+                        <option value="5">Contador</option>
                     </select>
                 </div>
             </div>

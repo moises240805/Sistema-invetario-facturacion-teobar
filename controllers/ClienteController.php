@@ -2,12 +2,12 @@
 //Se llama al modelo cliente , bitacoras y usuarios
 require_once 'models/Cliente.php';
 require_once 'models/Bitacora.php';
-require_once 'models/Admin.php';
+require_once 'models/Roles.php';
 
 //Se instancia los modelos
 $controller = new Cliente();
 $bitacora = new Bitacora();
-$usuario = new Admin();
+$usuario = new Roles();
 
 //esta variables es para definir el modulo en la bitacora para cuando se cree el json 
 $modulo = 'Clientes';
@@ -111,7 +111,7 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, "Consultar", $_SESSION['s_usuario']['id_rol'])) {
+    //if ($usuario->verificarPermiso($modulo, "Consultar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
         $id_cliente = $_GET['id_cliente'];
@@ -124,11 +124,11 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $accion="obtener";
         $cliente=$controller->manejarAccion($accion,$id_cliente);
         echo json_encode($cliente);
-    }
+    //}
     //muestra un modal de info que dice acceso no permitido
-    setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
-    exit();
+    //setError("Error accion no permitida ");
+    //require_once 'views/php/dashboard_cliente.php';
+    //exit();
 }
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -276,13 +276,13 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
 // Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-    setError("Acceso no autorizado");
+//if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
+//    setError("Acceso no autorizado");
     //require_once 'views/php/404.php';
 
-}else{
+//}else{
     require_once 'views/php/dashboard_cliente.php';
-}
+//}
 }
 
 ?>
