@@ -128,8 +128,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                //require_once "controllers/ClienteController.php"; // Asegúrate de que la ruta sea correcta
-                //$clientes = $controller->Mostrar_Cliente();
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
                 if(isset($clientes) && is_array($clientes) && !empty($clientes)){
                 foreach ($clientes as $cliente): 
             ?>
@@ -148,7 +149,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </td>
             </tr>
-            <?php             endforeach; 
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
         } else {
             echo "<tr><td colspan='6'>No hay clientes registrados.</td></tr>";
         } ?>

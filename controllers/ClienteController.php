@@ -275,34 +275,29 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
-// Verifica si el usuario está logueado y tiene permisos
-//if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-//    setError("Acceso no autorizado");
-    //require_once 'views/php/404.php';
-
-//}else{
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
         // Ejecutar acción permitida
-    $clientes =$controller->manejarAccion("consultar",null);
-    require_once 'views/php/dashboard_cliente.php';
-}
-    //muestra un modal de info que dice acceso no permitido
-    setError("Error accion no permitida ");
-    require_once 'views/php/dashboard_cliente.php';
-    exit();
-//}
+        $clientes =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_cliente.php';
+        exit();
+    }
+    else{
+
+        //muestra un modal de info que dice acceso no permitido
+        setError("Error accion no permitida ");
+        require_once 'views/php/dashboard_cliente.php';
+        exit(); 
+    }
+
 }
 elseif ($action == 'v' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
-    // Verifica si el usuario está logueado y tiene permisos
-    //if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-    //    setError("Acceso no autorizado");
-        //require_once 'views/php/404.php';
-    
-    //}else{
-        $clientes =$controller->manejarAccion("consultar",null);
-        //require_once 'views/php/dashboard_cliente.php';
-    //}
+    $clientes =$controller->manejarAccion("consultar",null);
+
 }
 
 ?>
