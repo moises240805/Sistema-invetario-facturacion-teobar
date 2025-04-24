@@ -281,8 +281,28 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
     //require_once 'views/php/404.php';
 
 //}else{
+    if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+    $clientes =$controller->manejarAccion("consultar",null);
     require_once 'views/php/dashboard_cliente.php';
+}
+    //muestra un modal de info que dice acceso no permitido
+    setError("Error accion no permitida ");
+    require_once 'views/php/dashboard_cliente.php';
+    exit();
 //}
+}
+elseif ($action == 'v' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+    // Verifica si el usuario está logueado y tiene permisos
+    //if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
+    //    setError("Acceso no autorizado");
+        //require_once 'views/php/404.php';
+    
+    //}else{
+        $clientes =$controller->manejarAccion("consultar",null);
+        //require_once 'views/php/dashboard_cliente.php';
+    //}
 }
 
 ?>

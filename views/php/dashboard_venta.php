@@ -191,8 +191,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         $pago = new Venta;
                         $pagos = $pago->obtenerPagos();
 
-                        $cliente = new Cliente();
-                        $clientes = $cliente->Mostrar_Cliente();
+                        //$cliente = new Cliente();
+                        //$clientes = $cliente->Mostrar_Cliente();
 
                         $producto = new Producto();
                         $productos = $producto->Mostrar_Producto2();

@@ -128,8 +128,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/ClienteController.php"; // Asegúrate de que la ruta sea correcta
-                $clientes = $controller->Mostrar_Cliente();
+                //require_once "controllers/ClienteController.php"; // Asegúrate de que la ruta sea correcta
+                //$clientes = $controller->Mostrar_Cliente();
+                if(isset($clientes) && is_array($clientes) && !empty($clientes)){
                 foreach ($clientes as $cliente): 
             ?>
             <tr>
@@ -147,7 +148,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php             endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay clientes registrados.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>

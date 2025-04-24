@@ -171,6 +171,10 @@ class Cliente extends Conexion{
                     return $this->Eliminar_Cliente($cliente);
                 }
 
+            case 'consultar':
+
+                    return $this->Mostrar_Cliente();
+                
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -212,7 +216,7 @@ class Cliente extends Conexion{
     }
 
     // Método para obtener todas las personas de la base de datos
-    public function Mostrar_Cliente() {
+    private function Mostrar_Cliente() {
         // Consulta SQL para seleccionar todos los registros de la tabla personas
         $query = "SELECT * FROM cliente";
         // Prepara la consulta
