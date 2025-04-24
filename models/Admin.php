@@ -170,12 +170,15 @@ class Admin extends Conexion {
                     return $this->Eliminar_Usuario($usuario);
                 }
 
+            case 'consultar':
+                return $this->Mostrar_Usuario();
+
             case 'ingresar':
                 //$validacion=$this->setValide($username);
                 //if(!$validacion['status']){
                 //    return $validacion;
                 //}else{
-                    return $this->Iniciar_Sesion($username);
+                    return $this->Iniciar_Sesion($usuario);
                 //}
 
             default:
@@ -186,10 +189,12 @@ class Admin extends Conexion {
 
 
     private function Guardar_Usuario() {
+        $conn = null;
         try {
+            $conn = $this->getConnection();
             // Consulta para verificar si el nombre de usuario ya existe
             $query = "SELECT * FROM usuarios WHERE usuario = :username";
-            $stmt = $this->conn->prepare($query);
+            $stmt = $conn->prepare($query);
             $stmt->bindParam(":username", $this->username);
             $stmt->execute();
             
@@ -199,7 +204,7 @@ class Admin extends Conexion {
                 
                 // Consulta SQL para insertar un nuevo registro en la tabla usuarios
                 $query = "INSERT INTO usuarios (usuario, pw, id_rol) VALUES (:username, :pw, :rol)";
-                $stmt = $this->conn->prepare($query);
+                $stmt = $conn->prepare($query);
                 $stmt->bindParam(":username", $this->username);
                 $stmt->bindParam(":pw", $hashedPassword);
                 $stmt->bindParam(":rol", $this->rol);
@@ -215,26 +220,38 @@ class Admin extends Conexion {
         } catch (PDOException $e) {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
         }
     }
     
 
     // Método para obtener todas las personas de la base de datos
-    public function Mostrar_Usuario() {
-        // Consulta SQL para seleccionar todos los registros de la tabla admin
-        $query = "SELECT * FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    private function Mostrar_Usuario() {
+        $conn = null;
+        try {
+            $conn = $this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla admin
+            $query = "SELECT * FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol";
+            // Prepara la consulta
+            $stmt = $conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     private function Obtener_Usuario($id) {
+        $conn = null;
         try {
+            $conn = $this->getConnection();
             $query = "SELECT * FROM usuarios WHERE ID = :ID";
-            $stmt = $this->conn->prepare($query);
+            $stmt = $conn->prepare($query);
             $stmt->bindParam(":ID", $id, PDO::PARAM_INT);
             if ($stmt->execute()) {
                 return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -243,16 +260,20 @@ class Admin extends Conexion {
         } catch (PDOException $e) {
             echo "Error en la consulta: " . $e->getMessage();
             return null;
+        } finally {
+            $conn = null;
         }
     }
 
     private function Actualizar_Usuario() {
+        $conn = null;
         try {
+            $conn = $this->getConnection();
             // Consulta SQL para actualizar los datos del usuario
             $query = "UPDATE usuarios SET usuario = :username, pw = :pw, id_rol = :rol WHERE ID = :id";
             
             // Prepara la consulta
-            $stmt = $this->conn->prepare($query);
+            $stmt = $conn->prepare($query);
             
             // Hash de la nueva contraseña
             $hashedPassword = password_hash($this->pw, PASSWORD_DEFAULT);
@@ -271,14 +292,18 @@ class Admin extends Conexion {
         } catch (PDOException $e) {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
         }
     }
     
 
     private function Eliminar_Usuario($id) { 
+        $conn = null;
         try { 
+            $conn = $this->getConnection();
             $query = "DELETE FROM usuarios WHERE ID = :ID"; 
-            $stmt = $this->conn->prepare($query); 
+            $stmt = $conn->prepare($query); 
             $stmt->bindParam(":ID", $id, PDO::PARAM_INT); 
     
             if ($stmt->execute()) {
@@ -289,33 +314,51 @@ class Admin extends Conexion {
         } catch (PDOException $e) { 
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-        } 
+        } finally {
+            $conn = null;
+        }
     }
     
 
-   public function Iniciar_Sesion($username) {
-    // Asegúrate de que la sesión esté iniciada
-    // Consulta SQL para seleccionar el registro del usuario
-    $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
-    // Prepara la consulta
-    $stmt = $this->conn->prepare($query);
-    
-    // Vincula el parámetro con el valor
-    $stmt->bindParam(":username", $username);
-    
-    // Ejecuta la consulta
-    $stmt->execute();
+   public function Iniciar_Sesion($usuario) {
+        $conn = null;
+        try {
+            $conn = $this->getConnection();
+            // Asegúrate de que la sesión esté iniciada
+            // Consulta SQL para seleccionar el registro del usuario
+            $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
+            // Prepara la consulta
+            $stmt = $conn->prepare($query);
+            // Vincula el parámetro con el valor
+            $stmt->bindParam(":username", $usuario['username']);
+            
+            // Ejecuta la consulta
+            $stmt->execute();
 
-    // Verifica si se encontró el usuario
-    if ($stmt->rowCount() === 1) {
-        return $stmt->fetch(PDO::FETCH_ASSOC); // Retorna los datos del usuario
+            // Verifica si se encontró el usuario
+            if ($stmt->rowCount() === 1) {
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                //Verificamos la contraseña
+                 if (password_verify($usuario['pw'], $user['pw'])) {
+                    return $user; // Retorna los datos del usuario
+                }else{
+                    return ['status' => false, 'msj' => 'Error en la consulta: Contraseña incorrecta'];
+                }
+            }else{
+                 return ['status' => false, 'msj' => 'Error en la consulta: Usuario no existe'];
+            }
+            
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
-    
-    return null; // Retorna null si no se encontró el usuario
 }
 
 
 
+/*
 public function verificarPermiso($modulo, $action, $id_rol) {
     try {
         $query = "SELECT a.estatus, p.nombre_permiso 
@@ -346,7 +389,7 @@ public function verificarPermiso($modulo, $action, $id_rol) {
         error_log("Error de permisos: " . $e->getMessage());
         return false;
     }
-}
+}*/
 
-}
+
 ?>

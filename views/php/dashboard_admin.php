@@ -129,9 +129,11 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </thead>
                     <tbody>
                         <?php
-                            require_once "controllers/AdminController.php";
-                            $admins = $controller->Mostrar_Usuario();
-                            foreach ($admins as $ad):
+                            //verifica si admin existe o esta vacia en dado caso que este vacia muestra clientes no 
+                            // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                            // si lo tiene muestra la informacion
+                            if(isset($admin) && is_array($admin) && !empty($admin)){
+                            foreach ($admin as $ad):
                         ?>
                             <tr>
                                 <td><?php echo $ad['usuario']; ?></td>
@@ -141,7 +143,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <a onclick="return eliminar()" href="index.php?action=usuario&a=eliminar&ID=<?php echo $ad['ID']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                            <?php
+                                //Imprime esta informacion en caso de estar vacia la variable             
+                                endforeach; 
+                            } else {
+                                echo "<tr><td colspan='6'>No hay usuarios registrados.</td></tr>";
+                            } ?>
                     </tbody>
                 </table>
             </div>
@@ -205,22 +212,19 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 </p>
             <?php endif; ?>
             <?php
-                require_once "controllers/AdminController.php";
-                if (isset($id)) {
-                    $admin = $controller->obtenerUsuario($id);
-                }
+
             ?>
-            <input class="form-control" type="hidden" name="id" value="<?php echo $admin['ID']; ?>" required>
+            <input class="form-control" type="hidden" name="id" value="" required>
             <div class="form-group row">
                 <label for="usuario" class="col-md-3">Usuario</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="usuario" value="<?php echo $admin['usuario']; ?>" maxlength="30" required>
+                    <input class="form-control" type="text" name="usuario" value="" maxlength="30" required>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="password" id='password2' name="clave" value="<?php echo $admin['pw']; ?>" maxlength="9" oninput='Password()' required>
+                    <input class="form-control" type="password" id='password2' name="clave" value="" maxlength="9" oninput='Password()' required>
                     <span id="Error2" class="error-message"></span>
                 </div>
             </div>

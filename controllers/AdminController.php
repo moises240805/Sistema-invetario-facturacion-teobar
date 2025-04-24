@@ -167,7 +167,7 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    //if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+    if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
         $id= $_GET['ID'];
@@ -182,9 +182,12 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
         $admin=$controller->manejarAccion($accion,$id);
         header('Content-Type: application/json');
         echo json_encode($admin);
-    ////setError("Error accion no permitida ");
+        exit();
+    }else{
+    setError("Error accion no permitida ");
     //require_once 'views/php/dashboard_admin.php';
-    //exit();
+    exit();
+    }
 }
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -299,14 +302,23 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
     
-    if($_SESSION["s_usuario"]["rol"]=="Usuario"){
-        header("Location: index.php?action=pagina");
-        exit(); // Asegúrate de salir después de redirigir 
-        }
-        else
-        {
-            require_once "views/php/dashboard_admin.php";
-        }
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($permiso->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
+        // Ejecutar acción permitida
+        $admin =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_admin.php';
+        exit();
+    }
+    else{
+
+        //muestra un modal de info que dice acceso no permitido
+        setError("Error accion no permitida ");
+        require_once 'views/php/dashboard_admin.php';
+        exit(); 
+    }
 }
 else{
     //require_once "views/php/login.php";
