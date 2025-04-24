@@ -24,6 +24,7 @@ class Conexion {
         } catch (PDOException $e) {
             die("Error de conexión: " . $e->getMessage());
         }
+        return $this->conn;
     }
 }
 ?>

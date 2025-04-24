@@ -182,10 +182,12 @@ class Cliente extends Conexion{
 
     private function Guardar_Cliente()
     {
+        $conn=null;
         try {
             // Consulta para verificar si el cliente ya existe
             $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
-            $stmt = $this->conn->prepare($query);
+            $conn=$this->getConnection();
+            $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_cliente", $this->id_cliente);
             $stmt->execute();
     
@@ -193,7 +195,7 @@ class Cliente extends Conexion{
                 // Insertar nuevo cliente
                 $query = "INSERT INTO cliente (id_cliente, nombre_cliente, tlf, direccion, email, tipo_id) 
                           VALUES (:id_cliente, :nombre_cliente, :tlf_cliente, :direccion_cliente, :email_cliente, :tipo)";
-                $stmt = $this->conn->prepare($query);
+                $stmt = $conn->prepare($query);
                 $stmt->bindParam(":id_cliente", $this->id_cliente);
                 $stmt->bindParam(":tipo", $this->tipo);
                 $stmt->bindParam(":nombre_cliente", $this->nombre_cliente);
@@ -212,33 +214,60 @@ class Cliente extends Conexion{
         } catch (PDOException $e) {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
         }
     }
 
     // Método para obtener todas las personas de la base de datos
     private function Mostrar_Cliente() {
-        // Consulta SQL para seleccionar todos los registros de la tabla personas
-        $query = "SELECT * FROM cliente";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $conn = null;
+            try{
+
+            // Consulta SQL para seleccionar todos los registros de la tabla personas
+            $query = "SELECT * FROM cliente";
+            // Prepara la consulta
+            $conn=$this->getConnection();
+            $stmt = $conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     private function Obtener_Cliente($id_cliente) {
-        $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $conn = null;
+        try{
+            $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
+            $conn=$this->getConnection();
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }catch (PDOException $e) {
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     private function Actualizar_Cliente() {
+
+        $conn = null;
         try {
             $query = "UPDATE cliente SET nombre_cliente = :nombre, tlf = :tlf, direccion = :direccion, email = :email_cliente, tipo_id = :tipo WHERE id_cliente = :id_cliente";
-            $stmt = $this->conn->prepare($query);
+            $conn=$this->getConnection();
+            $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
             $stmt->bindParam(":tipo", $this->tipo, PDO::PARAM_STR); // Corregido aquí
             $stmt->bindParam(":nombre", $this->nombre_cliente, PDO::PARAM_STR);
@@ -251,17 +280,22 @@ class Cliente extends Conexion{
             } else {
                 return ['status' => false, 'msj' => 'Error al actualizar el cliente'];
             }
-        } catch (PDOException $e) {
-            // Retornar mensaje de error sin hacer echo
-            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-        }
+            }catch (PDOException $e) {
+                // Retornar mensaje de error sin hacer echo
+                return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+            } finally {
+                $conn = null;
+            }
     }
     
 
     private function Eliminar_Cliente($id_cliente) {
+
+    $conn = null;
     try{
         $query = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
-        $stmt = $this->conn->prepare($query);
+        $conn=$this->getConnection();
+        $stmt = $conn->prepare($query);
         $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
@@ -269,11 +303,12 @@ class Cliente extends Conexion{
         } else {
             return ['status' => false, 'msj' => 'Error al eliminar el cliente'];
         }
-    }
-    catch (PDOException $e) {
-        // Retornar mensaje de error sin hacer echo
-        return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-    }
+        }catch (PDOException $e) {
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
 }
 }
 ?>
