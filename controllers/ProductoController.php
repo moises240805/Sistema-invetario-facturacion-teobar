@@ -1,11 +1,13 @@
 <?php
 // Incluye el archivo del modelo Producto
 require_once "models/Producto.php";
+require_once 'models/Tipo.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
 
 //Se instancia los modelos
 $controller = new Producto();
+$tipo = new Tipo();
 $bitacora = new Bitacora();
 $usuario = new Roles();
 
@@ -464,6 +466,7 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
         // Ejecutar acción permitida
         $producto =$controller->manejarAccion("consultar",null);
+        $tipos =$tipo->manejarAccion("consultar",null);
         require_once 'views/php/dashboard_producto.php';
         exit();
     }

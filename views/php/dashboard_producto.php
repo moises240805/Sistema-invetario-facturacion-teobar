@@ -177,13 +177,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="modal-header">
        <form class="formulario" action="index.php?action=producto&a=actualizar" method="post" name="form">
             <h1 class="titulo_form">Modificar Producto</h1>
-            <?php
-                //$producto=$controller->Obtener_Producto($id_producto);
-            ?>
-           <?php
-                require_once "controllers/TipoController.php"; 
-
-            ?>
             <input class="form-control" type="hidden" name="id_producto" value="<?php echo $producto['id_producto']; ?>" required>
             <div class="form-group row">
                 <label for="nombre" class="col-md-3">Nombre del Producto</label>
@@ -201,7 +194,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <label for="presentacion" class="col-md-3">Presentación del Producto</label>
                 <div class="col-md-9">
                     <select class="form-control" name="presentacion">
-                        <?php foreach ($tipo as $tipo): ?> 
+                        <?php foreach ($tipos as $tipo): ?> 
                             <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['id_presentacion'] == $producto['id_presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -285,6 +278,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
+
 <!-- Modal para Agregar Producto -->
 <div id="modalAgregarProducto" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
@@ -295,8 +289,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="modal-body">
                 <form class="formulario" action="index.php?action=producto&a=agregar" method="post" name="form">
                     <?php 
-                        require_once "controllers/TipoController.php"; 
-                        $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
+                       
                     ?>
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
@@ -414,10 +407,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             </div>
             <div class="modal-body">
                 <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form" enctype="multipart/form-data">
-                    <?php 
-                        require_once "controllers/TipoController.php"; 
-                        $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
-                    ?>
+
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
@@ -440,8 +430,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <label for="presentacion" class="col-md-3">Presentación del Producto</label>
                         <div class="col-md-9" style="display:flex">
                             <select class="form-control" id="presentacion" name="presentacion">
-                                <?php foreach ($tipos as $tipo): ?>
-                                    <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
+                                <?php foreach ($tipos as $producto): ?>
+                                    <option value="<?php echo $producto['id_presentacion'] ?>"><?php echo $producto['presentacion'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>

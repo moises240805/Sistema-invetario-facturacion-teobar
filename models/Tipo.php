@@ -184,7 +184,7 @@ class Tipo extends Conexion{
         }
     }
 
-    public function Mostrar_Tipo() {
+    private function Mostrar_Tipo() {
         $conn = null;
         try {
             $conn = $this->getConnection();

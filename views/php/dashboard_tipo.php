@@ -124,23 +124,30 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/TipoController.php"; // Asegúrate de que la ruta sea correcta
-                $productos = $controller->Mostrar_Tipo();
-                foreach ($productos as $producto):
+                    //verifica si producto existe o esta vacia en dado caso que este vacia muestra clientes no 
+                    // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                    // si lo tiene muestra la informacion
+                    if(isset($tipo) && is_array($tipo) && !empty($tipo)){
+                foreach ($tipo as $tipo):
             ?>
             <tr>
-                <td><?php echo $producto['tipo_producto']; ?></td>
-                <td><?php echo $producto['presentacion']; ?></td>
+                <td><?php echo $tipo['tipo_producto']; ?></td>
+                <td><?php echo $tipo['presentacion']; ?></td>
                 <td>
-                <a onclick="abrirModalModificar(<?php echo $producto['id_presentacion']; ?>)" title="Modificar">
+                <a onclick="abrirModalModificar(<?php echo $tipo['id_presentacion']; ?>)" title="Modificar">
                         <img src="views/img/edit.png" width="30px" height="30px">
                     </a>
-                    <a onclick="return eliminar()" href="index.php?action=tipo&a=eliminar&id_presentacion=<?php echo $producto['id_presentacion']; ?>" title="Eliminar">
+                    <a onclick="return eliminar()" href="index.php?action=tipo&a=eliminar&id_presentacion=<?php echo $tipo['id_presentacion']; ?>" title="Eliminar">
                         <img src="views/img/delet.png" width="30px" height="30px">
                     </a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+                            //Imprime esta informacion en caso de estar vacia la variable             
+                            endforeach; 
+                        } else {
+                            echo "<tr><td colspan='6'>No hay tipo de productos registrados.</td></tr>";
+                        } ?>
         </tbody>
     </table>
 </div>
