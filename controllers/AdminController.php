@@ -15,6 +15,13 @@ $modulo = 'Usuarios';
 //zona horaria
 date_default_timezone_set('America/Caracas');
 
+// Verifica si el usuario está logueado y tiene permisos
+if (!isset($_SESSION['s_usuario'])) {
+    //setError("Acceso no autorizado");
+    header("Location: index.php?action=login");
+    exit();
+}
+
 // Función para generar mensaje de error
 function setError($message) {
     $_SESSION['message_type'] = 'danger';
@@ -320,7 +327,18 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
         exit(); 
     }
 }
-else{
-    //require_once "views/php/login.php";
+elseif ($action == 'cerrar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+        
+    # Initialize the session
+    session_start();
+
+    # Unset all session variables
+
+    # Destroy the session
+    session_destroy();
+
+    # Redirect to login page
+    header('location:index.php');
+    exit();
 }
 ?>
