@@ -2,10 +2,15 @@
 // Incluye el archivo del modelo Producto
 require_once "models/Producto.php";
 require_once 'models/Bitacora.php';
+require_once 'models/Roles.php';
 
+//Se instancia los modelos
 $controller = new Producto();
 $bitacora = new Bitacora();
-$modulo = 'Producto';
+$usuario = new Roles();
+
+//esta variables es para definir el modulo en la bitacora para cuando se cree el json 
+$modulo = 'Productos';
 date_default_timezone_set('America/Caracas');
 
 require_once "views/php/utils.php";
@@ -20,231 +25,274 @@ require_once "views/php/utils.php";
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitiza y valida datos
-    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
-    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
-    $uni_medida2 = filter_input(INPUT_POST, 'uni_medida2', FILTER_SANITIZE_NUMBER_INT);
-    $uni_medida3 = filter_input(INPUT_POST, 'uni_medida3', FILTER_SANITIZE_NUMBER_INT);
-    $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $imagen = $_FILES['imagen'];
-    
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
+        // Sanitiza y valida datos
+        $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
+        $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
+        $uni_medida2 = filter_input(INPUT_POST, 'uni_medida2', FILTER_SANITIZE_NUMBER_INT);
+        $uni_medida3 = filter_input(INPUT_POST, 'uni_medida3', FILTER_SANITIZE_NUMBER_INT);
+        $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $imagen = $_FILES['imagen'];
+        
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+            $imagen = $_FILES['imagen'];
 
-        // Validación básica de la imagen
-        $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
-        $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
-
-        if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
-            setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
-            header("Location: index.php?action=producto&a=d");
-            exit();
-        }
-    
-
-
-        // Validación básica de la imagen
-        if (!empty($imagen['name'])) {
+            // Validación básica de la imagen
             $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
             $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
-    
+
             if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
                 setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
                 header("Location: index.php?action=producto&a=d");
                 exit();
             }
-        }
+        
 
-     // Subir la imagen al directorio destino
-     $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
- 
-     if (!empty($imagen['name'])) {
-         $nombreArchivo = basename($imagen['name']);
-         $rutaSubida = $directorioSubida . $nombreArchivo;
- 
-         if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
-             // La imagen se ha subido correctamente
-             $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
-         } else {
-             setError("Error al subir la imagen.");
-             header("Location: index.php?action=producto&a=d");
-             exit();
-         }
-     } 
-    } else {
-         $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
-     }
 
-    // Validar que los campos obligatorios no estén vacíos
-    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
-        setError("Todos los campos son requeridos");
-        header("Location: index.php?action=producto&a=d");
-        exit();
-    }
+            // Validación básica de la imagen
+            if (!empty($imagen['name'])) {
+                $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+                $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+        
+                if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+                    setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                    header("Location: index.php?action=producto&a=d");
+                    exit();
+                }
+            }
+
+        // Subir la imagen al directorio destino
+        $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
     
-    // Validar que los valores numéricos sean válidos
-    if (!is_numeric($cantidad_producto) || !is_numeric($precio_producto)) {
-        setError("La cantidad y el precio deben ser valores numéricos válidos");
-        header("Location: index.php?action=producto&a=d");
-        exit();
-    }
-
-    // Obtiene los valores del formulario y los sanitiza
-    $peso = htmlspecialchars($_POST['peso']);
-    $peso2 = $peso / $peso;
-    $peso3 = $peso2 * 1000;
-
-    $producto = json_encode([
-        'id_producto' => $id_producto,
-        'nombre_producto' => $nombre_producto,
-        'presentacion' => $presentacion,
-        'fecha_vencimiento' => $fecha_vencimiento,
-        'cantidad_producto' => $cantidad_producto,
-        'precio_producto' => $precio_producto,
-        'uni_medida' => $uni_medida,
-        'uni_medida2' => $uni_medida2,
-        'uni_medida3' => $uni_medida3,
-        'peso' => $peso,
-        'peso2' => $peso2,
-        'peso3' => $peso3,
-        'imagen' => $rutaSubida,
-        'marca' => $marca
-    ]);
-    echo $producto;
-    $accion = "agregar";
-    $controller->manejarAccion($accion, $producto);
-    try {
-        if ($controller) {
-            setSuccess("REGISTRADO CORRECTAMENTE");
-            $bitacora_data = json_encode([
-                'id_admin' => $_SESSION['s_usuario']['id'],
-                'movimiento' => "Agregar",
-                'fecha' => date('Y-m-d H:i:s'),
-                'modulo' => $modulo,
-                'descripcion' => "Producto: $nombre_producto"
-            ]);
-            $bitacora->setBitacoraData($bitacora_data);
-            $bitacora->Guardar_Bitacora();
+        if (!empty($imagen['name'])) {
+            $nombreArchivo = basename($imagen['name']);
+            $rutaSubida = $directorioSubida . $nombreArchivo;
+    
+            if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
+                // La imagen se ha subido correctamente
+                $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
+            } else {
+                setError("Error al subir la imagen.");
+                header("Location: index.php?action=producto&a=d");
+                exit();
+            }
+        } 
         } else {
-            setError("ERROR AL REGISTRAR...");
+            $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
         }
-    } catch (Exception $e) {
-        error_log("Error al registrar: " . $e->getMessage());
-        setError("Error en operación");
-    }
 
-    header("Location: index.php?action=producto&a=d");
-    exit();
+        // Validar que los campos obligatorios no estén vacíos
+        if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+            setError("Todos los campos son requeridos");
+            header("Location: index.php?action=producto&a=d");
+            exit();
+        }
+        
+        // Validar que los valores numéricos sean válidos
+        if (!is_numeric($cantidad_producto) || !is_numeric($precio_producto)) {
+            setError("La cantidad y el precio deben ser valores numéricos válidos");
+            header("Location: index.php?action=producto&a=d");
+            exit();
+        }
+
+        // Obtiene los valores del formulario y los sanitiza
+        $peso = htmlspecialchars($_POST['peso']);
+        $peso2 = $peso / $peso;
+        $peso3 = $peso2 * 1000;
+
+        $producto = json_encode([
+            'id_producto' => $id_producto,
+            'nombre_producto' => $nombre_producto,
+            'presentacion' => $presentacion,
+            'fecha_vencimiento' => $fecha_vencimiento,
+            'cantidad_producto' => $cantidad_producto,
+            'precio_producto' => $precio_producto,
+            'uni_medida' => $uni_medida,
+            'uni_medida2' => $uni_medida2,
+            'uni_medida3' => $uni_medida3,
+            'peso' => $peso,
+            'peso2' => $peso2,
+            'peso3' => $peso3,
+            'imagen' => $rutaSubida,
+            'marca' => $marca
+        ]);
+
+        try {
+
+            // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+            $resultado = $controller->manejarAccion($action, $producto);
+        
+
+            //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+            if (isset($resultado['status']) && $resultado['status'] === true) {
+
+                //usar mensaje dinámico del modelo
+                setSuccess($resultado['msj']);
+
+                $bitacora_data = json_encode([
+                    'id_admin' => $_SESSION['s_usuario']['id'],
+                    'movimiento' => "Agregar",
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'modulo' => $modulo,
+                    'descripcion' => "Producto: $nombre_producto"
+                ]);
+                $bitacora->setBitacoraData($bitacora_data);
+                $bitacora->Guardar_Bitacora();
+            } else {
+                    // Error: usar mensaje dinámico o genérico
+                    $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+                    setError($mensajeError);
+                }
+            } catch (Exception $e) {
+                //mensajes del expcecion del pdo 
+                error_log("Error al registrar: " . $e->getMessage());
+                setError("Error en operación");
+            }
+            
+            header("Location: index.php?action=producto&a=d"); // Redirect
+            exit();
+    }
+     //muestra un modal de info que dice acceso no permitido
+     setError("Error accion no permitida ");
+     require_once 'views/php/dashboard_producto.php';
+     exit();
 }
 elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitiza y valida datos
-    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $imagen = $_FILES['imagen'];
 
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-        $imagen = $_FILES['imagen'];
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
 
-        // Validación básica de la imagen
-        $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
-        $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+            // Sanitiza y valida datos
+            $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $imagen = $_FILES['imagen'];
 
-        if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
-            setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
-            header("Location: index.php?action=producto&a=d");
-            exit();
-        }
-    
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+                $imagen = $_FILES['imagen'];
+
+                // Validación básica de la imagen
+                $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+                $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+
+                if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+                    setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                    header("Location: index.php?action=producto&a=d");
+                    exit();
+                }
+            
 
 
-        // Validación básica de la imagen
-        if (!empty($imagen['name'])) {
-            $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
-            $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
-    
-            if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
-                setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                // Validación básica de la imagen
+                if (!empty($imagen['name'])) {
+                    $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+                    $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+            
+                    if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+                        setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                        header("Location: index.php?action=producto&a=d");
+                        exit();
+                    }
+                }
+
+            // Subir la imagen al directorio destino
+            $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
+        
+            if (!empty($imagen['name'])) {
+                $nombreArchivo = basename($imagen['name']);
+                $rutaSubida = $directorioSubida . $nombreArchivo;
+        
+                if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
+                    // La imagen se ha subido correctamente
+                    $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
+                } else {
+                    setError("Error al subir la imagen.");
+                    header("Location: index.php?action=producto&a=d");
+                    exit();
+                }
+            } 
+            } else {
+                $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
+            }
+
+            if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+                setError("Todos los campos son requeridos");
                 header("Location: index.php?action=producto&a=d");
                 exit();
             }
-        }
 
-     // Subir la imagen al directorio destino
-     $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
- 
-     if (!empty($imagen['name'])) {
-         $nombreArchivo = basename($imagen['name']);
-         $rutaSubida = $directorioSubida . $nombreArchivo;
- 
-         if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
-             // La imagen se ha subido correctamente
-             $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
-         } else {
-             setError("Error al subir la imagen.");
-             header("Location: index.php?action=producto&a=d");
-             exit();
-         }
-     } 
-    } else {
-         $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
-     }
-
-    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
-        setError("Todos los campos son requeridos");
-        header("Location: index.php?action=producto&a=d");
-        exit();
-    }
-
-    $producto = json_encode([
-        'id_producto' => $id_producto,
-        'nombre_producto' => $nombre_producto,
-        'fecha_registro' => $fecha_registro,
-        'presentacion' => $presentacion,
-        'fecha_vencimiento' => $fecha_vencimiento,
-        'cantidad_producto' => $cantidad_producto,
-        'precio_producto' => $precio_producto,
-        'uni_medida' => $uni_medida,
-        'imagen' => $rutaSubida,
-        'marca' => $marca
-    ]);
-echo $producto;
-    $accion = "agregar2";
-    $controller->manejarAccion($accion, $producto);
-    try {
-        if ($controller) {
-            setSuccess("REGISTRADO CORRECTAMENTE");
-            $bitacora_data = json_encode([
-                'id_admin' => $_SESSION['s_usuario']['id'],
-                'movimiento' => "Agregar",
-                'fecha' => date('Y-m-d H:i:s'),
-                'modulo' => $modulo,
-                'descripcion' => "Producto: $nombre_producto"
+            $producto = json_encode([
+                'id_producto' => $id_producto,
+                'nombre_producto' => $nombre_producto,
+                'fecha_registro' => $fecha_registro,
+                'presentacion' => $presentacion,
+                'fecha_vencimiento' => $fecha_vencimiento,
+                'cantidad_producto' => $cantidad_producto,
+                'precio_producto' => $precio_producto,
+                'uni_medida' => $uni_medida,
+                'imagen' => $rutaSubida,
+                'marca' => $marca
             ]);
-            $bitacora->setBitacoraData($bitacora_data);
-            $bitacora->Guardar_Bitacora();
-        } else {
-            setError("ERROR AL REGISTRAR...");
-        }
-    } catch (Exception $e) {
-        error_log("Error al registrar: " . $e->getMessage());
-        setError("Error en operación");
-    }
+        try {
 
-    header("Location: index.php?action=producto&a=d");
-    exit();
+                    // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+                    $resultado = $controller->manejarAccion($action, $producto);
+                
+
+                    //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                    if (isset($resultado['status']) && $resultado['status'] === true) {
+
+                        //usar mensaje dinámico del modelo
+                        setSuccess($resultado['msj']);
+
+                        $bitacora_data = json_encode([
+                            'id_admin' => $_SESSION['s_usuario']['id'],
+                            'movimiento' => "Agregar",
+                            'fecha' => date('Y-m-d H:i:s'),
+                            'modulo' => $modulo,
+                            'descripcion' => "Producto: $nombre_producto"
+                        ]);
+                        $bitacora->setBitacoraData($bitacora_data);
+                        $bitacora->Guardar_Bitacora();
+                    } else {
+                            // Error: usar mensaje dinámico o genérico
+                            $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+                            setError($mensajeError);
+                        }
+                    } catch (Exception $e) {
+                        //mensajes del expcecion del pdo 
+                        error_log("Error al registrar: " . $e->getMessage());
+                        setError("Error en operación");
+                    }
+                    
+                    header("Location: index.php?action=producto&a=d"); // Redirect
+                    exit();
+    }
+     //muestra un modal de info que dice acceso no permitido
+     setError("Error accion no permitida ");
+     require_once 'views/php/dashboard_producto.php';
+     exit();
 
 }
 
@@ -262,6 +310,13 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
 }
 
 else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+
+        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "Modificar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
     // Sanitiza y valida datos
     $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
     $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -293,11 +348,17 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'marca' => $marca
     ]);
 
-    $accion = "actualizar";
-    $controller->manejarAccion($accion, $producto);
     try {
-        if ($controller) {
-            setSuccess("ACTUALIZADO CORRECTAMENTE");
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion($action, $producto);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Modificar",
@@ -308,18 +369,33 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL ACTUALIZAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ACTUALIZAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al actualizar: " . $e->getMessage());
         setError("Error en operación");
     }
 
     header("Location: index.php?action=producto&a=d");
     exit();
+    }
+    //muestra un modal de info que dice acceso no permitido
+    setError("Error accion no permitida ");
+    require_once 'views/php/dashboard_producto.php';
+    exit();
 }
 
 elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
     $id_producto = $_GET['id_producto'];
     if (!filter_var($id_producto, FILTER_VALIDATE_INT)) {
         setError("ID inválido");
@@ -339,11 +415,17 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
     $nombre_producto = $producto['nombre'];
 
-    $accion = "eliminar";
-    $controller->manejarAccion($accion, $id_producto);
-    try {
-        if ($controller) {
-            setSuccess("ELIMINADO CORRECTAMENTE");
+        try {
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion($action, $id_producto);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Eliminar",
@@ -354,18 +436,44 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL ELIMINAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al eliminar: " . $e->getMessage());
         setError("Error en operación");
     }
-
+    
     header("Location: index.php?action=producto&a=d");
+    exit();
+    }
+    //muestra un modal de info que dice acceso no permitido
+    setError("Error accion no permitida ");
+    require_once 'views/php/dashboard_producto.php';
     exit();
 }
 
-if ($action == 'd') {
-    require_once 'views/php/dashboard_producto.php';
+elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+       //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
+        // Ejecutar acción permitida
+        $producto =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_producto.php';
+        exit();
+    }
+    else{
+
+        //muestra un modal de info que dice acceso no permitido
+        setError("Error accion no permitida ");
+        require_once 'views/php/dashboard_producto.php';
+        exit(); 
+    }
+    
 }
 ?>

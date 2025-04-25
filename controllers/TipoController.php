@@ -181,7 +181,12 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     exit();
 }
 
-if ($action == 't') {
+elseif ($action == 't' && $_SERVER["REQUEST_METHOD"] == "GET") {
     require_once 'views/php/dashboard_tipo.php';
+}
+elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+    $tipo =$controller->manejarAccion("consultar",null);
+
 }
 ?>

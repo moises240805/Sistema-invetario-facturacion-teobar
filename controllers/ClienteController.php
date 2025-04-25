@@ -296,7 +296,8 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
 }
 elseif ($action == 'v' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
-    $clientes =$controller->manejarAccion("consultar",null);
+        $clientes =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_venta.php';  
 
 }
 

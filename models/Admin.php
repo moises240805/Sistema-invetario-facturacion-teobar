@@ -320,76 +320,26 @@ class Admin extends Conexion {
     }
     
 
-   public function Iniciar_Sesion($usuario) {
-        $conn = null;
-        try {
-            $conn = $this->getConnection();
-            // Asegúrate de que la sesión esté iniciada
-            // Consulta SQL para seleccionar el registro del usuario
-            $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
-            // Prepara la consulta
-            $stmt = $conn->prepare($query);
-            // Vincula el parámetro con el valor
-            $stmt->bindParam(":username", $usuario['username']);
-            
-            // Ejecuta la consulta
-            $stmt->execute();
-
-            // Verifica si se encontró el usuario
-            if ($stmt->rowCount() === 1) {
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                //Verificamos la contraseña
-                 if (password_verify($usuario['pw'], $user['pw'])) {
-                    return $user; // Retorna los datos del usuario
-                }else{
-                    return ['status' => false, 'msj' => 'Error en la consulta: Contraseña incorrecta'];
-                }
-            }else{
-                 return ['status' => false, 'msj' => 'Error en la consulta: Usuario no existe'];
-            }
-            
-        } catch (PDOException $e) {
-            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-        } finally {
-            $conn = null;
+    public function Iniciar_Sesion($username) {
+        // Asegúrate de que la sesión esté iniciada
+        // Consulta SQL para seleccionar el registro del usuario
+        $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
+        // Prepara la consulta
+        $stmt = $this->conn->prepare($query);
+        
+        // Vincula el parámetro con el valor
+        $stmt->bindParam(":username", $username);
+        
+        // Ejecuta la consulta
+        $stmt->execute();
+    
+        // Verifica si se encontró el usuario
+        if ($stmt->rowCount() === 1) {
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Retorna los datos del usuario
         }
+        
+        return null; // Retorna null si no se encontró el usuario
     }
 }
-
-
-
-/*
-public function verificarPermiso($modulo, $action, $id_rol) {
-    try {
-        $query = "SELECT a.estatus, p.nombre_permiso 
-                  FROM accesos a
-                  JOIN modulos m ON a.id_modulo = m.id_modulo
-                  JOIN permisos p ON a.id_permiso = p.id_permiso
-                  WHERE a.id_rol = :id_rol
-                  AND m.nombre_modulo = :modulo
-                  AND p.nombre_permiso = :permiso
-                  LIMIT 1";  // Opcional para optimizar
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_rol", $id_rol, PDO::PARAM_INT);
-        $stmt->bindParam(":modulo", $modulo, PDO::PARAM_STR);
-        $stmt->bindParam(":permiso", $action, PDO::PARAM_STR);
-        $stmt->execute();
-        
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($result && isset($result['estatus'])) {
-            return $result['estatus'] == 1;
-        } else {
-            // No existe el permiso o no está activo
-            return false;
-        }
-        
-    } catch(PDOException $e) {
-        error_log("Error de permisos: " . $e->getMessage());
-        return false;
-    }
-}*/
-
 
 ?>

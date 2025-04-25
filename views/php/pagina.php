@@ -86,7 +86,7 @@
         <div class="products-grid">
             <?php 
                 require_once "controllers/ProductoController.php"; 
-                $productos = $controller->Mostrar_Producto();
+                $productos = $controller->Mostrar_ProductoE();
                 foreach ($productos as $producto):
             ?>
                 <div class="product-card">

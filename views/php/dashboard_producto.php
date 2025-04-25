@@ -132,15 +132,11 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 </thead>
                 <tbody>
                     <?php 
-                        require_once "controllers/ProductoController.php"; 
-                        if (!function_exists('setError')) {
-                            function setError($message) {
-                                $_SESSION['message_type'] = 'danger';
-                                $_SESSION['message'] = $message;
-                            }
-                        }
-                        $productos = $controller->Mostrar_Producto();
-                        foreach ($productos as $producto):
+                    //verifica si producto existe o esta vacia en dado caso que este vacia muestra clientes no 
+                    // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                    // si lo tiene muestra la informacion
+                    if(isset($producto) && is_array($producto) && !empty($producto)){
+                        foreach ($producto as $producto):
                     ?>
                         <tr>
                             <td><?php echo $producto['nombre']; ?></td>
@@ -158,7 +154,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                 <a onclick="return eliminar()" href="index.php?action=producto&a=eliminar&id_producto=<?php echo $producto['id_producto']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                        <?php
+                            //Imprime esta informacion en caso de estar vacia la variable             
+                            endforeach; 
+                        } else {
+                            echo "<tr><td colspan='6'>No hay productos registrados.</td></tr>";
+                        } ?>
                 </tbody>
             </table>
         </div>
@@ -181,7 +182,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             ?>
            <?php
                 require_once "controllers/TipoController.php"; 
-                $tipos = $controller->Mostrar_Tipo();
+
             ?>
             <input class="form-control" type="hidden" name="id_producto" value="<?php echo $producto['id_producto']; ?>" required>
             <div class="form-group row">
@@ -200,7 +201,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <label for="presentacion" class="col-md-3">Presentación del Producto</label>
                 <div class="col-md-9">
                     <select class="form-control" name="presentacion">
-                        <?php foreach ($tipos as $tipo): ?> 
+                        <?php foreach ($tipo as $tipo): ?> 
                             <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['id_presentacion'] == $producto['id_presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
                         <?php endforeach; ?>
                     </select>
