@@ -15,12 +15,6 @@ $modulo = 'Usuarios';
 //zona horaria
 date_default_timezone_set('America/Caracas');
 
-// Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario'])) {
-    //setError("Acceso no autorizado");
-    header("Location: index.php?action=login");
-    exit();
-}
 
 // Función para generar mensaje de error
 function setError($message) {
@@ -308,6 +302,13 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     exit();
 }
 elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+    // Verifica si el usuario está logueado y tiene permisos
+if (!isset($_SESSION['s_usuario'])) {
+    //setError("Acceso no autorizado");
+    header("Location: index.php?action=login");
+    exit();
+}
     
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
