@@ -171,7 +171,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             </div>
             <form class="formulario" action="index.php?action=cliente&a=actualizar" method="post" name="form">
                 <div class="modal-body">
-                    <input class="entrada" type="hidden" name="id_cliente" id="id_cliente" required>
+                    <input class="entrada form-control numeric" type="hidden" name="id_cliente" id="id_cliente" required>
                     <div class="form-group row">
                         <label for="tipo_id" class="col-md-3">CI del Cliente</label>
                         <div class="col-md-9">
@@ -187,7 +187,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="nombre_cliente" class="col-md-3">Nombre del Cliente</label>
                         <div class="col-md-9">
-                            <input class="entrada form-control" type="text" name="nombre_cliente" id="nombre_cliente" maxlength="50" required>
+                            <input class="entrada form-control alpha" type="text" name="nombre_cliente" id="nombre_cliente" maxlength="50" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -237,86 +237,127 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="formulario" action="index.php?action=cliente&a=agregar" method="post" name="form" id="miFormulario" onsubmit="return validateForm()">
-                <div class="modal-body">
-                    <div class="container text-center">
-                        <div class="row justify-content-center">
-                            <div class="col-md-10">
-                                <div class="form-group row justify-content-center mb-4">
-                                    <div class="col-md-10 text-center">
-                                        <label for="id" style="font-size: 18px;">CI del Cliente</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <div class="input-group">
-                                            <select name="tipo_cliente" class="form-control">
-                                                <option value="V-">V-</option>
-                                                <option value="E-">E-</option>
-                                            </select>
-                                            <input type="text" onkeypress="return SoloNumeros(event)" class="form-control" id="id" name="id_cliente" placeholder="CI"  maxlength="8" required oninput="validateId()">
-                                        </div>
-                                        <span id="idError" class="error-message"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group row justify-content-center mb-4">
-                                    <div class="col-md-10 text-center">
-                                        <label for="nombre" style="font-size: 18px;">Nombre del Cliente</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" id="nombre" name="nombre_cliente" placeholder="Nombre"  maxlength="50"required oninput="validateName()">
-                                        <span id="nameError" class="error-message"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group row justify-content-center mb-4">
-                                    <div class="col-md-10 text-center">
-                                        <label for="tlf" style="font-size: 18px;">Tlf del Cliente</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <div class="input-group">
-                                            <select name="codigo_tlf" class="form-control">
-                                                <option value="0412">0412</option>
-                                                <option value="0416">0416</option>
-                                                <option value="0426">0426</option>
-                                                <option value="0414">0414</option>
-                                                <option value="0424">0424</option>
-                                                <option value="0251">0251</option>
-                                            </select>
-                                            <input type="text" class="form-control" id="numero_tlf" name="telefono" placeholder="Ejem: 1234567" maxlength="7" onkeypress="return SoloNumeros(event)" required oninput="validatePhone()">    
-                                        </div>
-                                        <span id="phoneError" class="error-message"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group row justify-content-center mb-4">
-                                    <div class="col-md-10 text-center">
-                                        <label for="email" style="font-size: 18px;">Correo del Cliente</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Correo" maxlength="50" required oninput="validateEmail()">
-                                    </div>
-                                </div>
-                                <div class="form-group row justify-content-center mb-4">
-                                    <div class="col-md-10 text-center">
-                                        <label for="direccion" style="font-size: 18px;">Dirección del Cliente</label>
-                                    </div>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" name="direccion" placeholder="Dirección" maxlength="120" required oninput="validateAddress()">
-                                        <span id="addressError" class="error-message"></span>
-                                    </div>
-                                </div>
+            <form class="formulario" action="index.php?action=cliente&a=agregar" method="post" name="form" id="miFormulario">
+    <div class="modal-body">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <!-- CI del Cliente -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="id" style="font-size: 18px;">CI del Cliente</label>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <select name="tipo_cliente" class="form-control">
+                                    <option value="V-">V-</option>
+                                    <option value="E-">E-</option>
+                                </select>
+                                <input type="text" class="form-control numeric" id="id" name="id_cliente" 
+                                    placeholder="CI" maxlength="8" required>
                             </div>
+                            <span id="idError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="nombre" style="font-size: 18px;">Nombre del Cliente</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control alpha" id="nombre" name="nombre_cliente" 
+                                placeholder="Nombre" maxlength="50" required>
+                            <span id="nameError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="tlf" style="font-size: 18px;">Tlf del Cliente</label>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <select name="codigo_tlf" class="form-control">
+                                    <option value="0412">0412</option>
+                                    <option value="0416">0416</option>
+                                    <option value="0426">0426</option>
+                                    <option value="0414">0414</option>
+                                    <option value="0424">0424</option>
+                                    <option value="0251">0251</option>
+                                </select>
+                                <input type="text" class="form-control numeric" id="numero_tlf2" name="telefono" 
+                                    placeholder="Ejem: 1234567" maxlength="7" required>
+                            </div>
+                            <span id="phoneError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="email" style="font-size: 18px;">Correo del Cliente</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="email" class="form-control" id="email2" name="email" 
+                                placeholder="Correo" maxlength="50" required>
+                            <span id="emailError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="direccion" style="font-size: 18px;">Dirección del Cliente</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="direccion2" name="direccion" 
+                                placeholder="Dirección" maxlength="120" required>
+                            <span id="addressError" class="error-message"></span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()" data-dismiss="modal">Cancelar</button>
-                    <input onclick="return validateForm()" class="btn btn-primary" type="submit" value="Registrar">
-                </div>
-            </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" onclick="cerrarModal()" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </div>
+</form>
         </div>
     </div>
 </div>
 
+<style>
+.error-message {
+    color: #dc3545;
+    font-size: 0.8rem;
+    height: 18px;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
+.error-message.show {
+    opacity: 1;
+}
 
+.is-valid {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.input-group > .form-control {
+    z-index: 1;
+}
+</style>
 
 
 
@@ -342,21 +383,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
     <script src="views/js/modal_cliente.js"></script>
     <script src="views/js/validate_cliente.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <style>
-.error-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.is-invalid {
-    border-color: #dc3545 !important;
-}
-
-.input-group > .form-control {
-    z-index: 1; /* Corrige superposición de bordes */
-}
+    
 </style>
 </body>
 </html>
