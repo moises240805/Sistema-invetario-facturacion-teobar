@@ -111,15 +111,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
     unset($_SESSION['message']); // Clear the message
     unset($_SESSION['message_type']); // Clear the type
 }
-require_once "controllers/RolesController.php";
-// Simulando $datos que viene de la consulta
-$datos = $permiso->Mostrar_Roles();
 
-// Organizar datos
-$roles = [];
-$permisos = [];
-$modulos = [];
-$estatusTabla = [];
 
 foreach ($datos as $fila) {
     $roles[$fila['id_rol']] = $fila['nombre_rol'];

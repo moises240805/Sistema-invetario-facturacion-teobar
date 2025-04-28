@@ -10,6 +10,17 @@ class Roles extends Conexion {
     private $rol;
     private $permiso;
 
+
+    private function setRolesData($data) {
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+        $this->modulo = intval($data['id_modulo']);
+        $this->rol = intval($data['id_rol']);
+        $this->permiso = intval($data['id_permiso']);
+        $this->estatus = intval($data['estatus']);     
+    }
+
     // Métodos Getter y Setter
     public function getUsername() {
         return $this->username;
@@ -41,6 +52,58 @@ class Roles extends Conexion {
 
     public function setRol($rol) {
         $this->rol = $rol;
+    }
+
+    public function getModulo() {
+        return $this->modulo;
+    }
+
+    public function setModulo($modulo) {
+        $this->modulo = $modulo;
+    }
+
+    public function getPermiso() {
+        return $this->permiso;
+    }
+
+    public function setPermiso($permiso) {
+        $this->permiso = $permiso;
+    }
+
+    public function getEstatus() {
+        return $this->estatus;
+    }
+
+    public function setEstatus($estatus) {
+        $this->estatus = $estatus;
+    }
+
+
+
+     //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $data) {
+        switch ($accion) {
+
+
+            case 'actualizar':
+                $this->setRolesData($data);
+
+                    return $this->Actualizar_Roles(); 
+                
+
+
+            case 'consultar':
+
+                    return $this->Mostrar_Roles();
+                
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
+        }
     }
 
     public function verificarPermiso($modulo, $action, $id_rol) {
@@ -79,7 +142,7 @@ class Roles extends Conexion {
 
 
 
-    public function Mostrar_Roles() {
+    private function Mostrar_Roles() {
         try {
             $query = "SELECT 
             a.*, 
@@ -110,7 +173,7 @@ class Roles extends Conexion {
 
 
 
-    public function Actualizar_Roles($id_modulo, $id_rol, $id_permiso, $estatus) {
+    private function Actualizar_Roles() {
         try {
             $query = "UPDATE accesos 
                       SET estatus = :estatus 
@@ -120,10 +183,10 @@ class Roles extends Conexion {
     
             $stmt = $this->conn->prepare($query);
     
-            $stmt->bindParam(':estatus', $estatus, PDO::PARAM_INT);
-            $stmt->bindParam(':id_modulo', $id_modulo, PDO::PARAM_INT);
-            $stmt->bindParam(':id_rol', $id_rol, PDO::PARAM_INT);
-            $stmt->bindParam(':id_permiso', $id_permiso, PDO::PARAM_INT);
+            $stmt->bindParam(':estatus', $this->estatus, PDO::PARAM_INT);
+            $stmt->bindParam(':id_modulo', $this->modulo, PDO::PARAM_INT);
+            $stmt->bindParam(':id_rol', $this->rol, PDO::PARAM_INT);
+            $stmt->bindParam(':id_permiso', $this->permiso, PDO::PARAM_INT);
     
             $stmt->execute();
     
