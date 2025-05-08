@@ -86,9 +86,12 @@ class Manejo extends Conexion{
     public function Guardar_IngresoEgreso()
     {
         try {
+            // Iniciar transacción
+            $this->conn->beginTransaction();
+    
+            // Insertar el movimiento en la tabla movimientos_caja
             $query = "INSERT INTO movimientos_caja (id_cajas, tipo_movimiento, monto_movimiento, concepto, fecha, id_pago)
                       VALUES (:id_cajas, :movimiento, :monto, :descripcion, :fecha, :id_pago)";
-            
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":id_cajas", $this->id_cajas);
             $stmt->bindParam(":movimiento", $this->movimiento);
@@ -96,45 +99,50 @@ class Manejo extends Conexion{
             $stmt->bindParam(":descripcion", $this->descripcion);
             $stmt->bindParam(":fecha", $this->fecha);
             $stmt->bindParam(":id_pago", $this->id_pago);
-            
-            if ($stmt->execute()) {
-                // Obtener montos de ingresos
-                $montosIngresos = $this->ObtenerMontosIngresos($this->id_pago);
-
-                if($this->movimiento=="Ingreso"){
-
-                if ($montosIngresos !== false) {
-                    // Calcular monto total
-                    $montoTotal = $this->CalcularMontoTotal($montosIngresos);
-                    
-                    // Actualizar saldo de caja
-                    return $this->Update_SaldoCaja($montoTotal);
-                } else {
-                    return false;
-                }
-            }
-            if ($this->movimiento=="Egreso"){
-                if ($montosIngresos !== false) {
-                    // Calcular monto total final restando el egreso
-                    $montoTotalFinal = $this->CalcularMontoTotal2($montosIngresos, $this->monto);
-                    
-                    // Actualizar saldo de caja
-                    return $this->Update_SaldoCaja($montoTotalFinal);
-                } else {
-                    return false;
-                }
-            }
-            
-            else {
+            if (!$stmt->execute()) {
+                $this->conn->rollBack();
                 return false;
             }
-        }
-            
+    
+            // Obtener todos los movimientos de la caja para el id_pago actual
+            $query2 = "SELECT tipo_movimiento, monto_movimiento FROM movimientos_caja WHERE id_pago = :id_pago";
+            $stmt2 = $this->conn->prepare($query2);
+            $stmt2->bindParam(":id_pago", $this->id_pago, PDO::PARAM_INT);
+            $stmt2->execute();
+            $movimientos = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Calcular el saldo total
+            $saldo = 0;
+            foreach ($movimientos as $mov) {
+                if (strtolower($mov['tipo_movimiento']) == 'ingreso') {
+                    $saldo += $mov['monto_movimiento'];
+                } else if (strtolower($mov['tipo_movimiento']) == 'egreso') {
+                    $saldo -= $mov['monto_movimiento'];
+                }
+            }
+    
+            // Actualizar el saldo en la tabla cajas
+            $query3 = "UPDATE cajas SET saldo_caja = :saldo WHERE ID = :id_cajas";
+            $stmt3 = $this->conn->prepare($query3);
+            $stmt3->bindParam(":saldo", $saldo);
+            $stmt3->bindParam(":id_cajas", $this->id_cajas);
+            if (!$stmt3->execute()) {
+                $this->conn->rollBack();
+                return false;
+            }
+    
+            // Confirmar transacción
+            $this->conn->commit();
+            return true;
+    
         } catch(PDOException $e) {
-            error_log("Error en Ingreso Egreso: " . $e->getMessage());
+            // Rollback en caso de error
+            $this->conn->rollBack();
+            error_log("Error en Guardar_IngresoEgreso: " . $e->getMessage());
             return false;
         }
     }
+    
     
 
 
@@ -151,62 +159,5 @@ class Manejo extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-    public function ObtenerMontosIngresos($id_pago)
-    {
-        try {
-            $query = "SELECT monto_movimiento FROM movimientos_caja WHERE tipo_movimiento = 'ingreso' AND id_pago = :id_pago";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":id_pago", $id_pago, PDO::PARAM_INT); // Vincular el parámetro id_pago
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Retorna todos los resultados como un array asociativo
-            
-        } catch(PDOException $e) {
-            error_log("Error al obtener montos de ingresos: " . $e->getMessage());
-            return false;
-        }
-    }
-
-
-
-public function CalcularMontoTotal($montosIngresos)
-{
-    $montoTotal = 0;
-    foreach ($montosIngresos as $ingreso) {
-        $montoTotal += $ingreso['monto_movimiento'];
-    }
-    return $montoTotal;
-}
-
-public function CalcularMontoTotal2($montosIngresos, $montoEgreso)
-{
-    // Calcular monto total de ingresos
-    $montoTotalIngresos = $this->CalcularMontoTotal($montosIngresos);
-    
-    // Restar el monto del egreso del total de ingresos
-    $montoTotalFinal = $montoTotalIngresos - $montoEgreso;
-    
-    return $montoTotalFinal;
-}
-
-public function Update_SaldoCaja($montoTotal)
-{
-    try {
-        $query = "UPDATE cajas SET saldo_caja = :monto WHERE ID = :id_cajas";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":monto", $montoTotal);
-        $stmt->bindParam(":id_cajas", $this->id_cajas);
-        
-        // Ejecutar y retornar resultado
-        return $stmt->execute();
-        
-    } catch(PDOException $e) {
-        error_log("Error al actualizar saldo de caja: " . $e->getMessage());
-        return false;
-    }
-}
 }   
 ?>

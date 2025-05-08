@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-04-2025 a las 06:44:04
+-- Tiempo de generación: 03-05-2025 a las 04:40:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -121,9 +121,9 @@ INSERT INTO `accesos` (`id_accesos`, `id_rol`, `id_modulo`, `id_permiso`, `estat
 (79, 2, 4, 3, 1),
 (80, 2, 4, 4, 1),
 (81, 2, 5, 1, 1),
-(82, 2, 5, 2, 0),
-(83, 2, 5, 3, 0),
-(84, 2, 5, 4, 0),
+(82, 2, 5, 2, 1),
+(83, 2, 5, 3, 1),
+(84, 2, 5, 4, 1),
 (85, 2, 6, 1, 0),
 (86, 2, 6, 2, 0),
 (87, 2, 6, 3, 0),
@@ -280,7 +280,77 @@ INSERT INTO `bitacora` (`ID`, `fecha`, `movimiento`, `modulo`, `descripcion`, `i
 (174, '2025-04-24 00:01:47', 'Eliminar', 'Usuarios', 'El usuario:  elimino un usuario', 15),
 (175, '2025-04-24 00:24:04', 'Agregar', 'Usuarios', 'El usuario:  ha agregado un nuevo usuario', 15),
 (176, '2025-04-24 00:24:46', 'Agregar', 'Usuarios', 'El usuario:  ha agregado un nuevo usuario', 15),
-(177, '2025-04-24 00:28:11', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21);
+(177, '2025-04-24 00:28:11', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(178, '2025-04-24 01:05:14', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(179, '2025-04-24 10:10:58', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(180, '2025-04-24 10:15:52', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 21),
+(181, '2025-04-24 10:16:34', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 21),
+(182, '2025-04-24 10:25:46', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(183, '2025-04-24 12:25:19', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(184, '2025-04-24 12:25:56', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(185, '2025-04-24 12:26:13', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(186, '2025-04-24 12:27:52', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(187, '2025-04-24 12:27:59', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(188, '2025-04-24 12:28:11', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(189, '2025-04-24 12:28:26', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(190, '2025-04-24 13:59:32', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(191, '2025-04-24 14:22:57', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(192, '2025-04-24 15:13:18', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(193, '2025-04-24 15:13:25', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 15),
+(194, '2025-04-24 19:01:28', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(195, '2025-04-24 19:01:38', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(196, '2025-04-25 15:32:30', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(197, '2025-04-25 15:38:48', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(198, '2025-04-25 18:11:29', 'Iniciar Sesion', 'Usuarios', 'El usuario: @user_ca ha iniciado session', 9),
+(199, '2025-04-25 18:42:34', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(200, '2025-04-25 19:13:31', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(201, '2025-04-25 23:32:15', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(202, '2025-04-26 00:07:31', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(203, '2025-04-26 19:00:30', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(204, '2025-04-26 19:48:52', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(205, '2025-04-26 20:31:47', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(206, '2025-04-26 20:41:43', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(207, '2025-04-26 20:48:24', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(208, '2025-04-26 20:49:51', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(209, '2025-04-26 20:52:03', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 32200771', 15),
+(210, '2025-04-26 20:52:44', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 32200771', 15),
+(211, '2025-04-26 20:53:13', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 23423423', 15),
+(212, '2025-04-26 20:56:19', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 23423423', 15),
+(213, '2025-04-26 20:59:50', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 12341324', 15),
+(214, '2025-04-26 21:07:21', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(215, '2025-04-26 21:09:56', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 12341324', 15),
+(216, '2025-04-26 21:10:05', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 12341324', 15),
+(217, '2025-04-26 21:10:29', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 98089089', 15),
+(218, '2025-04-26 21:10:36', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 98089089', 15),
+(219, '2025-04-26 21:14:35', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(220, '2025-04-26 21:15:39', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 31039711', 15),
+(221, '2025-04-26 21:17:06', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 34534534', 15),
+(222, '2025-04-26 21:18:15', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 64532134', 15),
+(223, '2025-04-26 21:19:22', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 64532134', 15),
+(224, '2025-04-26 21:19:33', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 34534534', 15),
+(225, '2025-04-26 21:19:37', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 64532134', 15),
+(226, '2025-04-26 21:23:44', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(227, '2025-04-26 21:24:34', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 31039711', 15),
+(228, '2025-04-26 21:27:28', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 31039711', 15),
+(229, '2025-04-26 21:29:47', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(230, '2025-04-26 21:35:05', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 23423434', 15),
+(231, '2025-04-26 21:38:14', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 23423434', 15),
+(232, '2025-04-26 21:57:56', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 34534534', 15),
+(233, '2025-04-26 21:58:58', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 34534534', 15),
+(234, '2025-04-26 21:59:24', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 34534534', 15),
+(235, '2025-04-26 22:22:32', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 23434342', 15),
+(236, '2025-04-26 22:30:47', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 23434342', 15),
+(237, '2025-04-26 22:30:54', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 23434342', 15),
+(238, '2025-04-26 22:32:12', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 30984347', 15),
+(239, '2025-04-26 22:32:43', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 30984347', 15),
+(240, '2025-04-26 22:32:50', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 30984347', 15),
+(241, '2025-04-28 13:19:20', 'Iniciar Sesion', 'Usuarios', 'El usuario: @admin_ca ha iniciado session', 15),
+(242, '2025-04-28 13:20:01', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100990', 15),
+(243, '2025-04-28 13:20:31', 'Modificar', 'Clientes', 'Cliente con la cedula: V- 17100990', 15),
+(244, '2025-04-28 13:20:44', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100990', 15),
+(245, '2025-04-28 13:29:41', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(246, '2025-04-28 14:19:25', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21),
+(247, '2025-04-29 15:13:49', 'Iniciar Sesion', 'Usuarios', 'El usuario: @super_ca ha iniciado session', 21);
 
 -- --------------------------------------------------------
 
@@ -460,6 +530,21 @@ INSERT INTO `detalle_compra_proveedor` (`id_detalleCompraProveedor`, `id_factura
 (12, 12, 24, 1),
 (13, 13, 24, 1),
 (14, 14, 24, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_notificacion`
+--
+
+CREATE TABLE `detalle_notificacion` (
+  `ID` int(25) NOT NULL,
+  `id_detalle_notificaciones` int(25) NOT NULL,
+  `id_admin` int(25) NOT NULL,
+  `mensaje` varchar(100) NOT NULL,
+  `enlace` varchar(50) NOT NULL,
+  `estatus` int(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -649,17 +734,35 @@ CREATE TABLE `notificacion` (
   `id_notificacion` int(11) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `id_admin` int(11) NOT NULL,
-  `mensaje` varchar(200) NOT NULL,
-  `enlace` varchar(100) NOT NULL,
-  `estatus` varchar(100) NOT NULL
+  `titulo` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
 -- Volcado de datos para la tabla `notificacion`
 --
 
-INSERT INTO `notificacion` (`id_notificacion`, `fecha`, `id_admin`, `mensaje`, `enlace`, `estatus`) VALUES
-(1, '2025-04-02 15:47:27', 9, 'El producto  se ha agotado.', 'index.php?action=producto&a=d', 'Sin leer');
+INSERT INTO `notificacion` (`id_notificacion`, `fecha`, `id_admin`, `titulo`) VALUES
+(1, '2025-04-02 15:47:27', 9, 'El producto  se ha agotado.');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pedido`
+--
+
+CREATE TABLE `pedido` (
+  `id_pedido` int(25) NOT NULL,
+  `id_producto` int(25) NOT NULL,
+  `id_cliente` int(25) NOT NULL,
+  `id_modalidad_pago` int(25) NOT NULL,
+  `fecha_emision` date NOT NULL,
+  `monto` int(25) NOT NULL,
+  `cantidad` int(25) NOT NULL,
+  `tipo_entrega` varchar(50) NOT NULL,
+  `rif_banco` int(25) NOT NULL,
+  `tlf` int(25) NOT NULL,
+  `is_active` int(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -965,6 +1068,13 @@ ALTER TABLE `detalle_compra_proveedor`
   ADD KEY `id_producto` (`id_producto`);
 
 --
+-- Indices de la tabla `detalle_notificacion`
+--
+ALTER TABLE `detalle_notificacion`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `id_detalle_notificaciones` (`id_detalle_notificaciones`);
+
+--
 -- Indices de la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
@@ -1019,6 +1129,15 @@ ALTER TABLE `movimientos_caja`
 ALTER TABLE `notificacion`
   ADD PRIMARY KEY (`id_notificacion`),
   ADD KEY `id_admin` (`id_admin`);
+
+--
+-- Indices de la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  ADD PRIMARY KEY (`id_pedido`),
+  ADD KEY `id_producto` (`id_producto`,`id_cliente`,`rif_banco`),
+  ADD KEY `id_modalidad_pago` (`id_modalidad_pago`),
+  ADD KEY `id_cliente` (`id_cliente`);
 
 --
 -- Indices de la tabla `permisos`
@@ -1091,7 +1210,7 @@ ALTER TABLE `accesos`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=248;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
@@ -1104,6 +1223,12 @@ ALTER TABLE `cajas`
 --
 ALTER TABLE `cantidad_producto`
   MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+
+--
+-- AUTO_INCREMENT de la tabla `detalle_notificacion`
+--
+ALTER TABLE `detalle_notificacion`
+  MODIFY `ID` int(25) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `egresos`
@@ -1134,6 +1259,12 @@ ALTER TABLE `movimientos_caja`
 --
 ALTER TABLE `notificacion`
   MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  MODIFY `id_pedido` int(25) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -1210,6 +1341,12 @@ ALTER TABLE `detalle_compra_proveedor`
   ADD CONSTRAINT `detalle_compra_proveedor_ibfk_2` FOREIGN KEY (`id_facturaProveedor`) REFERENCES `compra` (`id_compra`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `detalle_notificacion`
+--
+ALTER TABLE `detalle_notificacion`
+  ADD CONSTRAINT `detalle_notificacion_ibfk_1` FOREIGN KEY (`id_detalle_notificaciones`) REFERENCES `notificacion` (`id_notificacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
@@ -1240,6 +1377,12 @@ ALTER TABLE `movimientos_caja`
 --
 ALTER TABLE `notificacion`
   ADD CONSTRAINT `notificacion_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuarios` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `pedido`
+--
+ALTER TABLE `pedido`
+  ADD CONSTRAINT `pedido_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `producto`

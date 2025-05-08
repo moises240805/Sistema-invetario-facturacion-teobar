@@ -441,7 +441,7 @@ class Producto extends Conexion{
         }
     }
 
-    private function Guardar_Producto2() {
+    public function Guardar_Producto2() {
         $conn = null;
         try {
             $conn = $this->getConnection();
@@ -539,6 +539,7 @@ class Producto extends Conexion{
                         GROUP_CONCAT(cp.precio SEPARATOR ' $ Bs\n ') AS precio, 
                         GROUP_CONCAT(cp.peso SEPARATOR '\n ') AS peso,
                         GROUP_CONCAT(m.nombre_medida SEPARATOR '\n ') AS nombre_medida, 
+                        GROUP_CONCAT(cp.id_unidad_medida SEPARATOR '\n ') AS id_medida, 
                         a.nombre_motivo,
                         s.presentacion
                       FROM producto p  
@@ -563,7 +564,7 @@ class Producto extends Conexion{
         }
     }
 
-    private function Mostrar_Producto2() {
+    public function Mostrar_Producto2() {
         $conn = null;
         try {
             $conn = $this->getConnection();
@@ -718,21 +719,29 @@ class Producto extends Conexion{
         $conn = null;
         try {
             $conn = $this->getConnection();
-
+            $conn->beginTransaction();
+    
             $query = "DELETE FROM producto WHERE id_producto = :id_producto";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt->execute();
 
-            if ($stmt->execute()) {
-                return ['status' => true, 'msj' => 'Producto eliminado correctamente'];
-            } else {
-                return ['status' => false, 'msj' => 'Error al eliminar el producto'];
-            }
+            $query2 = "DELETE FROM cantidad_producto WHERE id_producto = :id_producto";
+            $stmt2 = $conn->prepare($query2);
+            $stmt2->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
+            $stmt2->execute();
+    
+            $conn->commit();
+            return ['status' => true, 'msj' => 'Producto eliminado correctamente'];
         } catch (PDOException $e) {
+            if ($conn) {
+                $conn->rollBack();
+            }
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
             $conn = null;
         }
     }
+    
 }
 ?>

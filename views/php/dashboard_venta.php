@@ -131,13 +131,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                        require_once "controllers/VentaController.php";
-
-
-                $venta = new Venta();
-                    
-                $venta = $venta->Mostrar_Venta();
-                
                 foreach ($venta as $venta): 
             ?>
             <tr>
@@ -165,11 +158,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
-<?php
-                        require_once "controllers/ClienteController.php";
 
-                        require_once "controllers/ProductoController.php";
-?>
+
+
 
 
 <div class="modal fade show" id="agregarVentaModal" tabindex="-1" role="dialog" aria-labelledby="agregarVentaModalLabel" aria-hidden="false">
@@ -184,20 +175,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <form class="formulario2" action="index.php?action=venta&a=agregar" method="post" name="form">
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <?php
-                        $banco = new Venta;
-                        $bancos = $banco->obtenerBancos();
-
-                        $pago = new Venta;
-                        $pagos = $pago->obtenerPagos();
-
-                        //$cliente = new Cliente();
-                        //$clientes = $cliente->Mostrar_Cliente();
-
-                        $producto = new Producto();
-                        $productos = $producto->Mostrar_Producto2();
-                        ?>
-
                         <div class="row">
                         <table class="table table-bordered" id="tablaFormulario">
                             <thead>

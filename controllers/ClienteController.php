@@ -3,6 +3,7 @@
 require_once 'models/Cliente.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
+require_once 'views/php/utils.php';
 
 //Se instancia los modelos
 $controller = new Cliente();
@@ -13,29 +14,52 @@ $usuario = new Roles();
 $modulo = 'Clientes';
 date_default_timezone_set('America/Caracas');//Zona horaria
 
-// Función para generar mensaje de error
-function setError($message) {
-    $_SESSION['message_type'] = 'danger';
-    $_SESSION['message'] = $message;
-}
-
-// Función para generar mensaje de éxito
-function setSuccess($message) {
-    $_SESSION['message_type'] = 'success';
-    $_SESSION['message'] = $message;
-}
-
 
 //Esta variable manejara de forma dinamica las solicitudes http ya sean post o get
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
-{
+
+//Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
+switch ($action) {
+    case "agregar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            agregarCliente($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerCliente($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "actualizar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            actualizarCliente($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "eliminar":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            eliminarCliente($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "d":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            consultarCliente($controller, $usuario, $modulo);
+        }
+        break;
+    default:
+        consultarCliente($controller, $usuario, $modulo);
+        break;
+}
+
+
+
+// Función para agregar un cliente
+function agregarCliente($controller, $bitacora, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+    if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
     
         // Obtiene los valores del formulario y los sanitiza
@@ -67,7 +91,7 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
         try {
 
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-            $resultado = $controller->manejarAccion($action, $cliente);
+            $resultado = $controller->manejarAccion("agregar", $cliente);
         
 
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -87,7 +111,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
                 $bitacora->setBitacoraData($bitacora_data);
                 $bitacora->Guardar_Bitacora();
         
-            } else {
+            } 
+            else {
                 // Error: usar mensaje dinámico o genérico
                 $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
                 setError($mensajeError);
@@ -106,7 +131,11 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     require_once 'views/php/dashboard_cliente.php';
     exit();
 }
-elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+
+
+// Función para obtener un cliente
+function obtenerCliente($controller, $bitacora, $usuario, $modulo) {
     
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -122,7 +151,7 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
         }
 
         $accion="obtener";
-        $cliente=$controller->manejarAccion($accion,$id_cliente);
+        $cliente=$controller->manejarAccion("obtener",$id_cliente);
         echo json_encode($cliente);
     //}
     //muestra un modal de info que dice acceso no permitido
@@ -130,7 +159,12 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     //require_once 'views/php/dashboard_cliente.php';
     //exit();
 }
-else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+
+
+// Función para actualizar un cliente
+function actualizarCliente($controller, $bitacora, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -165,7 +199,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     try {
 
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-        $resultado = $controller->manejarAccion($action, $cliente);
+        $resultado = $controller->manejarAccion("actualizar", $cliente);
            
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -205,7 +239,9 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+// Función para eliminar un cliente
+function eliminarCliente($controller, $bitacora, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -236,7 +272,7 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     try {
 
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-        $resultado = $controller->manejarAccion($action, $id_cliente);
+        $resultado = $controller->manejarAccion("eliminar", $id_cliente);
            
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -273,7 +309,10 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     require_once 'views/php/dashboard_cliente.php';
     exit();
 }
-elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+
+// Función para consultar clientes
+function consultarCliente($controller, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -294,11 +333,4 @@ elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
 }
-elseif ($action == 'v' && $_SERVER["REQUEST_METHOD"] == "GET") {
-
-        $clientes =$controller->manejarAccion("consultar",null);
-        require_once 'views/php/dashboard_venta.php';  
-
-}
-
 ?>
