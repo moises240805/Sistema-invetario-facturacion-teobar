@@ -274,7 +274,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <select name="tipo_compra" class="form-control">
                                         <option value="">Selecione</option>
                                         <option value="5">Credito</option>
-                                        <option value="6">Descontado</option>
+                                        <option value="6">Contado</option>
                                     </select>
                                 </div>
                             </div>

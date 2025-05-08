@@ -22,24 +22,113 @@ class Venta extends Conexion{
         parent::__construct();
     }
 
-    public function setVentaData($venta) {
+    private function setVentaData($venta) {
         if (is_string($venta)) {
             $venta = json_decode($venta, true);
         }
     
-        $this->id_venta = $venta['id_venta'] ?? null;
-        $this->id_producto = $venta['productos']['id_producto'] ?? null;
-        $this->id_medida = $venta['productos']['id_medida'] ?? null;
-        $this->tipo_compra = $venta['tipo_compra'] ?? null;
-        $this->tlf = $venta['tlf'] ?? null;
-        $this->id_cliente = $venta['id_cliente'] ?? null;
-        $this->cantidad = $venta['cantidad'] ?? null;
-        $this->fech_emision = $venta['fech_emision'] ?? null;
-        $this->id_modalidad_pago = $venta['id_modalidad_pago'] ?? null;
-        $this->monto = $venta['monto'] ?? null;
-        $this->tipo_entrega = $venta['tipo_entrega'] ?? null;
-        $this->rif_banco = $venta['rif_banco'] ?? null;
+        // Expresiones regulares para validar campos específicos
+        $exp_id = "/^\d+$/"; // solo números para ids
+        $exp_tipo_compra = "/^(5|6)$/i"; // ejemplo: tipos permitidos
+        $exp_tlf = "/^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/";
+        $exp_tipo_entrega = "/^(Directa|Delivery)$/i"; // ejemplo: tipos permitidos
+        $exp_rif_banco = "/^[A-Z0-9\-]+$/i"; // ejemplo: caracteres permitidos para rif banco
+    
+        // Validar id_venta
+        if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
+            return ['status' => false, 'msj' => 'ID de venta inválido'];
+        }
+        $this->id_venta = (int)$venta['id_venta'];
+    
+        // Validar id_producto
+        if (!isset($venta['productos']['id_producto']) || !preg_match($exp_id, $venta['productos']['id_producto'])) {
+            return ['status' => false, 'msj' => 'ID de producto inválido'];
+        }
+        $this->id_producto = (int)$venta['productos']['id_producto'];
+    
+        // Validar id_medida
+        if (!isset($venta['productos']['id_medida']) || !preg_match($exp_id, $venta['productos']['id_medida'])) {
+            return ['status' => false, 'msj' => 'ID de medida inválido'];
+        }
+        $this->id_medida = (int)$venta['productos']['id_medida'];
+    
+        // Validar tipo_compra
+        $tipo_compra = trim($venta['tipo_compra'] ?? '');
+        if (!preg_match($exp_tipo_compra, $tipo_compra)) {
+            return ['status' => false, 'msj' => 'Tipo de compra inválido'];
+        }
+        $this->tipo_compra = strtolower($tipo_compra);
+    
+        // Validar teléfono
+        $tlf = trim($venta['tlf'] ?? '');
+        if (!preg_match($exp_tlf, $tlf)) {
+            return ['status' => false, 'msj' => 'Teléfono inválido'];
+        }
+        $this->tlf = $tlf;
+    
+        // Validar id_cliente
+        if (!isset($venta['id_cliente']) || !preg_match($exp_id, $venta['id_cliente'])) {
+            return ['status' => false, 'msj' => 'ID de cliente inválido'];
+        }
+        $this->id_cliente = (int)$venta['id_cliente'];
+    
+        // Validar cantidad (debe ser numérico y mayor que 0)
+        if (!isset($venta['cantidad']) || !is_numeric($venta['cantidad']) || $venta['cantidad'] <= 0) {
+            return ['status' => false, 'msj' => 'Cantidad inválida'];
+        }
+        $this->cantidad = (float)$venta['cantidad'];
+    
+        // Validar fecha de emisión (formato YYYY-MM-DD)
+        $fech_emision = trim($venta['fech_emision'] ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fech_emision) || !strtotime($fech_emision)) {
+            return ['status' => false, 'msj' => 'Fecha de emisión inválida'];
+        }
+        $this->fech_emision = $fech_emision;
+    
+        // Validar id_modalidad_pago
+        if (!isset($venta['id_modalidad_pago']) || !preg_match($exp_id, $venta['id_modalidad_pago'])) {
+            return ['status' => false, 'msj' => 'ID de modalidad de pago inválido'];
+        }
+        $this->id_modalidad_pago = (int)$venta['id_modalidad_pago'];
+    
+        // Validar monto (numérico y mayor que 0)
+        if (!isset($venta['monto']) || !is_numeric($venta['monto']) || $venta['monto'] <= 0) {
+            return ['status' => false, 'msj' => 'Monto inválido'];
+        }
+        $this->monto = (float)$venta['monto'];
+    
+        // Validar tipo_entrega
+        $tipo_entrega = trim($venta['tipo_entrega'] ?? '');
+        if (!preg_match($exp_tipo_entrega, $tipo_entrega)) {
+            return ['status' => false, 'msj' => 'Tipo de entrega inválido'];
+        }
+        $this->tipo_entrega = strtolower($tipo_entrega);
+    
+        // Validar rif_banco (puede ser opcional, validar si existe)
+        $rif_banco = trim($venta['rif_banco'] ?? '');
+        if ($rif_banco !== '' && !preg_match($exp_rif_banco, $rif_banco)) {
+            return ['status' => false, 'msj' => 'RIF banco inválido'];
+        }
+        $this->rif_banco = $rif_banco !== '' ? strtoupper($rif_banco) : null;
+    
+        return ['status' => true, 'msj' => 'Datos de venta validados correctamente'];
     }
+
+    private function setValideId($venta) {
+        if (is_string($venta)) {
+            $venta = json_decode($venta, true);
+        }
+    
+        // Expresiones regulares para validar campos específicos
+        $exp_id = "/^\d+$/"; // solo números para ids
+    
+        // Validar id_venta
+        if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
+            return ['status' => false, 'msj' => 'ID de venta inválido'];
+        }
+        $this->id_venta = (int)$venta['id_venta'];
+        }
+    
     
 
     // Getters
@@ -141,7 +230,57 @@ class Venta extends Conexion{
     }
 
     //Metodos
-    public function Guardar_Venta() 
+
+
+
+    //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $venta) {
+        switch ($accion) {
+
+            case 'agregar':
+                $validacion=$this->setVentaData($venta);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Guardar_Venta();
+                }
+                break;
+
+            case 'actualizar':
+
+
+            case 'obtenerBancos':
+                    return $this->obtenerBancos();
+                
+            case 'obtenerPagos':
+                    return $this->obtenerPagos();
+                    
+
+            case 'eliminar':
+                $validacion=$this->setValideId($venta);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Eliminar_Venta($venta);
+                }
+
+            case 'consultar':
+
+                    return $this->Mostrar_Venta();
+                
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
+        }
+    }
+
+
+
+    private function Guardar_Venta() 
     { 
         try { 
             $this->conn->beginTransaction(); 
@@ -162,13 +301,15 @@ class Venta extends Conexion{
                 
                 // Verificar si se encontró el producto
                 if (!$producto) {
-                    echo "Producto no encontrado: ID " . $producto_id;
-                    continue; // Saltar a la siguiente iteración si no se encuentra el producto
+                    // No se encontró el producto, hacer rollback y retornar error
+                    $this->conn->rollBack();
+                    return ['status' => false, 'msj' => "Producto no encontrado: ID $producto_id"];
                 }
         
                 // Comprobar si hay suficiente cantidad
                 if ($producto['cantidad'] < $cantidad) { 
-                   return false; // Saltar a la siguiente iteración si no hay suficiente cantidad
+                    $this->conn->rollBack();
+                    return ['status' => false, 'msj' => "Cantidad insuficiente para el producto ID $producto_id"];
                 } 
         
                 // Registrar la venta 
@@ -181,18 +322,18 @@ class Venta extends Conexion{
                 $stmt2->bindParam(':cantidad', $cantidad); 
                 $stmt2->bindParam(':fech_emision', $this->fech_emision); 
                 $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
-                $stmt2->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto
+                $stmt2->bindParam(':monto', $this->monto); // Asegúrate que monto sea correcto para cada producto
                 $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega); 
                 $stmt2->bindParam(':rif_banco', $this->rif_banco); 
                 $stmt2->execute();
-
+    
                 $stmt3 = $this->conn->prepare("INSERT INTO detalle_producto (id_detalle_producto, id_venta, id_producto, cantidad_producto, id_medida_especifica, precio) VALUES (:id_detalleproducto, :id_venta, :id_producto, :cantidad, :id_medida, :monto)"); 
                 $stmt3->bindParam(':id_venta', $this->id_venta); 
                 $stmt3->bindParam(':id_producto', $producto_id); 
                 $stmt3->bindParam(':id_medida', $medida_id); 
                 $stmt3->bindParam(':cantidad', $cantidad); 
                 $stmt3->bindParam(':id_detalleproducto', $this->id_venta); 
-                $stmt3->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
+                $stmt3->bindParam(':monto', $this->monto); // Asegúrate que monto sea correcto para cada producto 
                 $stmt3->execute(); 
         
                 // Descontar la cantidad del producto 
@@ -203,44 +344,45 @@ class Venta extends Conexion{
                 $stmt4->bindParam(':id_medida', $medida_id); 
                 $stmt4->execute(); 
             }
-
-            $n=5;
-            $m=$this->tipo_compra;
-            if($m==$n)
-            {
+    
+            // Si tipo_compra es igual a 5 (según tu lógica)
+            $n = 5;
+            $m = $this->tipo_compra;
+            if ($m == $n) {
                 $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_cobrar (id_cuentaCobrar, id_venta, fecha_cuentaCobrar, monto_cuentaCobrar) VALUES (:id_cuentaCobrar, :id_venta, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
                 $stmt5->bindParam(':id_venta', $this->id_venta); 
                 $stmt5->bindParam(':id_cuentaCobrar', $this->id_venta);
                 $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
-                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
+                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate que monto sea correcto
                 $stmt5->execute();  
             }
-
-            $id_actualizacion=1;
+    
+            $id_actualizacion = 1;
             $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
             $stmt6->bindParam(':id_actualizacion', $id_actualizacion); 
             $stmt6->bindParam(':id_producto', $producto_id); 
             $stmt6->execute(); 
-
+    
             // Confirmar la transacción solo si todas las operaciones fueron exitosas
             if ($this->conn->inTransaction()) {
                 $this->conn->commit(); 
             }
             
-            return true; 
+            return ['status' => true, 'msj' => 'Venta registrada correctamente']; 
     
         } catch (Exception $e) { 
             // Revertir la transacción en caso de error 
             if ($this->conn->inTransaction()) { 
                 $this->conn->rollBack(); 
             } 
-            echo "Error al registrar la venta: Cantidad no disponible " . $e->getMessage(); 
+            return ['status' => false, 'msj' => 'Error al registrar la venta: ' . $e->getMessage()]; 
         } 
     }
     
+    
 
     // Método para obtener todas las venta de la base de datos
-    public function Mostrar_Venta() {
+    private function Mostrar_Venta() {
         // Consulta SQL para seleccionar todos los registros de la tabla venta
         $query = "SELECT 
                     v.id_venta, 
@@ -371,7 +513,7 @@ class Venta extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerBancos() {
+    private function obtenerBancos() {
         $query = "SELECT * FROM bancos";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
@@ -381,7 +523,7 @@ class Venta extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerPagos() {
+    private function obtenerPagos() {
         $query = "SELECT * FROM modalidad_de_pago";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
