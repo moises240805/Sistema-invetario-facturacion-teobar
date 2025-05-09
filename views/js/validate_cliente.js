@@ -1,158 +1,160 @@
-function SoloNumeros(evt) {
-    const charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-        return false;
-    }
-    return true;
-}
+$(document).ready(function() {
+    // Solo números en campos numeric
+    $('.numeric').on('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
 
-function SoloLetras(evt) {
-    const charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode <= 32 || (charCode >= 37 && charCode <= 40)) {
-        return true;
-    }
-    if (charCode >= 65 && charCode <= 90) {
-        return true;
-    }
-    if (charCode >= 97 && charCode <= 122) {
-        return true;
-    }
-    if (charCode >= 192 && charCode <= 255) {
-        return true;
-    }
-    if (charCode === 32) {
-        return true;
-    }
-    return false;
-}
-function onlyLetters(e) {
-    const char = String.fromCharCode(e.keyCode || e.which);
-    const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s]$/;
+    // Solo letras y ciertos caracteres en campos alpha
+    $('.alpha').on('input', function() {
+        this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s-]/g, '');
+    });
+
+
     
-    if (!regex.test(char)) {
-        e.preventDefault();
-        return false;
-    }
-    return true;
-}
-
-function validateId() { 
-    const idInput = document.getElementById('id'); 
-    const idError = document.getElementById('idError'); 
-
-    // Verifica si la longitud del valor está entre 6 y 8
-    if (idInput.value.length < 6 || idInput.value.length > 8) { 
-        idError.textContent = "CI debe tener entre 6 y 8 dígitos."; 
-        return false;
-    } else { 
-        idError.textContent = "";
-        return true; 
-    } 
-}
-
-function validateId2() { 
-    const idInput = document.getElementById('id2'); 
-    const idError = document.getElementById('idError2'); 
-
-    // Verifica si la longitud del valor está entre 6 y 8
-    if (idInput.value.length < 6 || idInput.value.length > 8) { 
-        idError.textContent = "El RIF debe tener entre 6 y 10 dígitos."; 
-        return false;
-    } else { 
-        idError.textContent = "";
-        return true; 
-    } 
-}
-
-function validateName() {   
-    const nameInput = document.getElementById('nombre');  
-    const nameError = document.getElementById('nameError');   
-     
-    // Expresión regular que permite letras, espacios y guiones  
-    const regex = /^[A-Za-z\s-]+$/;   
-    if (!regex.test(nameInput.value)) {   
-        nameError.textContent = "El nombre solo puede contener letras.";  
-        return false; 
-    } else {   
-        nameError.textContent = "";   
-        return true;
-    }   
-}      
-
-function validatePhone() {
-    const phoneInput = document.getElementById('numero_tlf');
-    const phoneError = document.getElementById('phoneError');
+        // Validaciones para formulario AGREGAR (#miFormulario)
+        $('#id').on('input', validateIdAgregar);
+        $('#nombre').on('input', validateNameAgregar);
+        $('#numero_tlf2').on('input', validatePhoneAgregar);
+        $('#email2').on('input', validateEmailAgregar);
+        $('#direccion2').on('input', validateAddressAgregar);
     
-    if (phoneInput.value.length !== 7) {
-        phoneError.textContent = "El teléfono debe tener exactamente 7 dígitos.";
-        return false;
-    } else {
-        phoneError.textContent = "";
-        return true;
-    }
-}
-
-function validatePhone2() {
-    const phoneInput = document.getElementById('numero_tlf2');
-    const phoneError = document.getElementById('phoneError2');
+        $('#miFormulario').on('submit', function(e) {
+            const valid = [
+                validateIdAgregar.call($('#id')[0]),
+                validateNameAgregar.call($('#nombre')[0]),
+                validatePhoneAgregar.call($('#numero_tlf2')[0]),
+                validateEmailAgregar.call($('#email2')[0]),
+                validateAddressAgregar.call($('#direccion2')[0])
+            ].every(Boolean);
     
-    if (phoneInput.value.length !== 7) {
-        phoneError.textContent = "El teléfono debe tener exactamente 7 dígitos.";
-        return false;
-    } else {
-        phoneError.textContent = "";
-        return true;
-    }
-}
-
-function validateEmail() {
-    const emailInput = document.getElementById('email');
-    const emailError = document.getElementById('emailError');
+            if (!valid) {
+                e.preventDefault();
+                $('.is-invalid').first().focus();
+            }
+        });
     
-    // Corrige la expresión regular para el email
-    const regex = /^[^.@]+@[^.]+\.[^.]+$/;
+        // Validaciones para formulario MODIFICAR (sin id, con clase .entrada)
+        $('#id_cliente2').on('input', validateIdModificar);
+        $('#nombre_cliente').on('input', validateNameModificar);
+        $('#numero_tlf').on('input', validatePhoneModificar);
+        $('#email').on('input', validateEmailModificar);
+        $('#direccion').on('input', validateAddressModificar);
     
-    if (!regex.test(emailInput.value)) {
-        emailError.textContent = "Por favor ingresa un correo electrónico válido.";
-        return false;
-    } else {
-        emailError.textContent = "";
-        return true;
-    }
-}
-
-function validateAddress() {
-    const addressInput = document.querySelector('input[name="direccion"]');
-    const addressError = document.getElementById('addressError');
+        $('form[name="form"]').not('#miFormulario').on('submit', function(e) {
+            const valid = [
+                validateIdModificar.call($('#id_cliente2')[0]),
+                validateNameModificar.call($('#nombre_cliente')[0]),
+                validatePhoneModificar.call($('#numero_tlf')[0]),
+                validateEmailModificar.call($('#email')[0]),
+                validateAddressModificar.call($('#direccion')[0])
+            ].every(Boolean);
     
-    if (addressInput.value.trim() === "") {
-        addressError.textContent = "Este campo no puede estar vacío.";
-        return false;
-    } else {        
-      addressError.textContent = "";
-      return true;
-   }
-}
-
-// Función para validar todo el formulario antes de enviar
-function validateForm2() {
-   const isValidId = validateId();
-   const isValidId2 = validateId2();
-   const isValidName = validateName();
-   const isValidPhone = validatePhone();
-   const isValidPhone2 = validatePhone2();
-   const isValidEmail = validateEmail();
-   const isValidAddress = validateAddress();
-
-   return isValidId && isValidId2 && isValidName && isValidPhone && isValidPhone2 && isValidEmail && isValidAddress;
-}
-
-function validateForm() {
-    const isValidId = validateId();
-    const isValidName = validateName();
-    const isValidPhone = validatePhone();
-    const isValidEmail = validateEmail();
-    const isValidAddress = validateAddress();
- 
-    return isValidId && isValidName && isValidPhone && isValidEmail && isValidAddress;
- }
+            if (!valid) {
+                e.preventDefault();
+                $('.is-invalid').first().focus();
+            }
+        });
+    
+        // Funciones para AGREGAR
+        function validateIdAgregar() {
+            const $input = $(this);
+            const val = $input.val();
+            const isValid = val.length >= 6 && val.length <= 8;
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            $('#idError').toggleClass('show', !isValid).text(isValid ? '' : 'Entre 6 y 8 dígitos');
+            return isValid;
+        }
+    
+        function validateNameAgregar() {
+            const $input = $(this);
+            const val = $input.val();
+            const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s-]+$/;
+            const isValid = regex.test(val) && val.trim() !== '';
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            $('#nameError').toggleClass('show', !isValid).text(isValid ? '' : 'Solo letras y guiones');
+            return isValid;
+        }
+    
+        function validatePhoneAgregar() {
+            const $input = $(this);
+            const val = $input.val();
+            const isValid = val.length === 7;
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            $('#phoneError').toggleClass('show', !isValid).text(isValid ? '' : '7 dígitos requeridos');
+            return isValid;
+        }
+    
+        function validateEmailAgregar() {
+            const $input = $(this);
+            const val = $input.val();
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = regex.test(val);
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            $('#emailError').toggleClass('show', !isValid).text(isValid ? '' : 'Formato inválido');
+            return isValid;
+        }
+    
+        function validateAddressAgregar() {
+            const $input = $(this);
+            const val = $input.val().trim();
+            const isValid = val !== '';
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            $('#addressError').toggleClass('show', !isValid).text(isValid ? '' : 'Dirección requerida');
+            return isValid;
+        }
+    
+        // Funciones para MODIFICAR
+        function validateIdModificar() {
+            const $input = $(this);
+            const val = $input.val();
+            const isValid = val.length >= 6 && val.length <= 8;
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            // No tienes un span para error aquí, puedes agregar uno si quieres
+            return isValid;
+        }
+    
+        function validateNameModificar() {
+            const $input = $(this);
+            const val = $input.val();
+            const regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s-]+$/;
+            const isValid = regex.test(val) && val.trim() !== '';
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            return isValid;
+        }
+    
+        function validatePhoneModificar() {
+            const $input = $(this);
+            const val = $input.val();
+            const isValid = val.length === 7;
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            return isValid;
+        }
+    
+        function validateEmailModificar() {
+            const $input = $(this);
+            const val = $input.val();
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = regex.test(val);
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            return isValid;
+        }
+    
+        function validateAddressModificar() {
+            const $input = $(this);
+            const val = $input.val().trim();
+            const isValid = val !== '';
+    
+            $input.toggleClass('is-invalid', !isValid).toggleClass('is-valid', isValid);
+            return isValid;
+        }
+    });
+    

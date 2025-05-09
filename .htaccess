@@ -7,3 +7,57 @@ RewriteRule ^ index.php [QSA,L]
 RewriteEngine On
 RewriteCond %{REQUEST_URI} ^/(controllers|models|views)/.*\.php$
 RewriteRule ^ - [F,L]
+
+
+RewriteEngine On
+
+# Login
+RewriteRule ^login/?$ index.php?action=login [L,QSA]
+
+# Página principal
+RewriteRule ^pagina/?$ index.php?action=pagina [L,QSA]
+
+# Dashboard
+RewriteRule ^dashboard/?$ index.php?action=dashboard [L,QSA]
+
+# Producto
+RewriteRule ^producto/listar/?$ index.php?action=producto&a=d [L,QSA]
+RewriteRule ^producto/agregar/?$ index.php?action=producto&a=agregar [L,QSA]
+RewriteRule ^producto/formulario/?$ index.php?action=producto&a=mid_form [L,QSA]
+RewriteRule ^producto/actualizar/?$ index.php?action=producto&a=actualizar [L,QSA]
+RewriteRule ^producto/eliminar/?$ index.php?action=producto&a=eliminar [L,QSA]
+
+# Usuario
+RewriteRule ^usuario/listar/?$ index.php?action=usuario&a=d [L,QSA]
+RewriteRule ^usuario/agregar/?$ index.php?action=usuario&a=agregar [L,QSA]
+RewriteRule ^usuario/formulario/?$ index.php?action=usuario&a=mid_form [L,QSA]
+RewriteRule ^usuario/actualizar/?$ index.php?action=usuario&a=actualizar [L,QSA]
+RewriteRule ^usuario/eliminar/?$ index.php?action=usuario&a=eliminar [L,QSA]
+
+# Tipo
+RewriteRule ^tipo/listar/?$ index.php?action=tipo&a=t [L,QSA]
+RewriteRule ^tipo/agregar/?$ index.php?action=tipo&a=agregar [L,QSA]
+RewriteRule ^tipo/formulario/?$ index.php?action=tipo&a=mid_form [L,QSA]
+RewriteRule ^tipo/actualizar/?$ index.php?action=tipo&a=actualizar [L,QSA]
+RewriteRule ^tipo/eliminar/?$ index.php?action=tipo&a=eliminar [L,QSA]
+
+# Cliente
+RewriteRule ^cliente/listar/?$ index.php?action=cliente&a=d [L,QSA]
+RewriteRule ^cliente/agregar/?$ index.php?action=cliente&a=agregar [L,QSA]
+RewriteRule ^cliente/formulario/?$ index.php?action=cliente&a=mid_form [L,QSA]
+RewriteRule ^cliente/actualizar/?$ index.php?action=cliente&a=actualizar [L,QSA]
+RewriteRule ^cliente/eliminar/?$ index.php?action=cliente&a=eliminar [L,QSA]
+
+# Proveedor
+RewriteRule ^proveedor/listar/?$ index.php?action=proveedor&a=d [L,QSA]
+RewriteRule ^proveedor/agregar/?$ index.php?action=proveedor&a=agregar [L,QSA]
+RewriteRule ^proveedor/formulario/?$ index.php?action=proveedor&a=mid_form [L,QSA]
+RewriteRule ^proveedor/actualizar/?$ index.php?action=proveedor&a=actualizar [L,QSA]
+RewriteRule ^proveedor/eliminar/?$ index.php?action=proveedor&a=eliminar [L,QSA]
+
+# Venta
+RewriteRule ^venta/listar/?$ index.php?action=venta&a=v [L,QSA]
+RewriteRule ^venta/agregar/?$ index.php?action=venta&a=agregar [L,QSA]
+RewriteRule ^venta/formulario/?$ index.php?action=venta&a=mid_form [L,QSA]
+RewriteRule ^venta/actualizar/?$ index.php?action=venta&a=actualizar [L,QSA]
+RewriteRule ^venta/eliminar/?$ index.php?action=venta&a=eliminar [L,QSA]

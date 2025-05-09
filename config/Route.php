@@ -15,10 +15,11 @@ $rutas = [
     'compra' => 'controllers/CompraController.php',
     'pagar' => 'controllers/PagarController.php',
     'pago' => 'views/php/dashboard_pago.php',
-    'movimientos' => 'controllers/IngresoEgresoController.php',
+    'movimientos' => 'controllers/ManejoController.php',
     'bitacora' => 'controllers/BitacoraController.php',
     'notificacion' => 'controllers/NotificacionController.php',
     'reportes' => 'controllers/ReportController.php',
+    'roles' => 'controllers/RolesController.php',
 ];
 
 ?>

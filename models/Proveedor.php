@@ -23,19 +23,94 @@ class Proveedor extends Conexion{
     private function setProveedorData($proveedor) {
         if (is_string($proveedor)) {
             $proveedor = json_decode($proveedor, true);
+            if ($proveedor === null) {
+                return ['status' => false, 'msj' => 'JSON inválido'];
+            }
         }
-
-
-        $this->id_proveedor = $proveedor['id_proveedor'] ?? null;
-        $this->nombre_proveedor = $proveedor['nombre_proveedor'];
-        $this->direccion_proveedor = $proveedor['direccion_proveedor'];
-        $this->tlf_proveedor = $proveedor['telefono_proveedor'];
-        $this->id_representante_legal = $proveedor['id_representante_legal'] ?? null;
-        $this->nombre_representante_legal = $proveedor['nombre_representante_legal'];
-        $this->tlf_representante_legal = $proveedor['telefono_representante_legal'] ?? null;
-        $this->tipo = $proveedor['tipo'] ?? null;
-        $this->tipo2 = $proveedor['tipo2'] ?? null;
+    
+        // Expresiones regulares para validar campos
+        $exp_nombre = "/^[a-zA-ZÀ-ÖØ-öø-ÿ\s]{1,50}$/u"; // Letras y espacios, max 50 caracteres
+        $exp_direccion = "/^[a-zA-Z0-9À-ÖØ-öø-ÿ\s\.,#\-]{1,100}$/u"; // Letras, números y algunos símbolos, max 100 caracteres
+        $exp_telefono = "/^\+?\d{7,15}$/"; // Teléfono con 7 a 15 dígitos, opcional '+' al inicio
+        $exp_tipo = "/^\w{0,20}$/"; // Palabra alfanumérica, max 20 caracteres (ajustar según necesidades)
+        $exp_id = "/^\d+$/"; // Números enteros positivos
+    
+        // Validar id_proveedor (opcional, entero)
+        if (isset($proveedor['id_proveedor']) && !preg_match($exp_id, strval($proveedor['id_proveedor']))) {
+            return ['status' => false, 'msj' => 'ID de proveedor inválido'];
+        }
+        $this->id_proveedor = isset($proveedor['id_proveedor']) ? (int)$proveedor['id_proveedor'] : null;
+    
+        // Validar nombre_proveedor (obligatorio)
+        $nombre_prov = trim($proveedor['nombre_proveedor'] ?? '');
+        if ($nombre_prov === '' || !preg_match($exp_nombre, $nombre_prov)) {
+            return ['status' => false, 'msj' => 'Nombre de proveedor inválido o vacío'];
+        }
+        $this->nombre_proveedor = $nombre_prov;
+    
+        // Validar direccion_proveedor (obligatorio)
+        $direccion_prov = trim($proveedor['direccion_proveedor'] ?? '');
+        if ($direccion_prov === '' || !preg_match($exp_direccion, $direccion_prov)) {
+            return ['status' => false, 'msj' => 'Dirección de proveedor inválida o vacía'];
+        }
+        $this->direccion_proveedor = $direccion_prov;
+    
+        // Validar telefono_proveedor (obligatorio)
+        $tlf_prov = trim($proveedor['telefono_proveedor'] ?? '');
+        if ($tlf_prov === '' || !preg_match($exp_telefono, $tlf_prov)) {
+            return ['status' => false, 'msj' => 'Teléfono de proveedor inválido o vacío'];
+        }
+        $this->tlf_proveedor = $tlf_prov;
+    
+        // Validar id_representante_legal (opcional, entero)
+        if (isset($proveedor['id_representante_legal']) && !preg_match($exp_id, strval($proveedor['id_representante_legal']))) {
+            return ['status' => false, 'msj' => 'ID de representante legal inválido'];
+        }
+        $this->id_representante_legal = isset($proveedor['id_representante_legal']) ? (int)$proveedor['id_representante_legal'] : null;
+    
+        // Validar nombre_representante_legal (obligatorio)
+        $nombre_rep = trim($proveedor['nombre_representante_legal'] ?? '');
+        if ($nombre_rep === '' || !preg_match($exp_nombre, $nombre_rep)) {
+            return ['status' => false, 'msj' => 'Nombre del representante legal inválido o vacío'];
+        }
+        $this->nombre_representante_legal = $nombre_rep;
+    
+        // Validar telefono_representante_legal (opcional)
+        $tlf_rep = trim($proveedor['telefono_representante_legal'] ?? '');
+        if ($tlf_rep !== '' && !preg_match($exp_telefono, $tlf_rep)) {
+            return ['status' => false, 'msj' => 'Teléfono del representante legal inválido'];
+        }
+        $this->tlf_representante_legal = $tlf_rep !== '' ? $tlf_rep : null;
+    
+        // Validar tipo (opcional)
+        $tipo = trim($proveedor['tipo'] ?? '');
+        if ($tipo !== '' && !preg_match($exp_tipo, $tipo)) {
+            return ['status' => false, 'msj' => 'Tipo inválido'];
+        }
+        $this->tipo = $tipo !== '' ? $tipo : null;
+    
+        // Validar tipo2 (opcional)
+        $tipo2 = trim($proveedor['tipo2'] ?? '');
+        if ($tipo2 !== '' && !preg_match($exp_tipo, $tipo2)) {
+            return ['status' => false, 'msj' => 'Tipo2 inválido'];
+        }
+        $this->tipo2 = $tipo2 !== '' ? $tipo2 : null;
+    
+        // Todo validado y asignado correctamente
+        return ['status' => true, 'msj' => 'Datos de proveedor validados correctamente'];
     }
+
+
+    private function setValideId($proveedor){
+
+        // Validar id_cliente y tipo_id como numéricos
+    if (!is_numeric($proveedor) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+    $this->id_proveedor = (int)$proveedor;
+    return ['status' => true, 'msj' => 'ID validado correctamente'];
+}
+    
     
 
         // Getters
@@ -113,125 +188,203 @@ class Proveedor extends Conexion{
         }
 
     //Metodos
+
+
+
+
+        //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
     public function manejarAccion($accion, $proveedor) {
         switch ($accion) {
             case 'agregar':
-                $this->setProveedorData($proveedor);
+                $validacion = $this->setProveedorData($proveedor);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
                 return $this->Guardar_Proveedor();
+    
             case 'actualizar':
-                $this->setProveedorData($proveedor);
+                $validacion = $this->setProveedorData($proveedor);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
                 return $this->Actualizar_Proveedor();
+    
             case 'obtener':
+                $validacion = $this->setValideId($proveedor);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
                 return $this->Obtener_Proveedor($proveedor);
+    
             case 'eliminar':
+                $validacion = $this->setValideId($proveedor);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
                 return $this->Eliminar_Proveedor($proveedor);
+    
+            case 'consultar':
+                return $this->Mostrar_Proveedor();
+    
             default:
-                throw new Exception("Acción no válida");
+                return ['status' => false, 'msj' => 'Acción inválida'];
         }
     }
+    
 
-    private function Guardar_Proveedor()
-    {
+    private function Guardar_Proveedor() {
+        $conn = null;
         try {
-            // Consulta SQL para verificar si el proveedor ya existe
+            $conn = $this->getConnection();
+
+            // Verificar si el proveedor ya existe
             $query = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
-            // Prepara la consulta
-            $stmt = $this->conn->prepare($query);
-            // Vincula los parámetros con los valores
+            $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_proveedor", $this->id_proveedor);
-            // Ejecuta la consulta
             $stmt->execute();
-            // Verifica si el proveedor ya existe
-            if ($stmt->rowCount() == 0) {
-                // Si no existe, procede a insertar un nuevo registro
-                $query = "INSERT INTO proveedor (id_proveedor, nombre_proveedor, direccion, 
-                          tlf, id_representante, nombre_representante, tlf_representante, tipo_id, tipo_id2) 
-                          VALUES (:id_proveedor, :nombre_proveedor, :direccion_proveedor, 
-                          :tlf_proveedor, :id_representante_legal, :nombre_representante_legal, 
-                          :tlf_representante_legal, :tipo, :tipo2)";
-                // Prepara la consulta de inserción
-                $stmt = $this->conn->prepare($query);
-                // Vincula los parámetros con los valores
-                $stmt->bindParam(":id_proveedor", $this->id_proveedor);
-                $stmt->bindParam(":tipo", $this->tipo);
-                $stmt->bindParam(":tipo2", $this->tipo2);
-                $stmt->bindParam(":nombre_proveedor", $this->nombre_proveedor);
-                $stmt->bindParam(":direccion_proveedor", $this->direccion_proveedor);
-                $stmt->bindParam(":tlf_proveedor", $this->tlf_proveedor);
-                $stmt->bindParam(":id_representante_legal", $this->id_representante_legal);
-                $stmt->bindParam(":nombre_representante_legal", $this->nombre_representante_legal);
-                $stmt->bindParam(":tlf_representante_legal", $this->tlf_representante_legal);
-                // Ejecuta la consulta y retorna true si tiene éxito, false en caso contrario
-                return $stmt->execute();
+
+            if ($stmt->rowCount() > 0) {
+                return ['status' => false, 'msj' => 'El proveedor ya existe'];
+            }
+
+            // Insertar nuevo proveedor
+            $query = "INSERT INTO proveedor (id_proveedor, nombre_proveedor, direccion, 
+                      tlf, id_representante, nombre_representante, tlf_representante, tipo_id, tipo_id2) 
+                      VALUES (:id_proveedor, :nombre_proveedor, :direccion_proveedor, 
+                      :tlf_proveedor, :id_representante_legal, :nombre_representante_legal, 
+                      :tlf_representante_legal, :tipo, :tipo2)";
+            $stmt = $conn->prepare($query);
+
+            $stmt->bindParam(":id_proveedor", $this->id_proveedor);
+            $stmt->bindParam(":tipo", $this->tipo);
+            $stmt->bindParam(":tipo2", $this->tipo2);
+            $stmt->bindParam(":nombre_proveedor", $this->nombre_proveedor);
+            $stmt->bindParam(":direccion_proveedor", $this->direccion_proveedor);
+            $stmt->bindParam(":tlf_proveedor", $this->tlf_proveedor);
+            $stmt->bindParam(":id_representante_legal", $this->id_representante_legal);
+            $stmt->bindParam(":nombre_representante_legal", $this->nombre_representante_legal);
+            $stmt->bindParam(":tlf_representante_legal", $this->tlf_representante_legal);
+
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Proveedor guardado correctamente'];
             } else {
-                // Si el proveedor ya existe, retorna false
-                return false;
+                return ['status' => false, 'msj' => 'Error al guardar el proveedor'];
             }
         } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
-            return false;
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
         }
     }
 
-    // Método para obtener todas las personas de la base de datos
-    public function Mostrar_Proveedor() {
-        // Consulta SQL para seleccionar todos los registros de la tabla personas
-        $query = "SELECT * FROM proveedor";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    private function Mostrar_Proveedor() {
+        $conn = null;
+        try {
+            $conn = $this->getConnection();
+
+            $query = "SELECT * FROM proveedor";
+            $stmt = $conn->prepare($query);
+
+            if (!$stmt->execute()) {
+                return ['status' => false, 'msj' => 'Error al obtener proveedores'];
+            }
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            //return ['status' => true, 'data' => $data];
+
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     private function Obtener_Proveedor($id_proveedor) {
-        $query = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $conn = null;
+        try {
+            $conn = $this->getConnection();
+
+            $query = "SELECT * FROM proveedor WHERE id_proveedor = :id_proveedor";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                return ['status' => false, 'msj' => 'Error al obtener proveedor'];
+            }
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+            //return ['status' => true, 'data' => $data];
+
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     private function Actualizar_Proveedor() {
+        $conn = null;
         try {
+            $conn = $this->getConnection();
+
             $query = "UPDATE proveedor
-                    SET nombre_proveedor = :nombre,
-                        direccion = :direccion,
-                        tlf = :tlf,
-                        id_representante = :id_representante,
-                        nombre_representante = :nombre_representante,
-                        tlf_representante = :tlf_representante,
-                        tipo_id = :tipo,
-                        tipo_id2 = :tipo2
-                    WHERE id_proveedor = :id_proveedor";
-            $stmt = $this->conn->prepare($query);
-    
-            // Enlazar valores con tipos de datos adecuados
+                      SET nombre_proveedor = :nombre,
+                          direccion = :direccion,
+                          tlf = :tlf,
+                          id_representante = :id_representante,
+                          nombre_representante = :nombre_representante,
+                          tlf_representante = :tlf_representante,
+                          tipo_id = :tipo,
+                          tipo_id2 = :tipo2
+                      WHERE id_proveedor = :id_proveedor";
+            $stmt = $conn->prepare($query);
+
             $stmt->bindParam(":id_proveedor", $this->id_proveedor, PDO::PARAM_INT);
             $stmt->bindParam(":tipo", $this->tipo, PDO::PARAM_STR);
             $stmt->bindParam(":tipo2", $this->tipo2, PDO::PARAM_STR);
             $stmt->bindParam(":nombre", $this->nombre_proveedor, PDO::PARAM_STR);
             $stmt->bindParam(":direccion", $this->direccion_proveedor, PDO::PARAM_STR);
-            $stmt->bindParam(":tlf", $this->tlf_proveedor, PDO::PARAM_INT);
+            $stmt->bindParam(":tlf", $this->tlf_proveedor, PDO::PARAM_STR);
             $stmt->bindParam(":id_representante", $this->id_representante_legal, PDO::PARAM_INT);
             $stmt->bindParam(":nombre_representante", $this->nombre_representante_legal, PDO::PARAM_STR);
             $stmt->bindParam(":tlf_representante", $this->tlf_representante_legal, PDO::PARAM_STR);
-            // Ejecutar la consulta
-            return $stmt->execute();
+
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Proveedor actualizado correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al actualizar el proveedor'];
+            }
         } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
-            return false;
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
         }
     }
-    
 
     private function Eliminar_Proveedor($id_proveedor) {
-        $query = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
-        $stmt->execute();
-        return true;
+        $conn = null;
+        try {
+            $conn = $this->getConnection();
+
+            $query = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Proveedor eliminado correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al eliminar el proveedor'];
+            }
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 }
 ?>

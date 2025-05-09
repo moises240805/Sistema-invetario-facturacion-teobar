@@ -74,9 +74,12 @@ if ($controlador == '') {
                         require_once "views/php/dashboard_reporte.php";
                 
                 } else {
-                    require_once 'controllers/AdminController.php';
+                    //require_once 'controllers/AdminController.php';
                 }
-            }
+            
+        } else {
+            //require_once 'controllers/AdminController.php';
+        }
 }
 
 ?>

@@ -23,6 +23,29 @@ function cerrarModalAgregarProducto() {
 
 
 
+var modalAgregarProducto2 = document.getElementById("modalAgregarProducto2");
+
+// Get the button that opens the modal
+var btnAgregarProducto2 = document.getElementById("myBtnAgregarProducto2");
+
+// When the user clicks the button, open the modal 
+btnAgregarProducto2.onclick = function() {
+    modalAgregarProducto2.style.display = "block";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modalAgregarProducto2) {
+        modalAgregarProducto2.style.display = "none";
+    }
+}
+
+function cerrarModalAgregarProducto2() {
+    var modalAgregarProducto2 = document.getElementById("modalAgregarProducto2");
+    modalAgregarProducto2.style.display = "none";
+}
+
+
 
 function abrirModalModificar(id_producto) {
     // Abrir el modal
@@ -64,13 +87,6 @@ function abrirModalModificar(id_producto) {
                 }
             }
 
-            var selectMarca = document.getElementsByName('marca')[0];
-            for (var i = 0; i < selectMarca.options.length; i++) {
-                if (selectMarca.options[i].value === data.id_marca) {
-                    selectMarca.options[i].selected = true;
-                }
-            }
-
             var selectUniMedida = document.getElementsByName('uni_medida')[0];
             for (var i = 0; i < selectUniMedida.options.length; i++) {
                 if (selectUniMedida.options[i].value === data.id_unidad_medida) {
@@ -93,6 +109,35 @@ function abrirModalModificar(id_producto) {
             }
         })
         .catch(error => console.error('Error:', error));
+}
+
+
+
+
+// Get the modal
+var modal2 = document.getElementById("agregarTipoModal");
+
+// Get the button that opens the modal
+// Asegúrate de que el botón tenga el id "myBtn"
+// Si no, cambia "myBtn" por el id real del botón
+var btn2 = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span2 = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn2.onclick = function() {
+    modal2.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span2.onclick = function() {
+    modal2.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+function cerrarModal() {
+    document.getElementById("agregarTipoModal").style.display = "none";
 }
 
 
@@ -147,3 +192,47 @@ if (fechaVencimiento < fechaMinima) {
 
 // Llamar a la función al cargar la página
 validarFechaVencimiento();
+
+
+
+
+
+
+
+//// TIPO
+
+// Get the modal
+var modal = document.getElementById("agregarTipoModal");
+
+// Get the button that opens the modal
+// Asegúrate de que el botón tenga el id "myBtn"
+// Si no, cambia "myBtn" por el id real del botón
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+function cerrarModal() {
+    document.getElementById("agregarTipoModal").style.display = "none";
+}
+
+// Si deseas cerrar al hacer clic fuera del modal (no es necesario con Bootstrap):
+window.onclick = function(event) {
+    if (event.target == document.getElementById("agregarTipoModal")) {
+        document.getElementById("agregarTipoModal").style.display = "none";
+    }
+    if (event.target == document.getElementById("modalModificar")) {
+        document.getElementById("modalModificar").style.display = "none";
+    }
+}

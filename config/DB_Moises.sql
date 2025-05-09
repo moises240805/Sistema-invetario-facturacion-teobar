@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-04-2025 a las 23:32:43
+-- Tiempo de generación: 11-04-2025 a las 04:45:39
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `teobar`
+-- Base de datos: `venta`
 --
 
 -- --------------------------------------------------------
@@ -33,152 +33,6 @@ CREATE TABLE `accesos` (
   `id_modulo` int(25) NOT NULL,
   `id_permiso` int(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `accesos`
---
-
-INSERT INTO `accesos` (`id_accesos`, `id_rol`, `id_modulo`, `id_permiso`) VALUES
-(1, 1, 1, 1),
-(2, 1, 1, 2),
-(3, 1, 1, 3),
-(4, 1, 1, 4),
-(5, 1, 2, 1),
-(6, 1, 2, 2),
-(7, 1, 2, 3),
-(8, 1, 2, 4),
-(9, 1, 3, 1),
-(10, 1, 3, 2),
-(11, 1, 3, 3),
-(12, 1, 3, 4),
-(13, 1, 4, 1),
-(14, 1, 4, 2),
-(15, 1, 4, 3),
-(16, 1, 4, 4),
-(17, 1, 5, 1),
-(18, 1, 5, 2),
-(19, 1, 5, 3),
-(20, 1, 5, 4),
-(21, 1, 6, 1),
-(22, 1, 6, 2),
-(23, 1, 6, 3),
-(24, 1, 6, 4),
-(25, 1, 7, 1),
-(26, 1, 7, 2),
-(27, 1, 7, 3),
-(28, 1, 7, 4),
-(29, 1, 8, 1),
-(30, 1, 8, 2),
-(31, 1, 8, 3),
-(32, 1, 8, 4),
-(33, 1, 9, 1),
-(34, 1, 9, 2),
-(35, 1, 9, 3),
-(36, 1, 9, 4),
-(37, 1, 10, 1),
-(38, 1, 10, 2),
-(39, 1, 10, 3),
-(40, 1, 10, 4),
-(41, 1, 11, 1),
-(42, 1, 11, 2),
-(43, 1, 11, 3),
-(44, 1, 11, 4),
-(45, 1, 12, 1),
-(46, 1, 12, 2),
-(47, 1, 12, 3),
-(48, 1, 12, 4),
-(49, 1, 13, 1),
-(50, 1, 13, 2),
-(51, 1, 13, 3),
-(52, 1, 13, 4),
-(53, 1, 14, 1),
-(54, 1, 14, 2),
-(55, 1, 14, 3),
-(56, 1, 14, 4),
-(57, 1, 15, 1),
-(58, 1, 15, 2),
-(59, 1, 15, 3),
-(60, 1, 15, 4),
-(61, 1, 16, 1),
-(62, 1, 16, 2),
-(63, 1, 16, 3),
-(64, 1, 16, 4),
-(65, 2, 1, 1),
-(66, 2, 1, 2),
-(67, 2, 1, 3),
-(68, 2, 1, 4),
-(69, 2, 2, 1),
-(70, 2, 2, 2),
-(71, 2, 2, 3),
-(72, 2, 2, 4),
-(73, 2, 3, 1),
-(74, 2, 3, 2),
-(75, 2, 3, 3),
-(76, 2, 3, 4),
-(77, 2, 4, 1),
-(78, 2, 4, 2),
-(79, 2, 4, 3),
-(80, 2, 4, 4),
-(81, 2, 5, 1),
-(82, 2, 5, 2),
-(83, 2, 5, 3),
-(84, 2, 5, 4),
-(85, 2, 6, 1),
-(86, 2, 6, 2),
-(87, 2, 6, 3),
-(88, 2, 6, 4),
-(89, 2, 7, 1),
-(90, 2, 7, 2),
-(91, 2, 7, 3),
-(92, 2, 7, 4),
-(93, 2, 8, 1),
-(94, 2, 8, 2),
-(95, 2, 8, 3),
-(96, 2, 8, 4),
-(97, 2, 9, 1),
-(98, 2, 9, 2),
-(99, 2, 9, 3),
-(100, 2, 9, 4),
-(101, 2, 10, 1),
-(102, 2, 10, 2),
-(103, 2, 10, 3),
-(104, 2, 10, 4),
-(105, 2, 11, 1),
-(106, 2, 11, 2),
-(107, 2, 11, 3),
-(108, 2, 11, 4),
-(109, 2, 12, 1),
-(110, 2, 12, 2),
-(111, 2, 12, 3),
-(112, 2, 12, 4),
-(113, 2, 13, 1),
-(114, 2, 13, 2),
-(115, 2, 13, 3),
-(116, 2, 13, 4),
-(117, 2, 14, 1),
-(118, 2, 14, 2),
-(119, 2, 14, 3),
-(120, 2, 14, 4),
-(121, 2, 15, 1),
-(122, 2, 15, 2),
-(123, 2, 15, 3),
-(124, 2, 15, 4),
-(125, 2, 16, 1),
-(126, 2, 16, 2),
-(127, 2, 16, 3),
-(128, 2, 16, 4),
-(129, 3, 2, 1),
-(130, 3, 2, 2),
-(131, 3, 2, 3),
-(132, 3, 2, 4),
-(133, 4, 6, 1),
-(134, 4, 6, 2),
-(135, 4, 6, 3),
-(136, 4, 6, 4),
-(137, 4, 7, 1),
-(138, 4, 7, 2),
-(139, 4, 7, 3),
-(140, 4, 7, 4);
 
 -- --------------------------------------------------------
 
@@ -262,88 +116,30 @@ INSERT INTO `bitacora` (`ID`, `fecha`, `movimiento`, `modulo`, `descripcion`, `i
 (58, '2025-04-05 13:36:34', 'Abono', 'Cuenta Cobrar', 'El usuario: @admin_ca ha registrado un pago de una cuenta a cobrar pendiente', 2),
 (59, '2025-04-05 14:38:16', 'Pagar', 'Cuenta Pagar', 'El usuario: @admin_ca ha registrado un pago a proveedor de una cuanta a pagar pendiente', 2),
 (60, '2025-04-05 14:39:02', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(61, '2025-04-11 00:44:42', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(62, '2025-04-11 00:49:40', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(63, '2025-04-11 00:49:59', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(64, '2025-04-11 11:37:48', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(65, '2025-04-11 11:38:13', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(66, '2025-04-11 11:41:18', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(67, '2025-04-11 13:33:35', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(68, '2025-04-11 18:58:45', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(69, '2025-04-14 15:01:27', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(70, '2025-04-14 15:15:16', 'Agregar', 'Producto', 'Producto: pasta larga', 2),
-(71, '2025-04-14 15:44:05', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(72, '2025-04-14 21:35:34', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(73, '2025-04-15 09:23:10', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(74, '2025-04-15 10:27:45', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(75, '2025-04-15 10:33:16', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(76, '2025-04-15 10:41:36', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(77, '2025-04-15 10:47:37', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(78, '2025-04-18 19:38:36', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(79, '2025-04-21 10:35:07', 'Iniciar Sesion', 'Usuario', 'El usuario: @vendedor_ca ha iniciado session', 13),
-(80, '2025-04-21 10:38:13', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(81, '2025-04-21 10:39:09', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(82, '2025-04-21 10:39:56', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(83, '2025-04-21 10:40:06', 'Eliminar', 'Cliente', 'Cliente con la cedula:  17100998', 2),
-(84, '2025-04-21 10:55:55', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(85, '2025-04-21 10:56:08', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(86, '2025-04-21 12:26:38', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(87, '2025-04-21 12:27:09', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 31039711', 2),
-(88, '2025-04-21 12:30:10', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 31039711', 2),
-(89, '2025-04-21 12:32:09', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 31039711', 2),
-(90, '2025-04-21 13:07:05', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 31039711', 2),
-(91, '2025-04-21 13:15:45', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(92, '2025-04-21 13:34:19', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(93, '2025-04-21 15:45:17', 'Eliminar', 'Cliente', 'Cliente con la cedula: 0 17100998', 2),
-(94, '2025-04-21 16:21:39', 'Eliminar', 'Cliente', 'Cliente con la cedula: 0 17100998', 2),
-(95, '2025-04-21 16:24:58', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(96, '2025-04-21 16:30:43', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(97, '2025-04-21 16:30:55', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(98, '2025-04-21 17:17:02', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(99, '2025-04-21 17:18:31', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(100, '2025-04-21 17:18:51', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(101, '2025-04-21 17:20:53', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(102, '2025-04-21 17:25:19', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(103, '2025-04-21 17:26:44', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(104, '2025-04-21 17:26:51', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(105, '2025-04-21 17:41:10', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100', 2),
-(106, '2025-04-21 17:41:22', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100', 2),
-(107, '2025-04-21 17:44:16', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 12323', 2),
-(108, '2025-04-21 17:44:30', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 12323', 2),
-(109, '2025-04-21 17:56:18', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(110, '2025-04-21 18:06:21', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(111, '2025-04-21 18:11:35', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(112, '2025-04-21 18:38:57', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(113, '2025-04-21 20:02:41', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(114, '2025-04-21 20:09:57', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(115, '2025-04-21 20:12:52', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(116, '2025-04-21 20:14:06', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(117, '2025-04-21 20:15:04', 'Agregar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(118, '2025-04-21 20:15:29', 'Modificar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(119, '2025-04-21 20:15:46', 'Eliminar', 'Cliente', 'Cliente con la cedula: V- 17100998', 2),
-(120, '2025-04-22 15:17:12', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(121, '2025-04-22 16:05:25', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(122, '2025-04-22 16:24:03', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(123, '2025-04-22 16:29:15', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(124, '2025-04-22 16:39:24', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(125, '2025-04-22 16:39:35', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(126, '2025-04-22 16:39:50', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(127, '2025-04-22 16:40:14', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 9),
-(128, '2025-04-22 16:40:49', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 9),
-(129, '2025-04-22 16:51:23', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(130, '2025-04-22 16:51:37', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(131, '2025-04-22 16:51:54', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(132, '2025-04-22 16:52:20', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(133, '2025-04-22 16:54:09', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(134, '2025-04-22 16:55:02', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(135, '2025-04-22 16:55:09', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(136, '2025-04-22 17:01:00', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(137, '2025-04-22 17:11:33', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(138, '2025-04-22 17:12:15', 'Agregar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(139, '2025-04-22 17:12:30', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
-(140, '2025-04-22 17:15:20', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
-(141, '2025-04-22 17:19:04', 'Eliminar', 'Clientes', 'Cliente con la cedula: V- 17100998', 2),
-(142, '2025-04-22 17:29:45', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9);
+(61, '2025-04-05 17:23:47', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(62, '2025-04-05 17:25:18', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(63, '2025-04-05 17:25:48', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(64, '2025-04-05 17:27:30', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(65, '2025-04-05 17:29:20', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(66, '2025-04-05 17:31:11', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(67, '2025-04-05 17:31:40', 'Iniciar Sesion', 'Usuario', 'El usuario: @user_ca ha iniciado session', 9),
+(68, '2025-04-07 11:39:01', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(69, '2025-04-07 12:27:11', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(70, '2025-04-07 12:39:20', 'Agregar', 'Venta', 'El usuario: @admin_ca ha registrado una venta', 2),
+(71, '2025-04-07 13:03:48', 'Abono', 'Cuenta Cobrar', 'El usuario: @admin_ca ha registrado un pago de una cuenta a cobrar pendiente', 2),
+(72, '2025-04-07 20:46:51', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(73, '2025-04-07 20:54:07', 'Modificar', 'Tipo de Producto', 'Tipo producto: Refresco Con presentacion: Bulto de 6 unidades de 2lt', 2),
+(74, '2025-04-08 12:40:20', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(75, '2025-04-10 16:50:03', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(76, '2025-04-10 16:59:55', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(77, '2025-04-10 17:02:14', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(78, '2025-04-10 17:02:28', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(79, '2025-04-10 17:02:52', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(80, '2025-04-10 17:08:26', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(81, '2025-04-10 17:08:37', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(82, '2025-04-10 17:09:30', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(83, '2025-04-10 17:09:41', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2),
+(84, '2025-04-10 17:50:33', 'Iniciar Sesion', 'Usuario', 'El usuario: @admin_ca ha iniciado session', 2);
 
 -- --------------------------------------------------------
 
@@ -363,7 +159,7 @@ CREATE TABLE `cajas` (
 
 INSERT INTO `cajas` (`ID`, `nombre_caja`, `saldo_caja`) VALUES
 (1, 'Caja Principal efectivos y divisas', 240.16),
-(2, 'Caja Secundaria transferencias y pago movil', 354.96);
+(2, 'Caja Secundaria transferencias y pago movil', 369.58);
 
 -- --------------------------------------------------------
 
@@ -386,15 +182,14 @@ CREATE TABLE `cantidad_producto` (
 
 INSERT INTO `cantidad_producto` (`ID`, `id_producto`, `cantidad`, `precio`, `id_unidad_medida`, `peso`) VALUES
 (60, 24, 1.00, 12.00, 3, 20.00),
-(61, 24, 40.00, 0.60, 1, 1.00),
+(61, 24, 19.00, 0.60, 1, 1.00),
 (62, 24, 39999.00, 0.30, 2, 0.50),
 (117, 20, 11.00, 43.00, 4, 0.00),
 (119, 21, 16.00, 39.00, 4, 0.00),
 (122, 22, 47.00, 42.00, 4, 0.00),
 (151, 17, 20.00, 7.00, 3, 0.00),
 (152, 18, 40.00, 18.00, 3, 0.00),
-(153, 19, 24.00, 45.00, 4, 0.00),
-(154, 66, 22.00, 23.00, 3, 0.00);
+(153, 19, 24.00, 45.00, 4, 0.00);
 
 -- --------------------------------------------------------
 
@@ -440,16 +235,16 @@ CREATE TABLE `compra` (
 --
 
 INSERT INTO `compra` (`id_compra`, `id_producto`, `rif_proveedor`, `cantidad_compra`, `monto`, `fecha`, `pago`) VALUES
+(12, 24, 1234322, 1, 12.00, '2024-11-20', 5),
 (1, 24, 1234322, 10, 0.00, '2025-03-06', 5),
+(13, 24, 131254678, 1, 500.00, '2025-03-07', 4),
+(14, 24, 131254678, 1, 10.00, '2025-03-07', 5),
 (2, 24, 131254678, 1, 42.00, '2025-03-27', 3),
 (3, 24, 131254678, 1, 6.00, '2025-03-27', 1),
 (4, 22, 131254678, 1, 6.00, '2025-03-27', 1),
 (5, 22, 131254678, 1, 6.00, '2025-03-27', 1),
 (6, 22, 131254678, 1, 2.00, '2025-03-27', 1),
-(7, 22, 1234322, 1, 6.00, '2025-03-27', 1),
-(12, 24, 1234322, 1, 12.00, '2024-11-20', 5),
-(13, 24, 131254678, 1, 500.00, '2025-03-07', 4),
-(14, 24, 131254678, 1, 10.00, '2025-03-07', 5);
+(7, 22, 1234322, 1, 6.00, '2025-03-27', 1);
 
 -- --------------------------------------------------------
 
@@ -472,6 +267,7 @@ CREATE TABLE `cuenta_por_cobrar` (
 INSERT INTO `cuenta_por_cobrar` (`id_cuentaCobrar`, `id_venta`, `id_pago`, `fecha_cuentaCobrar`, `monto_cuentaCobrar`) VALUES
 (11, 11, NULL, '2025-03-21', 4.94),
 (14, 14, NULL, '2025-03-12', 4.92),
+(16, 16, 1, '2025-04-07', 180.44),
 (26, 26, NULL, '2025-03-27', 0.35);
 
 -- --------------------------------------------------------
@@ -515,14 +311,16 @@ CREATE TABLE `detalle_compra_proveedor` (
 --
 
 INSERT INTO `detalle_compra_proveedor` (`id_detalleCompraProveedor`, `id_facturaProveedor`, `id_producto`, `cantidad_compra`) VALUES
+(12, 12, 24, 1),
 (1, 1, 24, 10),
+(13, 13, 24, 1),
+(14, 14, 24, 1),
 (2, 2, 24, 1),
 (3, 3, 24, 1),
 (4, 4, 22, 1),
-(7, 7, 22, 1),
-(12, 12, 24, 1),
-(13, 13, 24, 1),
-(14, 14, 24, 1);
+(5, 5, 22, 1),
+(6, 6, 22, 1),
+(7, 7, 22, 1);
 
 -- --------------------------------------------------------
 
@@ -544,19 +342,28 @@ CREATE TABLE `detalle_producto` (
 --
 
 INSERT INTO `detalle_producto` (`id_detalle_producto`, `id_producto`, `id_venta`, `cantidad_producto`, `id_medida_especifica`, `precio`) VALUES
-(1, 22, 1, 1, 4, 48.72),
-(2, 22, 2, 1, 4, 48.72),
-(3, 22, 3, 1, 4, 48.72),
-(4, 22, 4, 1, 4, 48.72),
 (11, 24, 11, 1, 3, 13.92),
 (12, 24, 12, 1, 3, 13.92),
 (13, 24, 13, 1, 3, 13.92),
 (14, 24, 14, 1, 3, 13.92),
+(16, 21, 16, 5, 4, 242.44),
+(19, 24, 19, 1, 3, 13.92),
+(20, 24, 20, 1, 3, 13.92),
+(21, 24, 21, 1, 3, 13.92),
+(22, 24, 22, 1, 3, 13.92),
 (23, 22, 23, 1, 4, 48.72),
 (24, 22, 24, 1, 4, 48.72),
+(25, 22, 25, 1, 4, 48.72),
 (26, 24, 26, 1, 2, 0.35),
+(27, 22, 27, 1, 4, 48.72),
 (28, 22, 28, 1, 4, 48.72),
-(30, 24, 30, 1, 3, 13.92);
+(29, 22, 29, 1, 4, 48.72),
+(1, 22, 1, 1, 4, 48.72),
+(2, 22, 2, 1, 4, 48.72),
+(3, 22, 3, 1, 4, 48.72),
+(4, 22, 4, 1, 4, 48.72),
+(30, 24, 30, 1, 3, 13.92),
+(31, 24, 31, 21, 1, 14.62);
 
 -- --------------------------------------------------------
 
@@ -620,28 +427,6 @@ CREATE TABLE `modulos` (
   `id_modulo` int(25) NOT NULL,
   `nombre_modulo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `modulos`
---
-
-INSERT INTO `modulos` (`id_modulo`, `nombre_modulo`) VALUES
-(1, 'Usuarios'),
-(2, 'Productos'),
-(3, 'Tipos'),
-(4, 'Clientes'),
-(5, 'Proveedores'),
-(6, 'Ventas'),
-(7, 'Compras'),
-(8, 'Compras'),
-(9, 'Cobrar'),
-(10, 'Pagar'),
-(11, 'Bitacora'),
-(12, 'Ingresos'),
-(13, 'Egresos'),
-(14, 'Caja'),
-(15, 'Reportes'),
-(16, 'Ntificaciones');
 
 -- --------------------------------------------------------
 
@@ -717,13 +502,6 @@ CREATE TABLE `notificacion` (
   `estatus` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
---
--- Volcado de datos para la tabla `notificacion`
---
-
-INSERT INTO `notificacion` (`id_notificacion`, `fecha`, `id_admin`, `mensaje`, `enlace`, `estatus`) VALUES
-(1, '2025-04-02 15:47:27', 9, 'El producto  se ha agotado.', 'index.php?action=producto&a=d', 'Sin leer');
-
 -- --------------------------------------------------------
 
 --
@@ -734,16 +512,6 @@ CREATE TABLE `permisos` (
   `id_permiso` int(25) NOT NULL,
   `nombre_permiso` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `permisos`
---
-
-INSERT INTO `permisos` (`id_permiso`, `nombre_permiso`) VALUES
-(1, 'agregar'),
-(2, 'Consultar'),
-(3, 'Modificar'),
-(4, 'Eliminar');
 
 -- --------------------------------------------------------
 
@@ -764,7 +532,7 @@ CREATE TABLE `presentacion` (
 INSERT INTO `presentacion` (`id_presentacion`, `tipo_producto`, `presentacion`) VALUES
 (1, 'Arroz', 'Mary Perlado Bulto 20 unidades de 1k'),
 (6, 'Harina de trigo', 'Mary Saco de 43k'),
-(20, 'Refresco', 'Refresco bulto de 6 unidades de 2lt'),
+(20, 'Refresco', 'Bulto de 6 unidades de 2lt'),
 (21, 'Refresco', 'Refresco bulto de 6 unidades de 1lt'),
 (22, 'Refresco', 'Refresco bulto de 6 unidades de 250ml'),
 (23, 'Azucar', 'Azucar Bulto 20 unidades de 1k'),
@@ -802,7 +570,6 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `marca`, `fecha_registro`, `fec
 (22, 'Azucar La Nieve', '', '2025-03-15', '2025-04-05', 0, 0, 24, 'views/img/productos/Azucar La Nieve.jpg'),
 (24, 'Arroz', '', '2024-11-20', '2024-12-07', 1, 0, 1, ''),
 (56, 'avena', '', '2025-03-05', '2025-04-05', 2, 0, 6, ''),
-(66, 'pasta larga', 'waker', '2025-04-14', '2025-05-10', 0, 0, 1, 'views/img/productos/logaritmo.png'),
 (98, 'pasta', '', '2025-03-27', '2025-04-05', 0, 0, 1, 'views/img/productos/prueba.png');
 
 -- --------------------------------------------------------
@@ -924,14 +691,10 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`id_venta`, `id_producto`, `id_cliente`, `cantidad`, `fech_emision`, `id_modalidad_pago`, `monto`, `tipo_entrega`, `rif_banco`, `venta`, `tlf`, `is_active`) VALUES
-(1, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
-(2, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
-(3, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
-(4, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
-(11, 24, 31039711, 1, '2024-11-20', 1, 13.92, 'Directa', 0, 5, 0, 1),
-(12, 24, 31039711, 1, '2025-03-07', 3, 13.92, 'Directa', 102, 6, 2147483647, 1),
-(13, 24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 104, 6, 2147483647, 1),
-(14, 24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 108, 5, 1234567899, 1),
+(24, 31039711, 1, '2024-11-20', 1, 13.92, 'Directa', 0, 5, 0, 1),
+(24, 31039711, 1, '2025-03-07', 3, 13.92, 'Directa', 102, 6, 2147483647, 1),
+(24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 104, 6, 2147483647, 1),
+(24, 32200771, 1, '2025-03-07', 4, 13.92, 'Delivery', 108, 5, 1234567899, 1),
 (15, 17, 31039711, 1, '2025-03-15', 3, 8.12, 'Directa', 102, 6, 2147483647, 1),
 (16, 21, 31039711, 5, '2025-03-15', 3, 242.44, 'Delivery', 104, 5, 2147483647, 1),
 (19, 24, 31039711, 1, '2025-03-27', 1, 13.92, 'Directa', 0, 6, 0, 1),
@@ -945,7 +708,12 @@ INSERT INTO `venta` (`id_venta`, `id_producto`, `id_cliente`, `cantidad`, `fech_
 (27, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
 (28, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
 (29, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
-(30, 24, 31039711, 1, '2025-04-05', 3, 13.92, 'Directa', 102, 6, 2147483647, 1);
+(1, 22, 31039711, 1, '2025-03-27', 3, 48.72, 'Directa', 102, 6, 2147483647, 1),
+(2, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
+(3, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
+(4, 22, 31039711, 1, '2025-03-27', 1, 48.72, 'Directa', 0, 6, 0, 1),
+(30, 24, 31039711, 1, '2025-04-05', 3, 13.92, 'Directa', 102, 6, 2147483647, 1),
+(31, 24, 31039711, 21, '2025-04-07', 3, 14.62, 'Directa', 108, 6, 2147483647, 1);
 
 --
 -- Índices para tablas volcadas
@@ -964,7 +732,7 @@ ALTER TABLE `accesos`
 -- Indices de la tabla `bancos`
 --
 ALTER TABLE `bancos`
-  ADD PRIMARY KEY (`rif_banco`) USING BTREE;
+  ADD PRIMARY KEY (`rif_banco`);
 
 --
 -- Indices de la tabla `bitacora`
@@ -991,21 +759,21 @@ ALTER TABLE `cantidad_producto`
 -- Indices de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`id_cliente`) USING BTREE;
+  ADD PRIMARY KEY (`id_cliente`);
 
 --
 -- Indices de la tabla `compra`
 --
 ALTER TABLE `compra`
-  ADD PRIMARY KEY (`id_compra`) USING BTREE,
-  ADD KEY `INDEX` (`id_producto`,`rif_proveedor`),
+  ADD PRIMARY KEY (`id_compra`),
+  ADD KEY `id_producto` (`id_producto`),
   ADD KEY `rif_proveedor` (`rif_proveedor`);
 
 --
 -- Indices de la tabla `cuenta_por_cobrar`
 --
 ALTER TABLE `cuenta_por_cobrar`
-  ADD PRIMARY KEY (`id_cuentaCobrar`) USING BTREE,
+  ADD PRIMARY KEY (`id_cuentaCobrar`),
   ADD KEY `INDEX` (`id_venta`);
 
 --
@@ -1019,15 +787,14 @@ ALTER TABLE `cuenta_por_pagar`
 -- Indices de la tabla `detalle_compra_proveedor`
 --
 ALTER TABLE `detalle_compra_proveedor`
-  ADD PRIMARY KEY (`id_detalleCompraProveedor`) USING BTREE,
-  ADD KEY `INDEX` (`id_facturaProveedor`,`id_producto`),
-  ADD KEY `id_producto` (`id_producto`);
+  ADD PRIMARY KEY (`id_detalleCompraProveedor`),
+  ADD KEY `INDEX` (`id_facturaProveedor`,`id_producto`);
 
 --
 -- Indices de la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
-  ADD PRIMARY KEY (`id_detalle_producto`) USING BTREE,
+  ADD PRIMARY KEY (`id_detalle_producto`),
   ADD KEY `INDEX` (`id_producto`,`id_venta`,`id_medida_especifica`),
   ADD KEY `id_venta` (`id_venta`),
   ADD KEY `id_medida_especifica` (`id_medida_especifica`);
@@ -1129,12 +896,11 @@ ALTER TABLE `usuarios`
 -- Indices de la tabla `venta`
 --
 ALTER TABLE `venta`
-  ADD PRIMARY KEY (`id_venta`) USING BTREE,
+  ADD PRIMARY KEY (`id_venta`),
   ADD KEY `id_producto` (`id_producto`,`id_cliente`),
   ADD KEY `id_modalidad_pago` (`id_modalidad_pago`),
   ADD KEY `rif_banco` (`rif_banco`),
-  ADD KEY `id_cliente` (`id_cliente`),
-  ADD KEY `id_cliente_2` (`id_cliente`);
+  ADD KEY `id_cliente` (`id_cliente`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -1144,13 +910,13 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `accesos`
 --
 ALTER TABLE `accesos`
-  MODIFY `id_accesos` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
+  MODIFY `id_accesos` int(25) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=143;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=85;
 
 --
 -- AUTO_INCREMENT de la tabla `cajas`
@@ -1162,7 +928,7 @@ ALTER TABLE `cajas`
 -- AUTO_INCREMENT de la tabla `cantidad_producto`
 --
 ALTER TABLE `cantidad_producto`
-  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `ID` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
 -- AUTO_INCREMENT de la tabla `egresos`
@@ -1180,7 +946,7 @@ ALTER TABLE `ingresos`
 -- AUTO_INCREMENT de la tabla `modulos`
 --
 ALTER TABLE `modulos`
-  MODIFY `id_modulo` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_modulo` int(25) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos_caja`
@@ -1198,7 +964,13 @@ ALTER TABLE `notificacion`
 -- AUTO_INCREMENT de la tabla `permisos`
 --
 ALTER TABLE `permisos`
-  MODIFY `id_permiso` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_permiso` int(25) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `presentacion`
+--
+ALTER TABLE `presentacion`
+  MODIFY `id_presentacion` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1221,14 +993,14 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `accesos`
   ADD CONSTRAINT `accesos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `accesos_ibfk_2` FOREIGN KEY (`id_modulo`) REFERENCES `modulos` (`id_modulo`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `accesos_ibfk_3` FOREIGN KEY (`id_permiso`) REFERENCES `permisos` (`id_permiso`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `accesos_ibfk_2` FOREIGN KEY (`id_permiso`) REFERENCES `permisos` (`id_permiso`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `accesos_ibfk_3` FOREIGN KEY (`id_modulo`) REFERENCES `modulos` (`id_modulo`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuarios` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuarios` (`ID`);
 
 --
 -- Filtros para la tabla `cantidad_producto`
@@ -1241,13 +1013,13 @@ ALTER TABLE `cantidad_producto`
 -- Filtros para la tabla `compra`
 --
 ALTER TABLE `compra`
-  ADD CONSTRAINT `compra_ibfk_1` FOREIGN KEY (`rif_proveedor`) REFERENCES `proveedor` (`id_proveedor`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `compra_ibfk_2` FOREIGN KEY (`rif_proveedor`) REFERENCES `proveedor` (`id_proveedor`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cuenta_por_cobrar`
 --
 ALTER TABLE `cuenta_por_cobrar`
-  ADD CONSTRAINT `cuenta_por_cobrar_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `cuenta_por_cobrar_ibfk_1` FOREIGN KEY (`id_cuentaCobrar`) REFERENCES `venta` (`id_venta`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cuenta_por_pagar`
@@ -1259,15 +1031,16 @@ ALTER TABLE `cuenta_por_pagar`
 -- Filtros para la tabla `detalle_compra_proveedor`
 --
 ALTER TABLE `detalle_compra_proveedor`
-  ADD CONSTRAINT `detalle_compra_proveedor_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `detalle_compra_proveedor_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `detalle_compra_proveedor_ibfk_2` FOREIGN KEY (`id_facturaProveedor`) REFERENCES `compra` (`id_compra`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `detalle_producto`
 --
 ALTER TABLE `detalle_producto`
-  ADD CONSTRAINT `detalle_producto_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `detalle_producto_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
+   ADD CONSTRAINT `detalle_producto_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `detalle_producto_ibfk_2` FOREIGN KEY (`id_medida_especifica`) REFERENCES `unidades_de_medida` (`id_unidad_medida`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `detalle_producto_ibfk_3` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `egresos`
@@ -1285,21 +1058,21 @@ ALTER TABLE `ingresos`
 -- Filtros para la tabla `movimientos_caja`
 --
 ALTER TABLE `movimientos_caja`
-  ADD CONSTRAINT `movimientos_caja_ibfk_1` FOREIGN KEY (`id_pago`) REFERENCES `modalidad_de_pago` (`id_modalidad_pago`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `movimientos_caja_ibfk_2` FOREIGN KEY (`id_cajas`) REFERENCES `cajas` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `movimientos_caja_ibfk_1` FOREIGN KEY (`id_cajas`) REFERENCES `cajas` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `movimientos_caja_ibfk_2` FOREIGN KEY (`id_pago`) REFERENCES `modalidad_de_pago` (`id_modalidad_pago`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
-  ADD CONSTRAINT `notificacion_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuarios` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `notificacion_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuarios` (`ID`);
 
 --
 -- Filtros para la tabla `producto`
 --
 ALTER TABLE `producto`
-  ADD CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`id_presentacion`) REFERENCES `presentacion` (`id_presentacion`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`id_motivoActualizacion`) REFERENCES `motivo_actualizacion` (`id_motivoActualizacion`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`id_motivoActualizacion`) REFERENCES `motivo_actualizacion` (`id_motivoActualizacion`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`id_presentacion`) REFERENCES `presentacion` (`id_presentacion`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuarios`
@@ -1311,9 +1084,9 @@ ALTER TABLE `usuarios`
 -- Filtros para la tabla `venta`
 --
 ALTER TABLE `venta`
-  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_modalidad_pago`) REFERENCES `modalidad_de_pago` (`id_modalidad_pago`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`rif_banco`) REFERENCES `bancos` (`rif_banco`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_modalidad_pago`) REFERENCES `modalidad_de_pago` (`id_modalidad_pago`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`rif_banco`) REFERENCES `bancos` (`rif_banco`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

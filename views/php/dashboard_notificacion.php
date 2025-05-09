@@ -76,20 +76,33 @@
                             </div>
                             <div class="card-body">
                                 <div class="list-group">
-                                    <?php
-                                        foreach ($notificaciones as $notificacion):
-                                    ?>
-                                        <!-- Notificación 1 -->
-                                        <a href="<?php echo $notificacion['enlace']; ?>" target="_blank" class="list-group-item list-group-item-action">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h5 class="mb-1 text-primary"><?php echo $notificacion['mensaje']; ?></h5>
-                                                <small><?php echo $notificacion['fecha']; ?></small>
-                                            </div>
-                                            <p class="mb-1">Responsable: <?php echo $notificacion['usuario']; ?></p>
-                                            <small class="text-muted">Haz clic para más detalles</small>
-                                        </a>
-                                    <?php endforeach; ?>
-                                    
+                                    <!-- Notificación 1 -->
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1 text-primary">El arroz Mary esta por agotarse</h5>
+                                            <small>03/04/2025 12:30:00</small>
+                                        </div>
+                                        <p class="mb-1">Responsable: Juan Pérez</p>
+                                        <small class="text-muted">Haz clic para más detalles</small>
+                                    </a>
+                                    <!-- Notificación 2 -->
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1 text-primary">El azucar Montalban esta por vencer</h5>
+                                            <small>03/04/2025 11:00:00</small>
+                                        </div>
+                                        <p class="mb-1">Responsable: Laura Gómez</p>
+                                        <small class="text-muted">Haz clic para más detalles</small>
+                                    </a>
+                                    <!-- Notificación 3 -->
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1 text-primary">La harina de trigo esta por agotarse</h5>
+                                            <small>03/04/2025 09:15:00</small>
+                                        </div>
+                                        <p class="mb-1">Responsable: Dpto de Inventario</p>
+                                        <small class="text-muted">Haz clic para más detalles</small>
+                                    </a>
                                 </div>
                             </div>
                         </div>

@@ -86,7 +86,7 @@
         <div class="products-grid">
             <?php 
                 require_once "controllers/ProductoController.php"; 
-                $productos = $controller->Mostrar_Producto();
+                $productos = $controller->Mostrar_ProductoE();
                 foreach ($productos as $producto):
             ?>
                 <div class="product-card">
@@ -111,7 +111,8 @@
                             data-id="<?php echo $producto['id_producto']; ?>" 
                             data-name="<?php echo $producto['nombre']; ?>" 
                             data-price="<?php echo $producto['precio']; ?>"
-                            data-presentation="<?php echo $producto['nombre_medida']; ?>">
+                            data-presentation="<?php echo $producto['id_medida']; ?>"
+                            data-presentationM="<?php echo $producto['nombre_medida']; ?>">
                             Agregar al carrito
                         </button>
                     </div>

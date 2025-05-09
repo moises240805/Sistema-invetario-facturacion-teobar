@@ -1,11 +1,11 @@
 <?php
 // Incluye el archivo del modelo venta
 require_once "models/Compra.php";
-require_once "models/IngresoEgreso.php";
+require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 date_default_timezone_set('America/Caracas');
 $bitacora = new Bitacora();
-$ingreso = new IngresoEgreso();
+$ingreso = new Manejo();
 $controller = new Compra();
 
 $modulo = 'Compra';

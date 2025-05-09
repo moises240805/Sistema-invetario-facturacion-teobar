@@ -2,34 +2,60 @@
 
 require_once 'models/Proveedor.php';
 require_once 'models/Bitacora.php';
+require_once 'models/Roles.php';
+require 'views/php/utils.php';
 
+//Se instancia los modelos
 $controller = new Proveedor();
 $bitacora = new Bitacora();
-$modulo = 'Proveedor';
+$usuario = new Roles();
+
+//esta variables es para definir el modulo en la bitacora para cuando se cree el json 
+$modulo = 'Proveedores';
 date_default_timezone_set('America/Caracas');
-
-// Función para generar mensaje de error
-function setError($message) {
-    $_SESSION['message_type'] = 'danger';
-    $_SESSION['message'] = $message;
-}
-
-// Función para generar mensaje de éxito
-function setSuccess($message) {
-    $_SESSION['message_type'] = 'success';
-    $_SESSION['message'] = $message;
-}
-
-// Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-    setError("Acceso no autorizado");
-    header("Location: index.php");
-    exit();
-}
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+//Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
+switch ($action) {
+    case "agregar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            agregarProveedor($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerProveedor($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "actualizar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            actualizarProveedor($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "eliminar":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            eliminarProveedor($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "d":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            consultarProveedor($controller, $usuario, $modulo);
+        }
+        break;
+    default:
+        consultarProveedor($controller, $usuario, $modulo);
+        break;
+}
+
+// Función para agregar un Proveedor
+function agregarProveedor($controller, $bitacora, $usuario, $modulo){
+        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
     // Sanitiza y valida datos
     $id_proveedor = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -65,11 +91,17 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'telefono_representante_legal' => $telefono_representante_legal
     ]);
 
-    $accion = "agregar";
-    $controller->manejarAccion($accion, $proveedor);
-    try {
-        if ($controller) {
-            setSuccess("REGISTRADO CORRECTAMENTE");
+            try {
+
+            // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+            $resultado = $controller->manejarAccion('agregar', $proveedor);
+        
+
+            //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+            if (isset($resultado['status']) && $resultado['status'] === true) {
+                //usar mensaje dinámico del modelo
+                setSuccess($resultado['msj']);
+
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Agregar",
@@ -80,18 +112,51 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL REGISTRAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al registrar: " . $e->getMessage());
         setError("Error en operación");
     }
-
-    header("Location: index.php?action=proveedor&a=d");
+    
+    header("Location: index.php?action=proveedor&a=d"); // Redirect
     exit();
 }
+// Función para obtener un Proveedor
+ {
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    //if ($usuario->verificarPermiso($modulo, "Consultar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
 
-elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
+        $id_proveedor = $_GET['id_proveedor'];
+        if (!filter_var($id_Proveedor, FILTER_VALIDATE_INT)) {
+            setError("ID inválido");
+            header("Location: index.php?action=proveedor&a=d");
+            exit();
+        }
+
+        $accion="obtener";
+        $proveedor=$controller->manejarAccion("obtener",$id_proveedor);
+        echo json_encode($proveedor);
+    //}
+    //muestra un modal de info que dice acceso no permitido
+    //setError("Error accion no permitida ");
+    //require_once 'views/php/dashboard_Proveedor.php';
+    //exit();
+}
+//muestra un modal de info que dice acceso no permitido
+setError("Error accion no permitida ");
+require_once 'views/php/dashboard_proveedor.php';
+exit();
+}
+
+function obtenerProveedor($controller, $bitacora, $usuario, $modulo) {
     $id_proveedor = $_GET['id_proveedor'];
     if (!filter_var($id_proveedor, FILTER_VALIDATE_INT)) {
         setError("ID inválido");
@@ -100,11 +165,18 @@ elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
     }
 
     $accion = "obtener";
-    $proveedor = $controller->manejarAccion($accion, $id_proveedor);
+    $proveedor = $controller->manejarAccion('obtener', $id_proveedor);
     echo json_encode($proveedor);
 }
 
-else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+function actualizarCliente($controller, $bitacora, $usuario, $modulo) {
+
+        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "Modificar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
     // Sanitiza y valida datos
     $id_proveedor = filter_input(INPUT_POST, 'id_proveedor', FILTER_VALIDATE_INT);
     $tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -140,11 +212,16 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         'telefono_representante_legal' => $telefono_representante_legal
     ]);
 
-    $accion = "actualizar";
-    $controller->manejarAccion($accion, $proveedor);
     try {
-        if ($controller) {
-            setSuccess("ACTUALIZADO CORRECTAMENTE");
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto Proveedor y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion('actualizar', $proveedor);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Modificar",
@@ -155,9 +232,12 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL ACTUALIZAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ACTUALIZAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al actualizar: " . $e->getMessage());
         setError("Error en operación");
     }
@@ -165,8 +245,17 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: index.php?action=proveedor&a=d");
     exit();
 }
+}
 
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+// Función para eliminar un cliente
+function eliminarProveedor($controller, $bitacora, $usuario, $modulo) {
+
+        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
     $id_proveedor = $_GET['ID'];
     if (!filter_var($id_proveedor, FILTER_VALIDATE_INT)) {
         setError("ID inválido");
@@ -186,11 +275,17 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
     $nombre_proveedor = $proveedor['nombre_proveedor'];
 
-    $accion = "eliminar";
-    $controller->manejarAccion($accion, $id_proveedor);
-    try {
-        if ($controller) {
-            setSuccess("ELIMINADO CORRECTAMENTE");
+try {
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion('eliminar', $id_proveedor);
+           
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+
             $bitacora_data = json_encode([
                 'id_admin' => $_SESSION['s_usuario']['id'],
                 'movimiento' => "Eliminar",
@@ -201,18 +296,39 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
         } else {
-            setError("ERROR AL ELIMINAR...");
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+            setError($mensajeError);
         }
     } catch (Exception $e) {
+        //mensajes del expcecion del pdo 
         error_log("Error al eliminar: " . $e->getMessage());
         setError("Error en operación");
     }
-
-    header("Location: index.php?action=proveedor&a=d");
+    
+    header("Location: index.php?proveedor&a=d");
     exit();
+    }
 }
+// Función para consultar proveedores
+function consultarProveedor($controller, $usuario, $modulo) {
 
-if ($action == 'd') {
-    require_once 'views/php/dashboard_proveedor.php';
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
+        // Ejecutar acción permitida
+        $proveedor =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_proveedor.php';
+        exit();
+    }
+    else{
+
+        //muestra un modal de info que dice acceso no permitido
+        setError("Error accion no permitida ");
+        require_once 'views/php/dashboard_proveedor.php';
+        exit(); 
+    } 
 }
 ?>

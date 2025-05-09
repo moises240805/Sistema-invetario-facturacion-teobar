@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagos</title>
+    <title>Roles</title>
     <?php 
         require_once "link.php";
     ?>
@@ -66,15 +66,19 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Pagos</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Roles</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
 
                     <!-- Content Row -->
                     <div class="row mx-3">
+                    <div class="card shadow ">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Gestionar Roles</h6>
+           
 
-        
+        </div>
         <div class="card-body">
         <?php
 
@@ -107,37 +111,100 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
     unset($_SESSION['message']); // Clear the message
     unset($_SESSION['message_type']); // Clear the type
 }
+
+
+foreach ($datos as $fila) {
+    $roles[$fila['id_rol']] = $fila['nombre_rol'];
+    $permisos[$fila['id_permiso']] = $fila['nombre_permiso'];
+    $modulos[$fila['id_modulo']] = $fila['nombre_modulo'];
+    $estatusTabla[$fila['id_modulo']][$fila['id_rol']][$fila['id_permiso']] = $fila['estatus'];
+}
 ?>
-        <main class="main">
-    <section class="full-width text-center" style="padding: 20px;">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <div class="col-md-4 mb-4">
-                    <a href="index.php?action=cobrar&a=v" style="text-decoration: none;">
-                        <div class="card shadow">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Cuentas por Cobrar</h5>
-                                <h2 class="card-text">15</h2>
-                                <img src="views/img/cobrar.png" width="65rem" height="65rem" alt="Cuentas por Cobrar">
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <a href="index.php?action=pagar&a=v" style="text-decoration: none;">
-                        <div class="card shadow">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Cuentas por Pagar</h5>
-                                <h2 class="card-text">3</h2>
-                                <img src="views/img/pagar.png" width="65rem" height="65rem" alt="Cuentas por Pagar">
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
+
+<div class="container">
+    <h1 class="mt-5 mb-4">Tabla de Permisos</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th rowspan="2" style="vertical-align: middle;">Módulo / Usuario</th>
+                    <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                        <th colspan="<?php echo count($permisos); ?>"><?php echo htmlspecialchars($nombre_rol); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+                <tr>
+                    <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                        <?php foreach ($permisos as $id_permiso => $nombre_permiso): ?>
+                            <th><?php echo htmlspecialchars($nombre_permiso); ?></th>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($modulos as $id_modulo => $nombre_modulo): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($nombre_modulo); ?></td>
+                        <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                            <?php foreach ($permisos as $id_permiso => $nombre_permiso): ?>
+                                <?php
+                                $estatus = $estatusTabla[$id_modulo][$id_rol][$id_permiso] ?? '0';
+                                ?>
+                                <td class="estatus-cell"
+                                    data-id-modulo="<?php echo htmlspecialchars($id_modulo); ?>"
+                                    data-id-rol="<?php echo htmlspecialchars($id_rol); ?>"
+                                    data-id-permiso="<?php echo htmlspecialchars($id_permiso); ?>">
+                                    <?php echo htmlspecialchars($estatus); ?>
+                                </td>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table thead th {
+            background-color: #343a40;
+            color: white;
+            border-color: #454d55;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .module-name {
+            font-weight: bold;
+        }
+
+        .form-check-input {
+            margin: 0 auto; /* Centrar los checkboxes */
+        }
+    </style>
+
+    <script src="views/js/ajax_roles.js">
+    </script>
+    
+
 
 </body>
 </html>

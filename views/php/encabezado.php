@@ -5,7 +5,7 @@
             <img class="logo_user rounded-circle mr-2" src="views/img/avatar-male.png" alt="user">
             <span name="user" style="color: black;"><?php echo $_SESSION['s_usuario']['usuario'];?></span>
         </div>
-        <a href="views/php/logout.php" class="hero__logger btn btn-primary btn-sm shadow-sm">
+        <a href="index.php?action=usuario&a=cerrar" class="hero__logger btn btn-primary btn-sm shadow-sm">
             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
             Log Out
         </a>

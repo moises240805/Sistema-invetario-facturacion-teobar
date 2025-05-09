@@ -66,7 +66,7 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Producto</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Productos</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
@@ -118,8 +118,8 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <thead class="thead-light">
                     <tr>
                         <th>Nombre</th>
-                        <th>Presentación</th>
                         <th>Marca</th>
+                        <th>Presentación</th>
                         <th>F.R</th>
                         <th>F.V</th>
                         <th>Cantidad</th>
@@ -132,20 +132,16 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 </thead>
                 <tbody>
                     <?php 
-                        require_once "controllers/ProductoController.php"; 
-                        if (!function_exists('setError')) {
-                            function setError($message) {
-                                $_SESSION['message_type'] = 'danger';
-                                $_SESSION['message'] = $message;
-                            }
-                        }
-                        $productos = $controller->Mostrar_Producto();
-                        foreach ($productos as $producto):
+                    //verifica si producto existe o esta vacia en dado caso que este vacia muestra clientes no 
+                    // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                    // si lo tiene muestra la informacion
+                    if(isset($producto) && is_array($producto) && !empty($producto)){
+                        foreach ($producto as $producto):
                     ?>
                         <tr>
                             <td><?php echo $producto['nombre']; ?></td>
-                            <td><?php echo $producto['presentacion']; ?></td>
                             <td><?php echo $producto['marca']; ?></td>
+                            <td><?php echo $producto['presentacion']; ?></td>
                             <td><?php echo $producto['fecha_registro']; ?></td>
                             <td><?php echo $producto['fecha_vencimiento']; ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?></td>
@@ -158,7 +154,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                 <a onclick="return eliminar()" href="index.php?action=producto&a=eliminar&id_producto=<?php echo $producto['id_producto']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                        <?php
+                            //Imprime esta informacion en caso de estar vacia la variable             
+                            endforeach; 
+                        } else {
+                            echo "<tr><td colspan='6'>No hay productos registrados.</td></tr>";
+                        } ?>
                 </tbody>
             </table>
         </div>
@@ -176,52 +177,43 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="modal-header">
        <form class="formulario" action="index.php?action=producto&a=actualizar" method="post" name="form">
             <h1 class="titulo_form">Modificar Producto</h1>
-            <?php
-                //$producto=$controller->Obtener_Producto($id_producto);
-            ?>
-           <?php
-                require_once "controllers/TipoController.php"; 
-                $tipos = $controller->Mostrar_Tipo();
-               // $marcas = $controller->Mostrar_Marca();
-            ?>
             <input class="form-control" type="hidden" name="id_producto" value="<?php echo $producto['id_producto']; ?>" required>
             <div class="form-group row">
                 <label for="nombre" class="col-md-3">Nombre del Producto</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="nombre" value="<?php echo $producto['nombre']; ?>"  maxlength="50"  required oninput="validateName()">
+                    <input class="form-control" type="text" name="nombre" maxlength='50' value="<?php echo $producto['nombre']; ?>" required>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="presentacion" class="col-md-3">Presentacion de Producto</label>
+                <label for="marca" class="col-md-3">Marca del Producto</label>
+                <div class="col-md-9">
+                    <input class="form-control" type="text" name="marca" maxlength='50' value="<?php echo $producto['marca']; ?>" required>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="presentacion" class="col-md-3">Presentación del Producto</label>
                 <div class="col-md-9">
                     <select class="form-control" name="presentacion">
                         <?php foreach ($tipos as $tipo): ?> 
-                            <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['presentacion'] == $producto['presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
+                            <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['id_presentacion'] == $producto['id_presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
                         <?php endforeach; ?>
                     </select>
-                </div>
-            </div>
-            
-            <div class="form-group row">
-                <label for="marca" class="col-md-3">Marca</label>
-                <div class="col-md-9">
-                    <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
                 </div>
             </div>
             <div class="form-group row">
                 <label for="cantidad" class="col-md-3">Cantidad</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad" value="<?php echo $producto['cantidad']; ?>"  maxlength="15" onkeypress="return soloNumeros(event)" required >
-                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required >
-                    <input style="width: 6rem;" class="form-control" type="text" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required >
+                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad" maxlength value="<?php echo $producto['cantidad']; ?>" required>
+                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" required>
+                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" required>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="precio" class="col-md-3">Precio</label>
                 <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)"  required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="text" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" maxlength="15" onkeypress="return soloNumeros(event)" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio" maxlength='10' value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
+                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
                 </div>
             </div>
             <div class="form-group row">
@@ -286,8 +278,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 
+
 <!-- Modal para Agregar Producto -->
-<div id="modalAgregarProducto" class="modal fade" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+<div id="modalAgregarProducto" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -296,83 +289,74 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <div class="modal-body">
                 <form class="formulario" action="index.php?action=producto&a=agregar" method="post" name="form">
                     <?php 
-                        require_once "controllers/TipoController.php"; 
-                        $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
+                       
                     ?>
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateId()">
+                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto"maxlength="50"  required oninput="validateName()">
+                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="marca" name="marca" maxlength='50' placeholder="Marca del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="presentacion" class="col-md-3">Presentación del Producto</label>
-                        <div class="col-md-9">
-                            <select class="form-control" id="presentacion" name="presentacion">
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="presentacion" name="presentacion">
                                 <?php foreach ($tipos as $tipo): ?>
                                     <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                        <label for="marca" class="col-md-3">Marca</label>
-                        <div class="col-md-9">
-                            <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
                         </div>
                     </div>
+                    <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
                     <div class="form-group row">
-                        <label for="cantidad" class="col-md-3">Cantidad</label>
+                        <label for="cantidad" class="col-md-3" >Bulto o Saco</label>
                         <div class="col-md-9 d-flex justify-content-between">
                             <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="precio" class="col-md-3">Precio</label>
-                        <div class="col-md-9 d-flex justify-content-between">
                             <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="uni_medida" class="col-md-3">U.M</label>
-                        <div class="col-md-9 d-flex justify-content-between">
-                            <div style="margin-right: 10px;">
-                                <input style="width: 3rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <select class="form-control" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
-                                    <option value="">...</option>
+                            <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
+                            <select class="form-control"  style="width: 5rem;" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
                                     <option value="4">Saco</option>
                                     <option value="3">Bulto</option>
                                     <option value="7">Galon</option>
                                 </select>
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <select class="form-control" id="uni_medida2" name="uni_medida2" readOnly>
-                                    <option value="">...</option>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="precio" class="col-md-3">Kilogramo o Litros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b>$ Bs</b>
+                            <select class="form-control"  style="width: 10rem;" id="uni_medida2" name="uni_medida2" readOnly>
                                     <option value="1">Kilogramos</option>
                                     <option value="5">Litros</option>
                                 </select>
-                            </div>
-                            <div style="margin-right: 10px;">
-                                <input style="width: 3rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="uni_medida" class="col-md-3">Gramos o mililitros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                        <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                        <div style="margin-right: 10px;">
+                                <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
                             </div>
                             <div>
                                 <select class="form-control" id="uni_medida3" name="uni_medida3" readOnly>
-                                    <option value="">...</option>
                                     <option value="2">Gramos</option>
                                     <option value="6">Mililitro</option>
                                 </select>
@@ -402,7 +386,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModalAgregarProducto()">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Registrar</button>  <!-- Submit button -->
                         </div>
                     </div>
@@ -415,7 +399,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 <!-- Modal para Agregar Producto -->
-<div id="modalAgregarProducto2" class="modal fade" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+<div id="modalAgregarProducto2" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
         <div class="modal-content">
             <div class="modal-header">
@@ -423,42 +407,40 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             </div>
             <div class="modal-body">
                 <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form" enctype="multipart/form-data">
-                    <?php 
-                        require_once "controllers/TipoController.php"; 
-                        $tipos = $controller->Mostrar_Tipo(); // Assuming this gets the list of presentaciones
-                       // $marcas = $controller->Mostrar_Marca(); // Assuming this gets the list of presentaciones
-                    ?>
+
                     <div class="form-group row">
                         <label for="id_producto" class="col-md-3">Código del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="id_producto" name="id_producto" placeholder="Código del Producto" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateId()">
+                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre del Producto" maxlength="50" required oninput="validateName()">
+                            <input type="text" class="form-control" id="nombre" name="nombre" maxlength='50' placeholder="Nombre del Producto" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="marca" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="marca2" name="marca" maxlength='50' placeholder="Marca del Producto" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="presentacion" class="col-md-3">Presentación del Producto</label>
-                        <div class="col-md-9">
+                        <div class="col-md-9" style="display:flex">
                             <select class="form-control" id="presentacion" name="presentacion">
-                                <?php foreach ($tipos as $tipo): ?>
-                                    <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
+                                <?php foreach ($tipos as $producto): ?>
+                                    <option value="<?php echo $producto['id_presentacion'] ?>"><?php echo $producto['presentacion'] ?></option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
-                        <div class="form-group row">
-                        <label for="marca" class="col-md-3">Marca</label>
-                        <div class="col-md-9">
-                            <input class="form-control" type="text" name="marca" value="<?php echo $producto['marca'] ?>" maxlength="15" required >
+                            <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" id="cantidad" name="cantidad" placeholder="Cantidad" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateNumber()">
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -479,7 +461,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Precio</label>
                         <div class="col-md-9">
-                            <input type="text" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" maxlength="15" onkeypress="return soloNumeros(event)" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="Precio" maxlength='10' required oninput="validateNumber()"><b> $ Bs</b>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -503,7 +485,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     <div class="form-group row">
                         <div class="col-md-3"></div>
                         <div class="col-md-9">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModalAgregarProducto2()">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Registrar</button>  <!-- Submit button -->
                         </div>
                     </div>
@@ -515,6 +497,49 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 
+
+<div class="modal fade show" id="agregarTipoModal" tabindex="-1" role="dialog" aria-labelledby="agregarTipoModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarTipoModalLabel">Agregar Tipo Producto</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=tipo&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-21">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tipo_producto" style="font-size: 18px;">Tipo Producto</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="tipo_producto" name="tipo_producto"  maxlength="50"  onkeypress="return onlyLetters(event)" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="presentacion" style="font-size: 18px;">Presentación</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="presentacion" name="presentacion"  maxlength="50" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <!-- Modal -->
@@ -536,6 +561,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 </div>
 
 <script src="views/js/modal_producto.js"></script>
+
 <script src="views/js/calculator.js"></script>
 <script src="views/js/calculator2.js"></script>
 <script src="views/js/validate.js"></script>

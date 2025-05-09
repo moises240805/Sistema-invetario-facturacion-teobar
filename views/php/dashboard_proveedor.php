@@ -66,7 +66,7 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard/ Proveedores</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Proveedores</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
@@ -129,10 +129,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/ProveedorController.php"; // Asegúrate de que la ruta sea correcta
-
-
-                $proveedor = $controller->Mostrar_Proveedor();
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($proveedor) && is_array($proveedor) && !empty($proveedor)){
                 foreach ($proveedor as $proveedor): 
             ?>
             <tr>
@@ -152,7 +152,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay proveedores registrados.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>
@@ -182,7 +187,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                                 <option value="J-">J-</option>
                                                 <option value="G-">G-</option>
                                             </select>
-                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="10" required oninput="validateId2()">
+                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="7" required oninput="validateId2()">
                                         </div>
                                         <span id="idError2" class="error-message"></span>
                                     </div>

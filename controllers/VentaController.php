@@ -1,17 +1,19 @@
 <?php
 // Incluye el archivo del modelo venta
 require_once "models/Venta.php";
+require_once "models/Producto.php";
+require_once "models/Cliente.php";
 require "models/Notificacion.php";
-require "models/Producto.php";
-require_once "models/IngresoEgreso.php";
+require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 date_default_timezone_set('America/Caracas');
 
-$ingreso = new IngresoEgreso();
-$controller = new Venta();
+$ingreso = new Manejo();
+$modelo = new Venta();
+$producto = new Producto();
+$cliente = new Cliente();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
-$detalle_producto = new Producto();
 
 $modulo = 'Venta';
 
@@ -76,15 +78,15 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
     $venta = json_encode($venta);
     
 
-    $controller->setVentaData($venta);
+    $modelo->setVentaData($venta);
     
     $ingreso->setIngresoEgresoData($ingreso_data);
     // Llama al método guardar venta del controlador y guarda el resultado en $message
-    if($controller->Guardar_Venta($venta))
+    if($modelo->Guardar_Venta($venta))
     {
         // Verificar stock después de la venta
         foreach ($productos_vendidos as $producto) {
-            $stock_actual = $detalle_producto->obtenerStockProducto($producto['id_producto']);
+            $stock_actual = $producto->obtenerStockProducto($producto['id_producto']);
 
             if ($stock_actual <= 0) {
                 // Notificar al administrador
@@ -122,6 +124,12 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST")
 
 elseif ($action == 'v' && $_SERVER["REQUEST_METHOD"] == "GET") {
 
+                    
+    $venta = $modelo->Mostrar_Venta();
+    $clientes =$cliente->manejarAccion("consultar",null);
+    $productos = $producto->Mostrar_Producto2();
+    $bancos = $modelo->obtenerBancos();
+    $pagos = $modelo->obtenerPagos();
     require_once "views/php/dashboard_venta.php";
 }
 ?>

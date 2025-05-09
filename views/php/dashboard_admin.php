@@ -73,7 +73,7 @@ if (!isset($_SESSION["s_usuario"])) {
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Usuario</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Usuarios</h1>
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
@@ -129,19 +129,26 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </thead>
                     <tbody>
                         <?php
-                            require_once "controllers/AdminController.php";
-                            $admins = $controller->Mostrar_Usuario();
-                            foreach ($admins as $ad):
+                            //verifica si admin existe o esta vacia en dado caso que este vacia muestra clientes no 
+                            // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                            // si lo tiene muestra la informacion
+                            if(isset($admin) && is_array($admin) && !empty($admin)){
+                            foreach ($admin as $ad):
                         ?>
                             <tr>
                                 <td><?php echo $ad['usuario']; ?></td>
-                                <td><?php echo $ad['rol']; ?></td>
+                                <td><?php echo $ad['nombre_rol']; ?></td>
                                 <td>
                                     <a onclick="abrirModalModificar(<?php echo $ad['ID']; ?>)" title="Modificar"><img src="views/img/edit.png" width="30px" height="30px"></a>
                                     <a onclick="return eliminar()" href="index.php?action=usuario&a=eliminar&ID=<?php echo $ad['ID']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                            <?php
+                                //Imprime esta informacion en caso de estar vacia la variable             
+                                endforeach; 
+                            } else {
+                                echo "<tr><td colspan='6'>No hay usuarios registrados.</td></tr>";
+                            } ?>
                     </tbody>
                 </table>
             </div>
@@ -167,9 +174,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <div class="col-md-9">
                     <select class="form-control" name="rol" id="rol" required>
                         <option value="">...</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Usuario">Usuario</option>
-                        <option value="Cajero">Cajero</option>
+                        <option value="2">Administrador</option>
+                        <option value="3">Usuario</option>
+                        <option value="4">Vendedor</option>
+                        <option value="5">Contador</option>
                     </select>
                 </div>
             </div>
@@ -184,7 +192,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <div class="col-md-3"></div>
                 <div class="col-md-9">
                     <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                    <input type="submit" class="btn btn-primary" onclick="return Password()" value="Registrar">
+                    <input type="submit" class="btn btn-primary"  value="Registrar">
                 </div>
             </div>
         </form>
@@ -204,22 +212,19 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 </p>
             <?php endif; ?>
             <?php
-                require_once "controllers/AdminController.php";
-                if (isset($id)) {
-                    $admin = $controller->obtenerUsuario($id);
-                }
+
             ?>
-            <input class="form-control" type="hidden" name="id" value="<?php echo $admin['ID']; ?>" required>
+            <input class="form-control" type="hidden" name="id" value="" required>
             <div class="form-group row">
                 <label for="usuario" class="col-md-3">Usuario</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="usuario" value="<?php echo $admin['usuario']; ?>" maxlength="30" required>
+                    <input class="form-control" type="text" name="usuario" value="" maxlength="30" required>
                 </div>
             </div>
             <div class="form-group row">
                 <label for="pw" class="col-md-3">Password</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="password" id='password2' name="clave" value="<?php echo $admin['pw']; ?>" maxlength="9" oninput='Password()' required>
+                    <input class="form-control" type="password" id='password2' name="clave" value="" maxlength="9" oninput='Password()' required>
                     <span id="Error2" class="error-message"></span>
                 </div>
             </div>
@@ -227,9 +232,10 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                 <label for="rol" class="col-md-3">Rol</label>
                 <div class="col-md-9">
                     <select class="form-control" name="roles" id="" required>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Usuario">Usuario</option>
-                        <option value="Cajero">Cajero</option>
+                        <option value="2">Administrador</option>
+                        <option value="3">Usuario</option>
+                        <option value="4">Vendedor</option>
+                        <option value="5">Contador</option>
                     </select>
                 </div>
             </div>
