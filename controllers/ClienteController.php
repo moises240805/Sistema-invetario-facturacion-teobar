@@ -19,11 +19,7 @@ date_default_timezone_set('America/Caracas');//Zona horaria
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 
-<<<<<<< HEAD
-/Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
-=======
 //Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -53,11 +49,9 @@ switch ($action) {
     default:
         consultarCliente($controller, $usuario, $modulo);
         break;
-<<<<<<< HEAD
-}/
-=======
+
 }
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
 
 
 
