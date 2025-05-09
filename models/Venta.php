@@ -34,23 +34,58 @@ class Venta extends Conexion{
         $exp_tipo_entrega = "/^(Directa|Delivery)$/i"; // ejemplo: tipos permitidos
         $exp_rif_banco = "/^[A-Z0-9\-]+$/i"; // ejemplo: caracteres permitidos para rif banco
     
-        // Validar id_venta
-        if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
-            return ['status' => false, 'msj' => 'ID de venta inválido'];
-        }
-        $this->id_venta = (int)$venta['id_venta'];
-    
-        // Validar id_producto
-        if (!isset($venta['productos']['id_producto']) || !preg_match($exp_id, $venta['productos']['id_producto'])) {
+    // Validar id_venta (único)
+    if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
+        return ['status' => false, 'msj' => 'ID de venta inválido'];
+    }
+    $this->id_venta = (int)$venta['id_venta'];
+
+    // Validar productos (arrays)
+    if (
+        !isset($venta['productos']['id_producto']) || 
+        !is_array($venta['productos']['id_producto']) || 
+        empty($venta['productos']['id_producto'])
+    ) {
+        return ['status' => false, 'msj' => 'Productos no especificados'];
+    }
+    if (
+        !isset($venta['productos']['id_medida']) || 
+        !is_array($venta['productos']['id_medida']) || 
+        empty($venta['productos']['id_medida'])
+    ) {
+        return ['status' => false, 'msj' => 'Medidas no especificadas'];
+    }
+    if (
+        !isset($venta['cantidad']) || 
+        !is_array($venta['cantidad']) || 
+        empty($venta['cantidad'])
+    ) {
+        return ['status' => false, 'msj' => 'Cantidades no especificadas'];
+    }
+
+    // Validar cada id_producto
+    foreach ($venta['productos']['id_producto'] as $id_producto) {
+        if (!preg_match($exp_id, $id_producto)) {
             return ['status' => false, 'msj' => 'ID de producto inválido'];
         }
-        $this->id_producto = (int)$venta['productos']['id_producto'];
-    
-        // Validar id_medida
-        if (!isset($venta['productos']['id_medida']) || !preg_match($exp_id, $venta['productos']['id_medida'])) {
+    }
+    $this->id_producto = $venta['productos']['id_producto'];
+
+    // Validar cada id_medida
+    foreach ($venta['productos']['id_medida'] as $id_medida) {
+        if (!preg_match($exp_id, $id_medida)) {
             return ['status' => false, 'msj' => 'ID de medida inválido'];
         }
-        $this->id_medida = (int)$venta['productos']['id_medida'];
+    }
+    $this->id_medida = $venta['productos']['id_medida'];
+
+    // Validar cada cantidad
+    foreach ($venta['cantidad'] as $cantidad) {
+        if (!is_numeric($cantidad) || $cantidad <= 0) {
+            return ['status' => false, 'msj' => 'Cantidad inválida'];
+        }
+    }
+    $this->cantidad = $venta['cantidad'];
     
         // Validar tipo_compra
         $tipo_compra = trim($venta['tipo_compra'] ?? '');
@@ -71,12 +106,6 @@ class Venta extends Conexion{
             return ['status' => false, 'msj' => 'ID de cliente inválido'];
         }
         $this->id_cliente = (int)$venta['id_cliente'];
-    
-        // Validar cantidad (debe ser numérico y mayor que 0)
-        if (!isset($venta['cantidad']) || !is_numeric($venta['cantidad']) || $venta['cantidad'] <= 0) {
-            return ['status' => false, 'msj' => 'Cantidad inválida'];
-        }
-        $this->cantidad = (float)$venta['cantidad'];
     
         // Validar fecha de emisión (formato YYYY-MM-DD)
         $fech_emision = trim($venta['fech_emision'] ?? '');

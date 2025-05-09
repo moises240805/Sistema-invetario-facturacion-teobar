@@ -27,7 +27,7 @@ $action = isset($_GET['a']) ? $_GET['a'] : '';
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notificacion); 
+            agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion); 
         }
         break;
         break;
@@ -48,7 +48,7 @@ switch ($action) {
 
 
 
-function agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notificacion) {
+function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion) {
 
         //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -72,23 +72,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notifica
             'id_medida' => []
         ];
 
-            // Validar que los campos obligatorios no estén vacíos
-        if (empty($id_venta) ||
-            empty($tipo_compra) ||
-            empty($tlf) ||
-            empty($id_cliente) ||
-            empty($cantidad) ||
-            empty($fech_emision) ||
-            empty($id_modalidad_pago) ||
-            empty($monto) ||
-            empty($tipo_entrega) ||
-            empty($id_producto) ||
-            empty($id_medida))
-        {
-            setError("Todos los campos de la venta son requeridos");
-            header("Location: index.php?action=venta&a=v");
-            exit();
-        }
+
 
         $venta = json_encode([
             'id_venta' => $id_venta,
@@ -98,7 +82,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notifica
             'cantidad' => $cantidad,
             'fech_emision' => $fech_emision,
             'id_modalidad_pago' => $id_modalidad_pago,
-            'monto' => $total,
+            'monto' => $monto,
             'tipo_entrega' => $tipo_entrega,
             'rif_banco' => $rif_banco,
             'productos' => [
@@ -167,9 +151,8 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notifica
                 $ingreso->setIngresoEgresoData($ingreso_data);
                 $ingreso->Guardar_IngresoEgreso($ingreso_data); 
 
-                // Verificar stock después de la venta
-                foreach ($productos_vendidos as $producto) {
-                    $stock_actual = $producto->obtenerStockProducto($producto['id_producto']);
+                /*// Verificar stock después de la venta
+                    $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
 
                     if ($stock_actual <= 0) {
                         // Notificar al administrador
@@ -178,8 +161,8 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $ingreso, $notifica
                         $enlace = "index.php?action=producto&a=d";
 
                         $notificacion->insert($enlace,$mensaje, $id_admin, "Sin leer");
-                    }
-                }
+                    }*/
+                
             }
             else {
                 // Error: usar mensaje dinámico o genérico
