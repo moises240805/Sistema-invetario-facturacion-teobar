@@ -46,8 +46,8 @@ switch ($action) {
         break;
 }
 
-
-
+// === FUNCIONES ===
+// funcion para registrar una venta
 function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion) {
 
         //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -111,6 +111,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         $fech_emision = $venta['fech_emision'];
         $monto = $venta['monto'];
 
+        // Lógica de caja según modalidad de pago
         if ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) {
             $id_cajas = 1;
         } else {

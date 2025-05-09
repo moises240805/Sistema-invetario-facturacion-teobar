@@ -156,7 +156,8 @@ class Venta extends Conexion{
             return ['status' => false, 'msj' => 'ID de venta inválido'];
         }
         $this->id_venta = (int)$venta['id_venta'];
-        }
+        return ['status' => true, 'msj' => 'Datos de venta validados correctamente'];
+    }
     
     
 

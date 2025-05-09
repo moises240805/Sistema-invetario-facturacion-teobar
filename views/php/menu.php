@@ -24,7 +24,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
                 <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=proveedor&a=d" class="aside__link nav-link">Proveedores</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>
-                <li class="aside__item nav-item"><a href="index.php?action=compra" class="aside__link nav-link">Compras</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=compra&a=c" class="aside__link nav-link">Compras</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=bitacora" class="aside__link nav-link">Bitacora</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=movimientos" class="aside__link nav-link">Cajas Ingreso Egreso</a></li>
@@ -42,7 +42,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
                 <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=proveedor&a=d" class="aside__link nav-link">Proveedores</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>
-                <li class="aside__item nav-item"><a href="index.php?action=compra" class="aside__link nav-link">Compras</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=compra&a=c" class="aside__link nav-link">Compras</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=bitacora" class="aside__link nav-link">Bitacora</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=movimientos" class="aside__link nav-link">Cajas Ingreso Egreso</a></li>
@@ -52,7 +52,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
             <?php elseif ($rol == 'Cajero'): ?>
                 <!-- Limited Menu for Cajero -->
                 <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>
-                <li class="aside__item nav-item"><a href="index.php?action=compra" class="aside__link nav-link">Compras</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=compra&a=c" class="aside__link nav-link">Compras</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>
 
             <?php else: ?>

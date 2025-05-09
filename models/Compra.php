@@ -20,23 +20,127 @@ class Compra extends Conexion{
         parent::__construct();
     }
 
-    public function setCompraData($venta) {
-        if (is_string($venta)) {
-            $venta = json_decode($venta, true);
+    private function setCompraData($compra) {
+        if (is_string($compra)) {
+            $compra = json_decode($compra, true);
         }
-    
-        $this->id_compra = $venta['id_compra'] ?? null; // Cambiado de id_venta a id_compra
-        $this->id_producto = $venta['productos']['id_producto'] ?? null;
-        $this->id_medida = $venta['productos']['id_medida'] ?? null;
-        $this->tipo_compra = $venta['tipo_compra'] ?? null;
-        $this->tlf = $venta['tlf'] ?? null;
-        $this->id_cliente = $venta['id_cliente'] ?? null;
-        $this->cantidad = $venta['cantidad'] ?? null;
-        $this->fech_emision = $venta['fech_emision'] ?? null;
-        $this->id_modalidad_pago = $venta['id_modalidad_pago'] ?? null;
-        $this->monto = $venta['monto'] ?? null;
-        $this->tipo_entrega = $venta['tipo_entrega'] ?? null;
-        $this->rif_banco = $venta['rif_banco'] ?? null;
+
+        // Expresiones regulares para validación
+        $exp_id = "/^\d+$/";
+        $exp_tipo_entrega = "/^(Directa|Delivery)$/i";
+        $exp_rif_banco = "/^[A-Z0-9\-]+$/i";
+
+        // Validar id_compra
+        if (!isset($compra['id_compra']) || !preg_match($exp_id, $compra['id_compra'])) {
+            return ['status' => false, 'msj' => 'ID de compra inválido'];
+        }
+        $this->id_compra = (int)$compra['id_compra'];
+
+        // Validar productos (arrays)
+        if (
+            !isset($compra['productos']['id_producto']) ||
+            !is_array($compra['productos']['id_producto']) ||
+            empty($compra['productos']['id_producto'])
+        ) {
+            return ['status' => false, 'msj' => 'Productos no especificados'];
+        }
+        if (
+            !isset($compra['productos']['id_medida']) ||
+            !is_array($compra['productos']['id_medida']) ||
+            empty($compra['productos']['id_medida'])
+        ) {
+            return ['status' => false, 'msj' => 'Medidas no especificadas'];
+        }
+        if (
+            !isset($compra['cantidad']) ||
+            !is_array($compra['cantidad']) ||
+            empty($compra['cantidad'])
+        ) {
+            return ['status' => false, 'msj' => 'Cantidades no especificadas'];
+        }
+
+        // Validar cada id_producto
+        foreach ($compra['productos']['id_producto'] as $id_producto) {
+            if (!preg_match($exp_id, $id_producto)) {
+                return ['status' => false, 'msj' => 'ID de producto inválido'];
+            }
+        }
+        $this->id_producto = $compra['productos']['id_producto'];
+
+        // Validar cada id_medida
+        foreach ($compra['productos']['id_medida'] as $id_medida) {
+            if (!preg_match($exp_id, $id_medida)) {
+                return ['status' => false, 'msj' => 'ID de medida inválido'];
+            }
+        }
+        $this->id_medida = $compra['productos']['id_medida'];
+
+        // Validar cada cantidad
+        foreach ($compra['cantidad'] as $cantidad) {
+            if (!is_numeric($cantidad) || $cantidad <= 0) {
+                return ['status' => false, 'msj' => 'Cantidad inválida'];
+            }
+        }
+        $this->cantidad = $compra['cantidad'];
+
+        // Validar id_proveedor
+        if (!isset($compra['id_proveedor']) || !preg_match($exp_id, $compra['id_proveedor'])) {
+            return ['status' => false, 'msj' => 'ID de proveedor inválido'];
+        }
+        $this->id_proveedor = (int)$compra['id_proveedor'];
+
+        // Validar fecha de emisión
+        $fech_emision = trim($compra['fech_emision'] ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fech_emision) || !strtotime($fech_emision)) {
+            return ['status' => false, 'msj' => 'Fecha de emisión inválida'];
+        }
+        $this->fech_emision = $fech_emision;
+
+        // Validar id_modalidad_pago
+        if (!isset($compra['id_modalidad_pago']) || !preg_match($exp_id, $compra['id_modalidad_pago'])) {
+            return ['status' => false, 'msj' => 'ID de modalidad de pago inválido'];
+        }
+        $this->id_modalidad_pago = (int)$compra['id_modalidad_pago'];
+
+        // Validar monto
+        if (!isset($compra['monto']) || !is_numeric($compra['monto']) || $compra['monto'] <= 0) {
+            return ['status' => false, 'msj' => 'Monto inválido'];
+        }
+        $this->monto = (float)$compra['monto'];
+
+        // Validar tipo_entrega
+        $tipo_entrega = trim($compra['tipo_entrega'] ?? '');
+        if (!preg_match($exp_tipo_entrega, $tipo_entrega)) {
+            return ['status' => false, 'msj' => 'Tipo de entrega inválido'];
+        }
+        $this->tipo_entrega = ucfirst(strtolower($tipo_entrega));
+
+        // Validar rif_banco (opcional)
+        $rif_banco = trim($compra['rif_banco'] ?? '');
+        if ($rif_banco !== '' && !preg_match($exp_rif_banco, $rif_banco)) {
+            return ['status' => false, 'msj' => 'RIF banco inválido'];
+        }
+        $this->rif_banco = $rif_banco !== '' ? strtoupper($rif_banco) : null;
+
+        return ['status' => true, 'msj' => 'Datos de compra validados correctamente'];
+    }
+
+
+    private function setValideId($compra) {
+        if (is_string($compra)) {
+            $compra = json_decode($compra, true);
+        }
+
+        // Expresiones regulares para validación
+        $exp_id = "/^\d+$/";
+
+
+        // Validar id_compra
+        if (!isset($compra['id_compra']) || !preg_match($exp_id, $compra['id_compra'])) {
+            return ['status' => false, 'msj' => 'ID de compra inválido'];
+        }
+        $this->id_compra = (int)$compra['id_compra'];
+        return ['status' => true, 'msj' => 'Datos de compra validados correctamente'];
     }
     
 
@@ -122,9 +226,57 @@ class Compra extends Conexion{
         $this->id_medida = $id_medida;
     }
 
-    //Metodos
-    public function Guardar_Compra() 
-    { 
+     //Metodos
+
+
+
+    //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $compra) {
+        switch ($accion) {
+
+            case 'agregar':
+                $validacion=$this->setCompraData($compra);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Guardar_Compra();
+                }
+                break;
+
+            case 'actualizar':
+
+
+            case 'obtenerBancos':
+                    return $this->obtenerBancos();
+                
+            case 'obtenerPagos':
+                    return $this->obtenerPagos();
+                    
+
+            case 'eliminar':
+                $validacion=$this->setValideId($compra);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Eliminar_Compra($compra);
+                }
+
+            case 'consultar':
+
+                    return $this->Mostrar_Compra();
+                
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
+        }
+    }
+
+
+    private function Guardar_Compra() { 
         try { 
             $this->conn->beginTransaction(); 
             
@@ -144,13 +296,12 @@ class Compra extends Conexion{
                 
                 // Verificar si se encontró el producto
                 if (!$producto) {
-                    echo "Producto no encontrado: ID " . $producto_id;
-                    continue; // Saltar a la siguiente iteración si no se encuentra el producto
+                    $this->conn->rollBack();
+                    return ['status' => false, 'msj' => "Producto no encontrado: ID $producto_id"];
                 }
-
-        
-                // Registrar la venta 
-                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago,monto) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto)"); 
+    
+                // Registrar la compra 
+                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto)"); 
                 $stmt2->bindParam(':id_compra', $this->id_compra); 
                 $stmt2->bindParam(':id_producto', $producto_id); 
                 $stmt2->bindParam(':id_cliente', $this->id_cliente); 
@@ -159,7 +310,7 @@ class Compra extends Conexion{
                 $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
                 $stmt2->bindParam(':monto', $this->monto); 
                 $stmt2->execute(); 
-
+    
                 $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor (id_detalleCompraProveedor, id_facturaProveedor, id_producto, cantidad_compra) VALUES (:id_detalleproducto, :id_compra, :id_producto, :cantidad)"); 
                 $stmt3->bindParam(':id_compra', $this->id_compra); 
                 $stmt3->bindParam(':id_producto', $producto_id); 
@@ -167,28 +318,27 @@ class Compra extends Conexion{
                 $stmt3->bindParam(':id_detalleproducto', $this->id_compra); 
                 $stmt3->execute(); 
         
-            // Sumar la cantidad al stock del producto
-            $nueva_cantidad = $producto['cantidad'] + $cantidad; 
-            $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-            $stmt4->bindParam(':nueva_cantidad', $nueva_cantidad); 
-            $stmt4->bindParam(':id_producto', $producto_id); 
-            $stmt4->bindParam(':id_medida', $medida_id); 
-            $stmt4->execute(); 
-        }
-
-            $n=5;
-            $m=$this->id_modalidad_pago;
-            if($m==$n)
-            {
+                // Sumar la cantidad al stock del producto
+                $nueva_cantidad = $producto['cantidad'] + $cantidad; 
+                $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
+                $stmt4->bindParam(':nueva_cantidad', $nueva_cantidad); 
+                $stmt4->bindParam(':id_producto', $producto_id); 
+                $stmt4->bindParam(':id_medida', $medida_id); 
+                $stmt4->execute(); 
+            }
+    
+            $n = 5;
+            $m = $this->id_modalidad_pago;
+            if ($m == $n) {
                 $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_pagar (id_cuentaPagar, id_compra, fecha_cuentaPagar, monto_cuentaPagar) VALUES (:id_cuentaCobrar, :id_compra, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
                 $stmt5->bindParam(':id_compra', $this->id_compra); 
                 $stmt5->bindParam(':id_cuentaCobrar', $this->id_compra);
                 $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
-                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
+                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto);  
                 $stmt5->execute();  
             }
-
-            $id_actualizacion=0;
+    
+            $id_actualizacion = 0;
             $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
             $stmt6->bindParam(':id_actualizacion', $id_actualizacion); 
             $stmt6->bindParam(':id_producto', $producto_id); 
@@ -199,20 +349,21 @@ class Compra extends Conexion{
                 $this->conn->commit(); 
             }
             
-            return true; 
+            return ['status' => true, 'msj' => 'Compra registrada correctamente']; 
     
         } catch (Exception $e) { 
             // Revertir la transacción en caso de error 
             if ($this->conn->inTransaction()) { 
                 $this->conn->rollBack(); 
             } 
-            echo "Error al registrar la compra: " . $e->getMessage(); 
+            return ['status' => false, 'msj' => 'Error al registrar la compra: ' . $e->getMessage()]; 
         } 
     }
     
+    
 
     // Método para obtener todas las venta de la base de datos
-    public function Mostrar_Compra() {
+    private function Mostrar_Compra() {
         // Consulta SQL para seleccionar todos los registros de la tabla venta
         $query = "SELECT 
                     v.id_compra, 
@@ -323,6 +474,26 @@ class Compra extends Conexion{
                   GROUP BY 
                     c.id_cuentaPagar"; 
     
+        // Prepara la consulta
+        $stmt = $this->conn->prepare($query);
+        // Ejecuta la consulta
+        $stmt->execute();
+        // Retorna los resultados como un arreglo asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function obtenerBancos() {
+        $query = "SELECT * FROM bancos";
+        // Prepara la consulta
+        $stmt = $this->conn->prepare($query);
+        // Ejecuta la consulta
+        $stmt->execute();
+        // Retorna los resultados como un arreglo asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function obtenerPagos() {
+        $query = "SELECT * FROM modalidad_de_pago";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
         // Ejecuta la consulta
