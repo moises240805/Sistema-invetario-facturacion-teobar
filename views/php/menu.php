@@ -15,8 +15,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
         <ul class="aside__list nav flex-column sb-sidenav-menu-nested nav">
 
         <?php if ($rol == 'Superusuario'): ?>
-<<<<<<< HEAD
-                <!-- Full Menu for Administrator -->
+              <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
                 <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=usuario&a=d" class="aside__link nav-link">Usuarios</a></li>
@@ -34,8 +33,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
                 <li class="aside__item nav-item"><a href="index.php?action=roles" class="aside__link nav-link">Roles</a></li>
 
             <?php elseif ($rol == 'Administrador'): ?>
-=======
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
                 <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
                 <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>

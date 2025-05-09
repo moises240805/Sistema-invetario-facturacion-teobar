@@ -16,10 +16,9 @@ $producto = new Producto();
 $cliente = new Cliente();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
-<<<<<<< HEAD
-=======
+
 $usuario = new Roles();
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
 
 $modulo = 'Ventas';
 
@@ -75,19 +74,6 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
             'id_medida' => []
         ];
 
-
-<<<<<<< HEAD
-    $modelo->setVentaData($venta);
-    
-    $ingreso->setIngresoEgresoData($ingreso_data);
-    // Llama al método guardar venta del controlador y guarda el resultado en $message
-    if($modelo->Guardar_Venta($venta))
-    {
-        // Verificar stock después de la venta
-        foreach ($productos_vendidos as $producto) {
-            $stock_actual = $producto->obtenerStockProducto($producto['id_producto']);
-=======
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
         $venta = json_encode([
             'id_venta' => $id_venta,
@@ -203,15 +189,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
 
 function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $producto, $ingreso, $notificacion) {
 
-<<<<<<< HEAD
-                    
-    $venta = $modelo->Mostrar_Venta();
-    $clientes =$cliente->manejarAccion("consultar",null);
-    $productos = $producto->Mostrar_Producto2();
-    $bancos = $modelo->obtenerBancos();
-    $pagos = $modelo->obtenerPagos();
-    require_once "views/php/dashboard_venta.php";
-=======
+
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
@@ -231,6 +209,5 @@ function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $produc
             require_once 'views/php/dashboard_venta.php';
             exit(); 
     }
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 }
 ?>

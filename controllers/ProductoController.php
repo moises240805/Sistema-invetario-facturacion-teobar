@@ -4,10 +4,8 @@ require_once "models/Producto.php";
 require_once 'models/Tipo.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
-<<<<<<< HEAD
 require_once 'views/php/utils.php';
-=======
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
 
 //Se instancia los modelos
 $controller = new Producto();
@@ -21,7 +19,7 @@ date_default_timezone_set('America/Caracas');
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
-<<<<<<< HEAD
+
 //Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
 switch ($action) {
     case "agregar":
@@ -60,14 +58,11 @@ switch ($action) {
 
 // Función para agregar un Producto
 function agregarProducto($controller, $bitacora, $usuario, $modulo) {
-=======
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+    if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
         // Sanitiza y valida datos
@@ -170,11 +165,7 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
         try {
 
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-<<<<<<< HEAD
             $resultado = $controller->manejarAccion('agregar', $producto);
-=======
-            $resultado = $controller->manejarAccion($action, $producto);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
         
 
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -211,12 +202,11 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
      require_once 'views/php/dashboard_producto.php';
      exit();
 }
-<<<<<<< HEAD
+
+
 // Función para agregar un Producto
 function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
-=======
-elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -304,11 +294,7 @@ elseif ($action == "agregar2" && $_SERVER["REQUEST_METHOD"] == "POST") {
         try {
 
                     // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-<<<<<<< HEAD
                     $resultado = $controller->manejarAccion('agregar', $producto);
-=======
-                    $resultado = $controller->manejarAccion($action, $producto);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
                 
 
                     //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -361,14 +347,12 @@ function obtenerProducto($controller, $bitacora, $usuario, $modulo) {
     echo json_encode($producto);
 }
 
-<<<<<<< HEAD
+
 // Función para actualizar un Producto
 function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
-=======
-else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "Modificar", $_SESSION['s_usuario']['id_rol'])) {
@@ -408,11 +392,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     try {
 
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-<<<<<<< HEAD
         $resultado = $controller->manejarAccion('actualizar', $producto);
-=======
-        $resultado = $controller->manejarAccion($action, $producto);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
            
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -449,14 +429,11 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-<<<<<<< HEAD
+
 // Función para eliminar un Producto
 function eliminarProducto($controller, $bitacora, $usuario, $modulo) {
-=======
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
@@ -521,14 +498,12 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
     exit();
 }
 
-<<<<<<< HEAD
+
 // Función para consultar Productos
 function consultarProducto($controller, $usuario, $modulo, $tipo) {
-=======
-elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
-       //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {

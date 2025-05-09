@@ -318,48 +318,6 @@ class Compra extends Conexion{
                 $stmt3->bindParam(':id_detalleproducto', $this->id_compra); 
                 $stmt3->execute(); 
         
-<<<<<<< HEAD
-                // Registrar la venta 
-                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago,monto) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto)"); 
-                $stmt2->bindParam(':id_compra', $this->id_compra); 
-                $stmt2->bindParam(':id_producto', $producto_id); 
-                $stmt2->bindParam(':id_cliente', $this->id_cliente); 
-                $stmt2->bindParam(':cantidad', $cantidad); 
-                $stmt2->bindParam(':fech_emision', $this->fech_emision); 
-                $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
-                $stmt2->bindParam(':monto', $this->monto); 
-                $stmt2->execute(); 
-
-                $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor (id_detalleCompraProveedor, id_facturaProveedor, id_producto, cantidad_compra) VALUES (:id_detalleproducto, :id_compra, :id_producto, :cantidad)"); 
-                $stmt3->bindParam(':id_compra', $this->id_compra); 
-                $stmt3->bindParam(':id_producto', $producto_id); 
-                $stmt3->bindParam(':cantidad', $cantidad); 
-                $stmt3->bindParam(':id_detalleproducto', $this->id_compra); 
-                $stmt3->execute(); 
-        
-            // Sumar la cantidad al stock del producto
-            $nueva_cantidad = $producto['cantidad'] + $cantidad; 
-            $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-            $stmt4->bindParam(':nueva_cantidad', $nueva_cantidad); 
-            $stmt4->bindParam(':id_producto', $producto_id); 
-            $stmt4->bindParam(':id_medida', $medida_id); 
-            $stmt4->execute(); 
-        }
-
-            $n=5;
-            $m=$this->id_modalidad_pago;
-            if($m==$n)
-            {
-                $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_pagar (id_cuentaPagar, id_compra, fecha_cuentaPagar, monto_cuentaPagar) VALUES (:id_cuentaCobrar, :id_compra, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
-                $stmt5->bindParam(':id_compra', $this->id_compra); 
-                $stmt5->bindParam(':id_cuentaCobrar', $this->id_compra);
-                $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
-                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
-                $stmt5->execute();  
-            }
-
-            $id_actualizacion=0;
-=======
                 // Sumar la cantidad al stock del producto
                 $nueva_cantidad = $producto['cantidad'] + $cantidad; 
                 $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
@@ -381,7 +339,6 @@ class Compra extends Conexion{
             }
     
             $id_actualizacion = 0;
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
             $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
             $stmt6->bindParam(':id_actualizacion', $id_actualizacion); 
             $stmt6->bindParam(':id_producto', $producto_id); 

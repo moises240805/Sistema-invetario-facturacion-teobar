@@ -1,12 +1,9 @@
 <?php
 // Incluye el archivo del modelo venta
 require_once "models/Compra.php";
-<<<<<<< HEAD
-=======
 require_once "models/Producto.php";
 require_once "models/Proveedor.php";
 require_once "models/Notificacion.php";
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
@@ -19,14 +16,9 @@ $producto = new Producto();
 $proveedor = new Proveedor();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
-<<<<<<< HEAD
 $ingreso = new Manejo();
 $controller = new Compra();
-
-$modulo = 'Compra';
-=======
 $usuario = new Roles();
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
 $modulo = 'Compras';
 

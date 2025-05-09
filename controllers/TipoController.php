@@ -3,6 +3,7 @@
 require_once "models/Tipo.php";
 require_once 'models/Bitacora.php';
 require_once "models/Roles.php";
+require_once "views/php/utils.php";
 
 $controller = new Tipo();
 $usuario = new Roles();
@@ -10,16 +11,6 @@ $bitacora = new Bitacora();
 $modulo = 'Tipos';
 $modulos = 'Tipo de producto';
 date_default_timezone_set('America/Caracas');
-
-
-
-require_once "views/php/utils.php";
-
-// Verifica si el usuario está logueado y tiene permisos
-if (!isset($_SESSION['s_usuario']) || $_SESSION['s_usuario']['rol'] != 'Administrador') {
-    setError("Acceso no autorizado");
-
-}
 
 
 

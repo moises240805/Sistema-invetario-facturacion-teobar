@@ -3,17 +3,13 @@
 require_once 'models/Proveedor.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
-<<<<<<< HEAD
 require 'views/php/utils.php';
-=======
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
 //Se instancia los modelos
 $controller = new Proveedor();
 $bitacora = new Bitacora();
 $usuario = new Roles();
 
-<<<<<<< HEAD
 //esta variables es para definir el modulo en la bitacora para cuando se cree el json 
 $modulo = 'Proveedores';
 date_default_timezone_set('America/Caracas');
@@ -54,30 +50,9 @@ switch ($action) {
 
 // Función para agregar un Proveedor
 function agregarProveedor($controller, $bitacora, $usuario, $modulo){
-=======
-$modulo = 'Proveedores';
-date_default_timezone_set('America/Caracas');
-
-// Función para generar mensaje de error
-function setError($message) {
-    $_SESSION['message_type'] = 'danger';
-    $_SESSION['message'] = $message;
-}
-
-// Función para generar mensaje de éxito
-function setSuccess($message) {
-    $_SESSION['message_type'] = 'success';
-    $_SESSION['message'] = $message;
-}
 
 
-
-$action = isset($_GET['a']) ? $_GET['a'] : '';
-
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
-
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
@@ -121,12 +96,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
             try {
 
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-<<<<<<< HEAD
             $resultado = $controller->manejarAccion('agregar', $proveedor);
-=======
-            $resultado = $controller->manejarAccion($action, $proveedor);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
-        
+
 
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
             if (isset($resultado['status']) && $resultado['status'] === true) {
@@ -156,45 +127,8 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: index.php?action=proveedor&a=d"); // Redirect
     exit();
 }
-<<<<<<< HEAD
+}
 // Función para obtener un Proveedor
- {
-    
-    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
-    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
-    //action y el rol de usuario
-    //if ($usuario->verificarPermiso($modulo, "Consultar", $_SESSION['s_usuario']['id_rol'])) {
-        // Ejecutar acción permitida
-=======
-//muestra un modal de info que dice acceso no permitido
-setError("Error accion no permitida ");
-require_once 'views/php/dashboard_proveedor.php';
-exit();
-}
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
-
-        $id_proveedor = $_GET['id_proveedor'];
-        if (!filter_var($id_Proveedor, FILTER_VALIDATE_INT)) {
-            setError("ID inválido");
-            header("Location: index.php?action=proveedor&a=d");
-            exit();
-        }
-
-        $accion="obtener";
-        $proveedor=$controller->manejarAccion("obtener",$id_proveedor);
-        echo json_encode($proveedor);
-    //}
-    //muestra un modal de info que dice acceso no permitido
-    //setError("Error accion no permitida ");
-    //require_once 'views/php/dashboard_Proveedor.php';
-    //exit();
-}
-//muestra un modal de info que dice acceso no permitido
-setError("Error accion no permitida ");
-require_once 'views/php/dashboard_proveedor.php';
-exit();
-}
-
 function obtenerProveedor($controller, $bitacora, $usuario, $modulo) {
     $id_proveedor = $_GET['id_proveedor'];
     if (!filter_var($id_proveedor, FILTER_VALIDATE_INT)) {
@@ -208,13 +142,10 @@ function obtenerProveedor($controller, $bitacora, $usuario, $modulo) {
     echo json_encode($proveedor);
 }
 
-<<<<<<< HEAD
-function actualizarCliente($controller, $bitacora, $usuario, $modulo) {
-=======
-else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+function actualizarCliente($controller, $bitacora, $usuario, $modulo) {
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "Modificar", $_SESSION['s_usuario']['id_rol'])) {
@@ -257,13 +188,8 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
 
-<<<<<<< HEAD
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto Proveedor y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
         $resultado = $controller->manejarAccion('actualizar', $proveedor);
-=======
-        // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-        $resultado = $controller->manejarAccion($action, $proveedor);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
            
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -294,28 +220,18 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 }
-<<<<<<< HEAD
 
 // Función para eliminar un cliente
 function eliminarProveedor($controller, $bitacora, $usuario, $modulo) {
 
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
-=======
 
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
-
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
-    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
-    //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
-        // Ejecutar acción permitida
-
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
     $id_proveedor = $_GET['ID'];
     if (!filter_var($id_proveedor, FILTER_VALIDATE_INT)) {
         setError("ID inválido");
@@ -338,12 +254,8 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
 try {
 
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-<<<<<<< HEAD
         $resultado = $controller->manejarAccion('eliminar', $id_proveedor);
-=======
-        $resultado = $controller->manejarAccion($action, $id_proveedor);
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
-           
+
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
         if (isset($resultado['status']) && $resultado['status'] === true) {
@@ -374,13 +286,10 @@ try {
     exit();
     }
 }
-<<<<<<< HEAD
+
 // Función para consultar proveedores
 function consultarProveedor($controller, $usuario, $modulo) {
-=======
-}
-elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 

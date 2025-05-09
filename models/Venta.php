@@ -352,30 +352,19 @@ class Venta extends Conexion{
                 $stmt2->bindParam(':cantidad', $cantidad); 
                 $stmt2->bindParam(':fech_emision', $this->fech_emision); 
                 $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
-<<<<<<< HEAD
                 $stmt2->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto
                 $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega); 
                 $stmt2->bindParam(':rif_banco', $this->rif_banco); 
                 $stmt2->execute();
 
-=======
-                $stmt2->bindParam(':monto', $this->monto); // Asegúrate que monto sea correcto para cada producto
-                $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega); 
-                $stmt2->bindParam(':rif_banco', $this->rif_banco); 
-                $stmt2->execute();
-    
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+                
                 $stmt3 = $this->conn->prepare("INSERT INTO detalle_producto (id_detalle_producto, id_venta, id_producto, cantidad_producto, id_medida_especifica, precio) VALUES (:id_detalleproducto, :id_venta, :id_producto, :cantidad, :id_medida, :monto)"); 
                 $stmt3->bindParam(':id_venta', $this->id_venta); 
                 $stmt3->bindParam(':id_producto', $producto_id); 
                 $stmt3->bindParam(':id_medida', $medida_id); 
                 $stmt3->bindParam(':cantidad', $cantidad); 
                 $stmt3->bindParam(':id_detalleproducto', $this->id_venta); 
-<<<<<<< HEAD
-                $stmt3->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
-=======
                 $stmt3->bindParam(':monto', $this->monto); // Asegúrate que monto sea correcto para cada producto 
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
                 $stmt3->execute(); 
         
                 // Descontar la cantidad del producto 
@@ -386,45 +375,25 @@ class Venta extends Conexion{
                 $stmt4->bindParam(':id_medida', $medida_id); 
                 $stmt4->execute(); 
             }
-<<<<<<< HEAD
-
-            $n=5;
-            $m=$this->tipo_compra;
-            if($m==$n)
-            {
-=======
     
             // Si tipo_compra es igual a 5 (según tu lógica)
             $n = 5;
             $m = $this->tipo_compra;
             if ($m == $n) {
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
                 $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_cobrar (id_cuentaCobrar, id_venta, fecha_cuentaCobrar, monto_cuentaCobrar) VALUES (:id_cuentaCobrar, :id_venta, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
                 $stmt5->bindParam(':id_venta', $this->id_venta); 
                 $stmt5->bindParam(':id_cuentaCobrar', $this->id_venta);
                 $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
-<<<<<<< HEAD
-                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate de que el monto sea correcto para cada producto 
-                $stmt5->execute();  
-            }
-
-            $id_actualizacion=1;
-=======
                 $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate que monto sea correcto
                 $stmt5->execute();  
             }
     
             $id_actualizacion = 1;
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
             $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
             $stmt6->bindParam(':id_actualizacion', $id_actualizacion); 
             $stmt6->bindParam(':id_producto', $producto_id); 
             $stmt6->execute(); 
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
             // Confirmar la transacción solo si todas las operaciones fueron exitosas
             if ($this->conn->inTransaction()) {
                 $this->conn->commit(); 
