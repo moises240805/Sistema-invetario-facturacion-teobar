@@ -130,7 +130,15 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             </tr>
         </thead>
         <tbody>
+<<<<<<< HEAD
             <?php 
+=======
+            <?php
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($venta) && is_array($venta) && !empty($venta)){ 
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
                 foreach ($venta as $venta): 
             ?>
             <tr>
@@ -152,7 +160,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay ventas registrados.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>
@@ -274,7 +287,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                     <select name="tipo_compra" class="form-control">
                                         <option value="">Selecione</option>
                                         <option value="5">Credito</option>
-                                        <option value="6">Descontado</option>
+                                        <option value="6">Contado</option>
                                     </select>
                                 </div>
                             </div>

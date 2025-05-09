@@ -3,7 +3,10 @@
 require_once "models/Admin.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
+<<<<<<< HEAD
 require_once 'views/php/utils.php';
+=======
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 
 //se instancia los objetos admin y bitacora
 $controller = new Admin();
@@ -16,6 +19,23 @@ $modulo = 'Usuarios';
 //zona horaria
 date_default_timezone_set('America/Caracas');
 
+<<<<<<< HEAD
+=======
+
+// Función para generar mensaje de error
+function setError($message) {
+    $_SESSION['message_type'] = 'danger';
+    $_SESSION['message'] = $message;
+}
+
+// Función para generar mensaje de éxito
+function setSuccess($message) {
+    $_SESSION['message_type'] = 'success';
+    $_SESSION['message'] = $message;
+}
+
+
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 //esta variable se utilizara para trabajar la peticiones https dinamicamente ya sea por post o get
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
@@ -148,8 +168,13 @@ function agregarUsuario($controller, $bitacora, $usuario, $modulo)
 
         try {
 
+<<<<<<< HEAD
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto Usuario y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
             $resultado = $controller->manejarAccion('agregar', $user);
+=======
+            // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+            $resultado = $controller->manejarAccion($action, $user);
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
         
 
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -185,6 +210,7 @@ function agregarUsuario($controller, $bitacora, $usuario, $modulo)
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
     require_once 'views/php/dashboard_admin.php';
+<<<<<<< HEAD
     exit();
     
 }
@@ -330,11 +356,15 @@ function eliminarUsuario($controller, $bitacora, $usuario, $modulo) {
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
     require_once 'views/php/dashboard_admin.php';
+=======
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
     exit();
+    
 }
 // Función para consultar usuarios
 function consultarUsuario($controller, $modulo, $permiso) {
 
+<<<<<<< HEAD
     // Verifica si el usuario está logueado y tiene permisos
 if (!isset($_SESSION['s_usuario'])) {
     //setError("Acceso no autorizado");
@@ -365,6 +395,188 @@ if (!isset($_SESSION['s_usuario'])) {
         
     # Initialize the session
     session_start();
+=======
+elseif ($action == 'mid_form' && $_SERVER["REQUEST_METHOD"] == "GET") {
+    
+
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
+        $id= $_GET['ID'];
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            setError("ID inválido");
+            header("Location: index.php?action=usuario&a=d");
+            exit();
+        }
+
+        // Llama al controlador para mostrar el formulario de modificación
+        $accion="obtener";
+        $admin=$controller->manejarAccion($accion,$id);
+        header('Content-Type: application/json');
+        echo json_encode($admin);
+        exit();
+    }else{
+    setError("Error accion no permitida ");
+    //require_once 'views/php/dashboard_admin.php';
+    exit();
+    }
+}
+else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($permiso->verificarPermiso($modulo, "Modificar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+
+        // Obtiene los valores del formulario y los sanitiza 
+        $user = json_encode([
+            'username' => htmlspecialchars($_POST['usuario']),
+            'pw' => htmlspecialchars($_POST['clave']),
+            'rol' => htmlspecialchars($_POST['roles']),
+            'id' => htmlspecialchars($_POST['id'])
+        ]);
+
+        try {
+
+            // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+            $resultado = $controller->manejarAccion($action, $user);
+        
+
+            //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+            if (isset($resultado['status']) && $resultado['status'] === true) {
+                //usar mensaje dinámico del modelo
+                setSuccess($resultado['msj']);
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
+
+    # Unset all session variables
+
+<<<<<<< HEAD
+    # Destroy the session
+    session_destroy();
+
+    # Redirect to login page
+    header('location:index.php');
+    exit();
+=======
+                $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => 'Modificar',
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' =>'El usuario: '.$username. " " . 'ha modificado un usuario'
+                ]);
+                $bitacora->setBitacoraData($bitacora_data);
+                $bitacora->Guardar_Bitacora();
+            } else {
+                // Error: usar mensaje dinámico o genérico
+                $mensajeError = $resultado['msj'] ?? "ERROR AL ACTUALIZAR...";
+                setError($mensajeError);
+            }  
+        } catch (Exception $e) {
+            //mensajes del expcecion del pdo 
+            error_log("Error al actualizar: " . $e->getMessage());
+            setError("Error en operación");
+        }
+
+        header("Location: index.php?action=usuario&a=d"); // Redirect
+        exit();
+    }
+    //muestra un modal de info que dice acceso no permitido
+    setError("Error accion no permitida ");
+    require_once 'views/php/dashboard_admin.php';
+    exit();
+    
+}
+elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($permiso->verificarPermiso($modulo, "Eliminar", $_SESSION['s_usuario']['id_rol'])) {
+        // Ejecutar acción permitida
+    
+        $id= $_GET['ID'];
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            setError("ID inválido");
+            header("Location: index.php?action=usuario&a=d");
+            exit();
+        }
+
+
+        try {
+
+        $resultado=$controller->manejarAccion($action,$id);
+        
+                //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                if (isset($resultado['status']) && $resultado['status'] === true) {
+                    //usar mensaje dinámico del modelo
+                    setSuccess($resultado['msj']);
+
+            $bitacora_data = json_encode([
+                'id_admin' => $_SESSION['s_usuario']['id'],
+                'movimiento' => 'Eliminar',
+                'fecha' => date('Y-m-d H:i:s'),
+                'modulo' => $modulo,
+                'descripcion' =>'El usuario: '.$username. " " . 'elimino un usuario'
+                ]);
+                $bitacora->setBitacoraData($bitacora_data);
+                $bitacora->Guardar_Bitacora();
+
+
+        } else {
+            // Error: usar mensaje dinámico o genérico
+            $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+            setError($mensajeError);
+        }
+        } catch (Exception $e) {
+            //mensajes del expcecion del pdo 
+            error_log("Error al eliminar: " . $e->getMessage());
+            setError("Error en operación");
+        }
+        header("Location: index.php?action=usuario&a=d");
+        exit();
+    }
+    //muestra un modal de info que dice acceso no permitido
+    setError("Error accion no permitida ");
+    require_once 'views/php/dashboard_admin.php';
+    exit();
+}
+elseif ($action == 'd' && $_SERVER["REQUEST_METHOD"] == "GET") {
+
+    // Verifica si el usuario está logueado y tiene permisos
+if (!isset($_SESSION['s_usuario'])) {
+    //setError("Acceso no autorizado");
+    header("Location: index.php?action=login");
+    exit();
+}
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($permiso->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
+        // Ejecutar acción permitida
+        $admin =$controller->manejarAccion("consultar",null);
+        require_once 'views/php/dashboard_admin.php';
+        exit();
+    }
+    else{
+
+        //muestra un modal de info que dice acceso no permitido
+        setError("Error accion no permitida ");
+        require_once 'views/php/dashboard_admin.php';
+        exit(); 
+    }
+}
+elseif ($action == 'cerrar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+        
+    # Initialize the session
+    session_start();
 
     # Unset all session variables
 
@@ -374,5 +586,6 @@ if (!isset($_SESSION['s_usuario'])) {
     # Redirect to login page
     header('location:index.php');
     exit();
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
 }
 ?>

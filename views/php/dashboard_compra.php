@@ -129,12 +129,11 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/CompraController.php";
-
-                $compra = new Compra();
-                $compra = $compra->Mostrar_Compra();
-                
-                foreach ($compra as $compra): 
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($compras) && is_array($compras) && !empty($compras)){
+                foreach ($compras as $compra): 
             ?>
             <tr>
                 <td><?php echo htmlspecialchars($compra['id_compra']); ?></td>
@@ -153,7 +152,12 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                     </a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay compras registrados.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>
@@ -171,31 +175,6 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             <form class="formulario2" action="index.php?action=compra&a=agregar" method="post" name="form">
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <?php if (!empty($message)): ?>
-                            <p class="alert alert-<?php echo ($message == "COMPRA AGREGADA CORRECTAMENTE") ? 'success' : 'danger'; ?>">
-                                <?php echo $message; ?>
-                            </p>
-                        <?php endif; ?>
-
-                        <?php
-                        require_once "controllers/VentaController.php";
-                        $banco = new Venta;
-                        $bancos = $banco->obtenerBancos();
-
-                        $pago = new Venta;
-                        $pagos = $pago->obtenerPagos();
-
-                        require_once "controllers/ProveedorController.php";
-
-                        $cliente = new Proveedor();
-                        $clientes = $cliente->Mostrar_Proveedor();
-
-                        require_once "controllers/ProductoController.php";
-
-                        $producto = new Producto();
-                        $productos = $producto->Mostrar_Producto2();
-                        ?>
-
                         <table class="table table-bordered" id="tablaFormulario">
                             <tbody>
                                 <tr>
@@ -211,9 +190,9 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                             <div class="input-group">
                                                 <select name="id_cliente" class="form-control">
                                                     <option value="">Seleccione Proveedor</option>
-                                                    <?php foreach ($clientes as $cliente): ?>
-                                                        <option value="<?php echo $cliente['id_proveedor']; ?>">
-                                                            <?php echo $cliente['nombre_proveedor']; ?>
+                                                    <?php foreach ($proveedores as $proveedor): ?>
+                                                        <option value="<?php echo $proveedor['id_proveedor']; ?>">
+                                                            <?php echo $proveedor['nombre_proveedor']; ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -229,7 +208,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                                             <select name="id_modalidad_pago" class="form-control">
                                                 <option value="">Seleccione pago</option>
                                                 <?php foreach ($pagos as $pago): ?>
-                                                    <option value="<?php echo $pago['ID']; ?>">
+                                                    <option value="<?php echo $pago['id_modalidad_pago']; ?>">
                                                         <?php echo $pago['nombre_modalidad']; ?>
                                                     </option>
                                                 <?php endforeach; ?>

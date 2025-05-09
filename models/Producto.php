@@ -361,6 +361,12 @@ class Producto extends Conexion{
                     return $validacion;
                 }
                 return $this->Obtener_Producto($producto);
+<<<<<<< HEAD
+=======
+
+            case 'obtenerProductos':
+                return $this->Mostrar_Producto2();
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
     
             case 'eliminar':
                 $validacion = $this->setValideId($producto);
@@ -564,7 +570,11 @@ class Producto extends Conexion{
         }
     }
 
+<<<<<<< HEAD
     public function Mostrar_Producto2() {
+=======
+    private function Mostrar_Producto2() {
+>>>>>>> 6a28e997408252a9114b84208fbdedc1ba787ccd
         $conn = null;
         try {
             $conn = $this->getConnection();
