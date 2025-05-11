@@ -55,6 +55,7 @@
 
                     <?php 
             require_once "encabezado.php";
+            require_once "alert.php";
             //require_once "menu.php";
             ?>
 
@@ -82,38 +83,6 @@
 
         </div>
         <div class="card-body">
-        <?php
-
-if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
-    $message = $_SESSION['message'];
-    $message_type = $_SESSION['message_type'];
-
-    // Pass PHP values to JavaScript variables
-    echo "<script>";
-    echo "var js_message = '" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "var js_message_type = '" . htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "</script>";
-
-    echo '<script>
-        $(document).ready(function() {
-            // Set Modal Title and Body
-            if (js_message_type === "success") {
-                $("#successModal .modal-title").text("Exitoso");
-                $("#successModal .modal-body").text(js_message);
-            } else {
-                $("#successModal .modal-title").text("Error");
-                $("#successModal .modal-body").text(js_message);
-            }
-
-            // Show the Modal
-            $("#successModal").modal("show");
-        });
-    </script>';
-
-    unset($_SESSION['message']); // Clear the message
-    unset($_SESSION['message_type']); // Clear the type
-}
-?>
     <div class="table-responsive">
     <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
         <thead class="thead-light">
@@ -362,23 +331,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
 
 
 
-<!-- Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="successModalLabel"></h5> <!-- Title will be dynamically set -->
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <!-- Message will be dynamically set -->
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
     <script src="views/js/modal_cliente.js"></script>

@@ -55,6 +55,7 @@
 
                     <?php 
             require_once "encabezado.php";
+            require_once "alert.php";
             //require_once "menu.php";
             ?>
 
@@ -76,38 +77,6 @@
 
         
         <div class="card-body">
-        <?php
-
-if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
-    $message = $_SESSION['message'];
-    $message_type = $_SESSION['message_type'];
-
-    // Pass PHP values to JavaScript variables
-    echo "<script>";
-    echo "var js_message = '" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "var js_message_type = '" . htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "</script>";
-
-    echo '<script>
-        $(document).ready(function() {
-            // Set Modal Title and Body
-            if (js_message_type === "success") {
-                $("#successModal .modal-title").text("Exitoso");
-                $("#successModal .modal-body").text(js_message);
-            } else {
-                $("#successModal .modal-title").text("Error");
-                $("#successModal .modal-body").text(js_message);
-            }
-
-            // Show the Modal
-            $("#successModal").modal("show");
-        });
-    </script>';
-
-    unset($_SESSION['message']); // Clear the message
-    unset($_SESSION['message_type']); // Clear the type
-}
-?>
         <main class="main">
     <section class="full-width text-center" style="padding: 20px;">
         <div class="container-fluid">
