@@ -81,11 +81,11 @@ require_once "controllers/CajaController.php";
         <div class="col">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3>Manjeo de cajas</h3>
+                    <h3>Manejo de cajas</h3>
                 </div>
                 <div class="card-body">
                     <h4 class="card-title"><?php echo $caja["nombre_caja"]; ?></h4>
-                    <p class="card-text"><?php echo $caja["saldo_caja"]; ?></p>
+                    <p class="card-text"><b style='font-size:1.2em;'><?=number_format($caja["saldo_caja"],2,',','.'); ?></b></p>
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@ require_once "controllers/CajaController.php";
     
         <div class="card-body">
     <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+    <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
         <thead class="thead-light">
             <tr>
                 <th>Nro de movimiento</th>
@@ -135,6 +135,10 @@ require_once "controllers/CajaController.php";
 
 
 
+ 
+<link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/jquery.js"></script>
+<script src="views/js/DataTables/datatables.js"></script>
 
 </body>
 </html>

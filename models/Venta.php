@@ -11,6 +11,7 @@ class Venta extends Conexion{
     private $id_cliente;
     private $cantidad;
     private $fech_emision;
+    private $fech_vencimiento;
     private $id_modalidad_pago;
     private $monto;
     private $tipo_entrega;
@@ -34,58 +35,58 @@ class Venta extends Conexion{
         $exp_tipo_entrega = "/^(Directa|Delivery)$/i"; // ejemplo: tipos permitidos
         $exp_rif_banco = "/^[A-Z0-9\-]+$/i"; // ejemplo: caracteres permitidos para rif banco
     
-    // Validar id_venta (único)
-    if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
-        return ['status' => false, 'msj' => 'ID de venta inválido'];
-    }
-    $this->id_venta = (int)$venta['id_venta'];
-
-    // Validar productos (arrays)
-    if (
-        !isset($venta['productos']['id_producto']) || 
-        !is_array($venta['productos']['id_producto']) || 
-        empty($venta['productos']['id_producto'])
-    ) {
-        return ['status' => false, 'msj' => 'Productos no especificados'];
-    }
-    if (
-        !isset($venta['productos']['id_medida']) || 
-        !is_array($venta['productos']['id_medida']) || 
-        empty($venta['productos']['id_medida'])
-    ) {
-        return ['status' => false, 'msj' => 'Medidas no especificadas'];
-    }
-    if (
-        !isset($venta['cantidad']) || 
-        !is_array($venta['cantidad']) || 
-        empty($venta['cantidad'])
-    ) {
-        return ['status' => false, 'msj' => 'Cantidades no especificadas'];
-    }
-
-    // Validar cada id_producto
-    foreach ($venta['productos']['id_producto'] as $id_producto) {
-        if (!preg_match($exp_id, $id_producto)) {
-            return ['status' => false, 'msj' => 'ID de producto inválido'];
+        // Validar id_venta (único)
+        if (!isset($venta['id_venta']) || !preg_match($exp_id, $venta['id_venta'])) {
+            return ['status' => false, 'msj' => 'ID de venta inválido'];
         }
-    }
-    $this->id_producto = $venta['productos']['id_producto'];
+        $this->id_venta = (int)$venta['id_venta'];
 
-    // Validar cada id_medida
-    foreach ($venta['productos']['id_medida'] as $id_medida) {
-        if (!preg_match($exp_id, $id_medida)) {
-            return ['status' => false, 'msj' => 'ID de medida inválido'];
+        // Validar productos (arrays)
+        if (
+            !isset($venta['productos']['id_producto']) || 
+            !is_array($venta['productos']['id_producto']) || 
+            empty($venta['productos']['id_producto'])
+        ) {
+            return ['status' => false, 'msj' => 'Productos no especificados'];
         }
-    }
-    $this->id_medida = $venta['productos']['id_medida'];
+        if (
+            !isset($venta['productos']['id_medida']) || 
+            !is_array($venta['productos']['id_medida']) || 
+            empty($venta['productos']['id_medida'])
+        ) {
+            return ['status' => false, 'msj' => 'Medidas no especificadas'];
+        }
+        if (
+            !isset($venta['cantidad']) || 
+            !is_array($venta['cantidad']) || 
+            empty($venta['cantidad'])
+        ) {
+            return ['status' => false, 'msj' => 'Cantidades no especificadas'];
+        }
 
-    // Validar cada cantidad
-    foreach ($venta['cantidad'] as $cantidad) {
-        if (!is_numeric($cantidad) || $cantidad <= 0) {
-            return ['status' => false, 'msj' => 'Cantidad inválida'];
+        // Validar cada id_producto
+        foreach ($venta['productos']['id_producto'] as $id_producto) {
+            if (!preg_match($exp_id, $id_producto)) {
+                return ['status' => false, 'msj' => 'ID de producto inválido'];
+            }
         }
-    }
-    $this->cantidad = $venta['cantidad'];
+        $this->id_producto = $venta['productos']['id_producto'];
+
+        // Validar cada id_medida
+        foreach ($venta['productos']['id_medida'] as $id_medida) {
+            if (!preg_match($exp_id, $id_medida)) {
+                return ['status' => false, 'msj' => 'ID de medida inválido'];
+            }
+        }
+        $this->id_medida = $venta['productos']['id_medida'];
+
+        // Validar cada cantidad
+        foreach ($venta['cantidad'] as $cantidad) {
+            if (!is_numeric($cantidad) || $cantidad <= 0) {
+                return ['status' => false, 'msj' => 'Cantidad inválida'];
+            }
+        }
+        $this->cantidad = $venta['cantidad'];
     
         // Validar tipo_compra
         $tipo_compra = trim($venta['tipo_compra'] ?? '');
@@ -96,8 +97,10 @@ class Venta extends Conexion{
     
         // Validar teléfono
         $tlf = trim($venta['tlf'] ?? '');
-        if (!preg_match($exp_tlf, $tlf)) {
-            return ['status' => false, 'msj' => 'Teléfono inválido'];
+        if($tlf!=""){
+            if (!preg_match($exp_tlf, $tlf)) {
+                return ['status' => false, 'msj' => 'Teléfono inválido'];
+            }
         }
         $this->tlf = $tlf;
     
@@ -113,10 +116,19 @@ class Venta extends Conexion{
             return ['status' => false, 'msj' => 'Fecha de emisión inválida'];
         }
         $this->fech_emision = $fech_emision;
+
+        // Validar fecha de emisión (formato YYYY-MM-DD)
+        $fech_vencimiento = trim($venta['fech_vencimiento'] ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fech_vencimiento) || !strtotime($fech_vencimiento)) {
+            return ['status' => false, 'msj' => 'Fecha de vencimiento inválida'];
+        }
+        $this->fech_vencimiento = $fech_vencimiento;
     
         // Validar id_modalidad_pago
-        if (!isset($venta['id_modalidad_pago']) || !preg_match($exp_id, $venta['id_modalidad_pago'])) {
-            return ['status' => false, 'msj' => 'ID de modalidad de pago inválido'];
+        if($venta['id_modalidad_pago']!=""){
+            if (!isset($venta['id_modalidad_pago']) || !preg_match($exp_id, $venta['id_modalidad_pago'])) {
+                return ['status' => false, 'msj' => 'ID de modalidad de pago inválido'];
+            }
         }
         $this->id_modalidad_pago = (int)$venta['id_modalidad_pago'];
     
@@ -128,10 +140,12 @@ class Venta extends Conexion{
     
         // Validar tipo_entrega
         $tipo_entrega = trim($venta['tipo_entrega'] ?? '');
-        if (!preg_match($exp_tipo_entrega, $tipo_entrega)) {
-            return ['status' => false, 'msj' => 'Tipo de entrega inválido'];
+        if($tipo_entrega!=""){
+            if (!preg_match($exp_tipo_entrega, $tipo_entrega)) {
+                return ['status' => false, 'msj' => 'Tipo de entrega inválido'];
+            }
         }
-        $this->tipo_entrega = strtolower($tipo_entrega);
+        $this->tipo_entrega = ucwords(mb_strtolower($tipo_entrega));
     
         // Validar rif_banco (puede ser opcional, validar si existe)
         $rif_banco = trim($venta['rif_banco'] ?? '');
@@ -190,6 +204,10 @@ class Venta extends Conexion{
         return $this->fech_emision;
     }
 
+    public function getFechVencimiento() {
+        return $this->fech_vencimiento;
+    }
+
     public function getIdModalidadPago() {
         return $this->id_modalidad_pago;
     }
@@ -239,6 +257,11 @@ class Venta extends Conexion{
         $this->fech_emision = $fech_emision;
     }
 
+    public function setFechVencimiento($fech_vencimiento) {
+        $this->fech_vencimiento = $fech_vencimiento;
+        
+    }
+
     public function setIdModalidadPago($id_modalidad_pago) {
         $this->id_modalidad_pago = $id_modalidad_pago;
     }
@@ -274,9 +297,12 @@ class Venta extends Conexion{
 
             case 'agregar':
                 $validacion=$this->setVentaData($venta);
+                // print_r($validacion);
+                // die();
                 if(!$validacion['status']){
                     return $validacion;
                 }else{
+                    // echo "Guardar";
                     return $this->Guardar_Venta();
                 }
                 break;
@@ -285,11 +311,16 @@ class Venta extends Conexion{
 
 
             case 'obtenerBancos':
-                    return $this->obtenerBancos();
+                return $this->obtenerBancos();
+                break;
                 
             case 'obtenerPagos':
-                    return $this->obtenerPagos();
-                    
+                return $this->obtenerPagos();
+                break;
+            
+            case 'obtenerNumeroVenta':
+                return $this->obtenerNumeroVenta();
+                break;
 
             case 'eliminar':
                 $validacion=$this->setValideId($venta);
@@ -341,16 +372,17 @@ class Venta extends Conexion{
                     $this->conn->rollBack();
                     return ['status' => false, 'msj' => "Cantidad insuficiente para el producto ID $producto_id"];
                 } 
-        
+                
                 // Registrar la venta 
-                $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_producto, id_cliente, cantidad, fech_emision, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf) VALUES (:id_venta, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf)"); 
+                $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_producto, id_cliente, cantidad, fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf) VALUES (:id_venta, :id_producto, :id_cliente, :cantidad, :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf)"); 
                 $stmt2->bindParam(':id_venta', $this->id_venta); 
                 $stmt2->bindParam(':tipo_compra', $this->tipo_compra); 
                 $stmt2->bindParam(':tlf', $this->tlf); 
                 $stmt2->bindParam(':id_producto', $producto_id); 
                 $stmt2->bindParam(':id_cliente', $this->id_cliente); 
                 $stmt2->bindParam(':cantidad', $cantidad); 
-                $stmt2->bindParam(':fech_emision', $this->fech_emision); 
+                $stmt2->bindParam(':fech_emision', $this->fech_emision);
+                $stmt2->bindParam(':fech_vencimiento', $this->fech_vencimiento);
                 $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
                 $stmt2->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto
                 $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega); 
@@ -556,6 +588,16 @@ class Venta extends Conexion{
 
     private function obtenerPagos() {
         $query = "SELECT * FROM modalidad_de_pago";
+        // Prepara la consulta
+        $stmt = $this->conn->prepare($query);
+        // Ejecuta la consulta
+        $stmt->execute();
+        // Retorna los resultados como un arreglo asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function obtenerNumeroVenta() {
+        $query = "SELECT MAX(id_venta) as id_venta FROM venta LIMIT 1";
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
         // Ejecuta la consulta

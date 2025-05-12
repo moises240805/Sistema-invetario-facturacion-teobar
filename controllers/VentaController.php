@@ -22,7 +22,6 @@ $usuario = new Roles();
 
 $modulo = 'Ventas';
 
-
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
 //Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
@@ -31,7 +30,6 @@ switch ($action) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion); 
         }
-        break;
         break;
     case "eliminar":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
@@ -52,7 +50,8 @@ switch ($action) {
 // funcion para registrar una venta
 function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion) {
 
-        //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
@@ -65,6 +64,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         $id_cliente = htmlspecialchars($_POST['id_cliente']);
         $cantidad = array_map('htmlspecialchars', $_POST['cantidad']);
         $fech_emision = htmlspecialchars($_POST['fech_emision']);
+        $fech_vencimiento = htmlspecialchars($_POST['fech_vencimiento']);
         $id_modalidad_pago = htmlspecialchars($_POST['id_modalidad_pago']);
         $monto = htmlspecialchars($_POST['total']);
         $tipo_entrega = htmlspecialchars($_POST['tipo_entrega']);
@@ -82,6 +82,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
             'id_cliente' => $id_cliente,
             'cantidad' => $cantidad,
             'fech_emision' => $fech_emision,
+            'fech_vencimiento' => $fech_vencimiento,
             'id_modalidad_pago' => $id_modalidad_pago,
             'monto' => $monto,
             'tipo_entrega' => $tipo_entrega,
@@ -110,6 +111,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         
         $id_modalidad_pago = $venta['id_modalidad_pago'];
         $fech_emision = $venta['fech_emision'];
+        $fech_vencimiento = $venta['fech_vencimiento'];
         $monto = $venta['monto'];
 
         // Lógica de caja según modalidad de pago
@@ -123,6 +125,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
             'id_cajas' => $id_cajas,
             'movimiento' => "Ingreso",
             'fecha' => $fech_emision,
+            'fechav' => $fech_vencimiento,
             'monto' => $monto,
             'id_pago' => $id_modalidad_pago,
             'descripcion' => "Venta de productos"
@@ -132,10 +135,10 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         
 
         try {
-
+            // print_r($_POST);
+            // echo "<br><br>";
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
             $resultado = $modelo->manejarAccion("agregar", $venta);
-        
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
             if (isset($resultado['status']) && $resultado['status'] === true) {
                 //usar mensaje dinámico del modelo
@@ -179,7 +182,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
 
         header("Location: index.php?action=venta&a=v"); // Redirect
         exit();
-        }
+    }
     //muestra un modal de info que dice acceso no permitido
     setError("Error accion no permitida ");
     require_once 'views/php/dashboard_venta.php';
@@ -200,6 +203,13 @@ function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $produc
         $productos = $producto->manejarAccion("obtenerProductos",null);
         $bancos = $modelo->manejarAccion("obtenerBancos",null);
         $pagos = $modelo->manejarAccion("obtenerPagos",null);
+        $numero_ventas = $modelo->manejarAccion("obtenerNumeroVenta", null);
+        if(count($numero_ventas)>0){
+            $numero_venta=$numero_ventas[0]['id_venta'];
+        }else{
+            $numero_venta=0;
+        }
+        $numero_venta++;
         require_once "views/php/dashboard_venta.php";
     }
     else{
