@@ -1,6 +1,7 @@
 <?php
 // Incluye el archivo del modelo admin y bitacora
 require_once "models/Admin.php";
+require_once "models/Cliente.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
 require_once 'views/php/utils.php';
@@ -8,6 +9,7 @@ require_once 'views/php/utils.php';
 
 //se instancia los objetos admin y bitacora
 $controller = new Admin();
+$clientes = new Cliente();
 $permiso = new Roles();
 $bitacora = new Bitacora();
 
@@ -27,6 +29,10 @@ switch ($action) {
     case "ingresar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             iniciarSesion($controller, $bitacora, $usuario, $modulo);
+        }
+    case "registrar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            registeronline($controller, $clientes, $bitacora, $permiso, $modulo);
         }
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -133,6 +139,80 @@ switch ($action) {
             </script>';
     }
 }
+
+function registeronline($controller, $clientes, $bitacora, $permiso, $modulo){
+
+    // Obtiene los valores del formulario y los sanitiza
+    $username = htmlspecialchars($_POST['username']);
+    $pw = htmlspecialchars($_POST['password']);
+    $tipo_id = filter_input(INPUT_POST, 'tipo_cedula', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $id_cliente = filter_input(INPUT_POST, 'id_usuario', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $nombre_cliente = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $telefono = filter_input(INPUT_POST, 'codigo_tlf', FILTER_SANITIZE_FULL_SPECIAL_CHARS) . filter_input(INPUT_POST, 'telefono', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $direccion = filter_input(INPUT_POST, 'direccion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    //Verifica si todos los campos existen y no esta vacios
+    if (empty($tipo_id) || empty($id_cliente) || empty($nombre_cliente) || empty($telefono) || empty($direccion) || empty($email) || empty($username) || empty($pw)) {
+        setError("Todos los campos son requeridos");
+        header("Location: index.php?action=pagina");
+        exit();
+    }
+
+    $user = json_encode([
+        'username' => $username,
+        'rol' => '3',
+        'pw' => $pw
+    ]);
+
+
+    $cliente = json_encode([
+        'tipo_id' => $tipo_id,
+        'id_cliente' => $id_cliente,
+        'nombre_cliente' => $nombre_cliente,
+        'telefono' => $telefono,
+        'direccion' => $direccion,
+        'email' => $email
+    ]);
+
+    try {
+
+
+        // Llama a la funcion manejarAccion del modelo donde pasa el objeto Usuario y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+        $resultado = $controller->manejarAccion('agregar', $user);
+
+        //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+        if (isset($resultado['status']) && $resultado['status'] === true) {
+            
+            // Llama a la funcion manejarAccion del modelo donde pasa el objeto Usuario y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+            $resultado2 = $clientes->manejarAccion('agregar', $cliente);
+
+            if (isset($resultado2['status']) && $resultado2['status'] === true) {
+            //usar mensaje dinámico del modelo
+            setSuccess($resultado['msj']);
+            }
+        } 
+        else {
+                // Error: usar mensaje dinámico o genérico
+                $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+                setError($mensajeError);
+            }  
+        } catch (Exception $e) {
+            //mensajes del expcecion del pdo 
+            error_log("Error al registrar: " . $e->getMessage());
+            setError("Error en operación");
+        }
+
+        header("Location: index.php?action=login"); // Redirect
+        exit();
+
+
+
+
+
+}
+
+
 // Función para agregar un Usuario
 function agregarUsuario($controller, $bitacora, $permiso, $modulo) 
 {

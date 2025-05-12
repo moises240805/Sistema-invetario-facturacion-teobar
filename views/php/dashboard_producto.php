@@ -169,55 +169,49 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="cantidad" class="col-md-3">Cantidad</label>
-                <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad" maxlength value="<?php echo $producto['cantidad']; ?>" required>
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad2" value="<?php echo $producto['cantidad']; ?>" required>
-                    <input style="width: 6rem;" class="form-control" type="number" min="0" name="cantidad3" value="<?php echo $producto['cantidad']; ?>" required>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="precio" class="col-md-3">Precio</label>
-                <div class="col-md-9 d-flex justify-content-between">
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio" maxlength='10' value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio2" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
-                    <input style="width: 6rem;" class="form-control" type="number" step="0.01" min="0" name="precio3" value="<?php echo $producto['precio']; ?>" required><b> $ Bs</b>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="uni_medida" class="col-md-3">U.M</label>
-                <div class="col-md-9 d-flex justify-content-between">
-                    <div style="margin-right: 10px;">
-                        <input style="width: 3rem;" class="form-control" type="number" step="0.01" min="0" name="peso" value="<?php echo $producto['peso']; ?>" required oninput="calcularCantidad()">
+                <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
+<div class="form-group row">
+                        <label for="cantidad" class="col-md-3" >Bulto o Saco</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
+                            <select class="form-control"  style="width: 5rem;" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
+                                    <option value="4">Saco</option>
+                                    <option value="3">Bulto</option>
+                                    <option value="7">Galon</option>
+                                </select>
+                        </div>
                     </div>
-                    <div style="margin-right: 10px;">
-                        <select class="form-control" style="width: 8rem;" name="uni_medida" oninput="calcularCantidad()">
-                            <option value="">...</option>
-                            <option value="4">Saco</option>
-                            <option value="3">Bulto</option>
-                            <option value="7">Galon</option>
-                        </select>
+
+                    <div class="form-group row">
+                        <label for="precio" class="col-md-3">Kilogramo o Litros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b>$ Bs</b>
+                            <select class="form-control"  style="width: 10rem;" id="uni_medida2" name="uni_medida2" readOnly>
+                                    <option value="1">Kilogramos</option>
+                                    <option value="5">Litros</option>
+                                </select>
+                        </div>
                     </div>
-                    <div style="margin-right: 10px;">
-                        <select class="form-control" style="width: 8rem;" readOnly name="uni_medida2">
-                            <option value="">...</option>
-                            <option value="1">Kilogramos</option>
-                            <option value="5">Litros</option>
-                        </select>
+
+                    <div class="form-group row">
+                        <label for="uni_medida" class="col-md-3">Gramos o mililitros</label>
+                        <div class="col-md-9 d-flex justify-content-between">
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                        <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                        <div style="margin-right: 10px;">
+                                <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
+                            </div>
+                            <div>
+                                <select class="form-control" id="uni_medida3" name="uni_medida3" readOnly>
+                                    <option value="2">Gramos</option>
+                                    <option value="6">Mililitro</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div style="margin-right: 10px;">
-                        <input style="width: 3rem;" class="form-control" type="number" step="0.01" min="0" name="peso3" value="<?php echo $producto['peso']; ?>" required oninput="calcularCantidad()">
-                    </div>
-                    <div>
-                        <select class="form-control" style="width: 8rem;" readOnly name="uni_medida3">
-                            <option value="">...</option>
-                            <option value="2">Gramos</option>
-                            <option value="6">Mililitro</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
             <div class="form-group row">
                 <label for="motivo_actualizacion" class="col-md-3">Motivo de Actualización</label>
                 <div class="col-md-9">
@@ -367,7 +361,7 @@
 
 
 
-<!-- Modal para Agregar Producto -->
+<!-- Modal para Agregar Producto2 -->
 <div id="modalAgregarProducto2" class="modal fade show" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" style="max-width: 110%;">
         <div class="modal-content">
@@ -466,7 +460,7 @@
 
 
 
-
+<!-- Modal para Agregar Tipo Producto -->
 <div class="modal fade show" id="agregarTipoModal" tabindex="-1" role="dialog" aria-labelledby="agregarTipoModalLabel" aria-hidden="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">

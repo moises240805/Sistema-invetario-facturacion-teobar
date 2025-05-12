@@ -13,10 +13,42 @@ $modulos = 'Tipo de producto';
 date_default_timezone_set('America/Caracas');
 
 
-
 $action = isset($_GET['a']) ? $_GET['a'] : '';
+//Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
+switch ($action) {
+    case "agregar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            agregarTipo($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerTipo($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "actualizar":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            actualizarTipo($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "eliminar":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            eliminarTipo($controller, $bitacora, $usuario, $modulo);
+        }
+        break;
+    case "t":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            consultarTipo($controller, $usuario, $modulo);
+        }
+        break;
+    default:
+        consultarTipo($controller, $usuario, $modulo);
+        break;
 
-if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+}
+
+
+    function agregarTipo($controller, $bitacora, $usuario, $modulo){
 
 
         //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -89,7 +121,7 @@ if ($action == "agregar" && $_SERVER["REQUEST_METHOD"] == "POST") {
      exit();
 }
 
-elseif ($action == "mid_form" && $_SERVER["REQUEST_METHOD"] == "GET") {
+    function obtenerTipo($controller, $bitacora, $usuario, $modulo) {
     $id_presentacion = $_GET['id_presentacion'];
     if (!filter_var($id_presentacion, FILTER_VALIDATE_INT)) {
         setError("ID inválido");
@@ -102,7 +134,7 @@ elseif ($action == "mid_form" && $_SERVER["REQUEST_METHOD"] == "GET") {
     echo json_encode($tipo);
 }
 
-else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
+    function actualizarTipo($controller, $bitacora, $usuario, $modulo) {
 
             //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -174,7 +206,7 @@ else if ($action == "actualizar" && $_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
+    function eliminarTipo($controller, $bitacora, $usuario, $modulo) {
 
             //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -242,7 +274,7 @@ elseif ($action == 'eliminar' && $_SERVER["REQUEST_METHOD"] == "GET") {
             exit();
 }
 
-elseif ($action == 't' && $_SERVER["REQUEST_METHOD"] == "GET") {
+    function consultarTipo($controller, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
  //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 

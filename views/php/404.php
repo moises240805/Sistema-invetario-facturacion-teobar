@@ -9,49 +9,28 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>404</title>
+    <title>SB Admin 2 - 404</title>
 
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <?php require_once 'alert.php';
+require_once 'link.php'; ?>
 
 </head>
 
 <body id="page-top">
 
-<?php
+    <!-- Page Wrapper -->
+    <div id="wrapper">
 
-if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
-    $message = $_SESSION['message'];
-    $message_type = $_SESSION['message_type'];
-
-    // Pass PHP values to JavaScript variables
-    echo "<script>";
-    echo "var js_message = '" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "var js_message_type = '" . htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8') . "';"; // Sanitize!
-    echo "</script>";
-
-    echo '<script>
-        $(document).ready(function() {
-            // Set Modal Title and Body
-            if (js_message_type === "success") {
-                $("#successModal .modal-title").text("Exitoso");
-                $("#successModal .modal-body").text(js_message);
-            } else {
-                $("#successModal .modal-title").text("Error");
-                $("#successModal .modal-body").text(js_message);
-            }
-
-            // Show the Modal
-            $("#successModal").modal("show");
-        });
-    </script>';
-
-    unset($_SESSION['message']); // Clear the message
-    unset($_SESSION['message_type']); // Clear the type
-}
-?>
-
+        <!-- Sidebar -->
+       
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -62,7 +41,7 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
                         <div class="error mx-auto" data-text="404">404</div>
                         <p class="lead text-gray-800 mb-5">Page Not Found</p>
                         <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
-                        <a>&larr; Back to Dashboard</a>
+                        <a href="index.php">&larr; Back to Dashboard</a>
                     </div>
 
                 </div>
@@ -71,7 +50,56 @@ if (isset($_SESSION['message']) && isset($_SESSION['message_type'])) {
             </div>
             <!-- End of Main Content -->
 
-           
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Your Website 2020</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
 
 </body>
 

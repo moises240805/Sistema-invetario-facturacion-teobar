@@ -181,6 +181,14 @@ class Admin extends Conexion {
                     return $this->Iniciar_Sesion($usuario);
                 //}
 
+            case 'registrar':
+                //$validacion=$this->setValide($username);
+                //if(!$validacion['status']){
+                //    return $validacion;
+                //}else{
+                    return $this->Register_Online($usuario);
+                //}
+
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -223,6 +231,61 @@ class Admin extends Conexion {
         } finally {
             $conn = null;
         }
+    }
+
+    private function Register_Online($usuario){
+        
+        $conn=null;
+        try {
+            $this->conn->beginTransaction();
+            // Consulta para verificar si el cliente ya existe
+            $query = "SELECT * FROM cliente WHERE $usuario[id_cliente] = :id_cliente";
+            $conn=$this->getConnection();
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":id_cliente", $this->id_cliente);
+            $stmt->execute();
+    
+            if ($stmt->rowCount() == 0) {
+                // Insertar nuevo cliente
+                $query = "INSERT INTO cliente ($usuario[id_cliente], $usuairo[nombre_cliente], $usuario[tlf], $usuario[direccion], $usuaio[email], $usuario[tipo_id]) 
+                          VALUES (:id_cliente, :nombre_cliente, :tlf_cliente, :direccion_cliente, :email_cliente, :tipo)";
+                $stmt = $conn->prepare($query);
+                $stmt->bindParam(":id_cliente", $usuario['id_cliente']);
+                $stmt->bindParam(":tipo", $usuario['tipo_id']);
+                $stmt->bindParam(":nombre_cliente", $usuairo['nombre_cliente']);
+                $stmt->bindParam(":tlf_cliente", $usuario['tlf']);
+                $stmt->bindParam(":direccion_cliente", $usuario['direccion']);
+                $stmt->bindParam(":email_cliente", $usuaio['email']);
+
+                $hashedPassword = password_hash($usuario['pw'], PASSWORD_DEFAULT);
+                
+                // Consulta SQL para insertar un nuevo registro en la tabla usuarios
+                $query = "INSERT INTO usuarios ($usuario[username], $usuario[pw], $usuario[rol]) VALUES (:username, :pw, :rol)";
+                $stmt = $conn->prepare($query);
+                $stmt->bindParam(":username", $usuario['username']);
+                $stmt->bindParam(":pw", $hashedPassword);
+                $stmt->bindParam(":rol", $usuario['rol']);
+    
+            // Confirmar la transacción solo si todas las operaciones fueron exitosas
+            if ($this->conn->inTransaction()) {
+                $this->conn->commit(); 
+                    return ['statuzs' => true, 'msj' => 'Guardado correctamente'];
+                } else {
+                    return ['status' => false, 'msj' => 'Error al guardar'];
+                }
+            } else {
+                return ['status' => false, 'msj' => 'El registro ya existe'];
+            }
+        } catch (PDOException $e) {
+                if ($this->conn->inTransaction()) { 
+                $this->conn->rollBack(); 
+            } 
+            // Retornar mensaje de error sin hacer echo
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
+
     }
     
 

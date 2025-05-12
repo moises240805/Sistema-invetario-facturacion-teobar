@@ -6,6 +6,16 @@
     <title>Teobar : Tienda Online</title>
     <link rel="stylesheet" href="views/css/styles.css">
     <link rel="shortcut icon" href="views/img/logo.jpeg">
+    <!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- jQuery, Popper.js y Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<?php require_once 'alert.php';
+require_once 'link.php'; ?>
+
 </head>
 <body>
 <nav class="navbar">
@@ -40,6 +50,10 @@
         <span id="cart-count" class="cart-count">0</span>
     </button>
 </div>
+           <button type="button" class="btn btn-primary" id="myBtn" data-toggle="modal" data-target="#registrarClienteModal">
+  Registrar
+</button>
+
 
             <!-- Información del usuario -->
             <?php if (isset($_SESSION['s_usuario'])): ?>
@@ -47,11 +61,12 @@
                     <img src="views/img/avatar-male.png" alt="user" class="user-avatar">
                     <span class="user-name"><?php echo $_SESSION['s_usuario']['usuario']; ?></span>
                     <a href="views/php/logout.php" class="logout-button">Cerrar Sesión</a>
-                    <a href="index.php?action=dashboard" class="cart-button aside__link nav-link">Home</a>
+                    <a href="index.php?action=dashboard" class="login-button">Home</a>
                 </div>
             <?php else: ?>
                 <a href="index.php?action=login" class="login-button">Iniciar Sesión</a>
             <?php endif; ?>
+
         </div>
     </div>
 </nav>
@@ -188,6 +203,129 @@
 
     </div>  
 </footer>
+
+
+<div class="modal fade" id="registrarClienteModal" tabindex="-1" role="dialog" aria-labelledby="agregarClienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="registrarClienteModalLabel">Registrarse</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=usuario&a=registrar" method="post" name="form" id="miFormulario">
+    <div class="modal-body">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                <div class="form-group row">
+                    <label for="username" class="col-md-3">Usuario</label>
+                        <div class="col-md-9">
+                        <input type="text" class="form-control" id="username" name="username" maxlength="15" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pw" class="col-md-3">Contraseña</label>
+                        <div class="col-md-9">
+                        <input type="password" class="form-control" id="password" name="password"  maxlength="9" required oninput="Password()">
+                        <span id="Error" class="error-message"></span>
+                    </div>
+                </div>
+                    <!-- CI del Cliente -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="id" style="font-size: 18px;">Cedula de Identidad</label>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <select name="tipo_cedula" class="form-control">
+                                    <option value="V-">V-</option>
+                                    <option value="E-">E-</option>
+                                </select>
+                                <input type="text" class="form-control numeric" id="id" name="id_usuario" 
+                                    placeholder="123456789" maxlength="8" required>
+                            </div>
+                            <span id="idError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Nombre -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="nombre" style="font-size: 18px;">Nombre</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control alpha" id="nombre" name="nombre" 
+                                placeholder="Nombre" maxlength="50" required>
+                            <span id="nameError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="tlf" style="font-size: 18px;">Nro telefonico</label>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <select name="codigo_tlf" class="form-control">
+                                    <option value="0412">0412</option>
+                                    <option value="0416">0416</option>
+                                    <option value="0426">0426</option>
+                                    <option value="0414">0414</option>
+                                    <option value="0424">0424</option>
+                                    <option value="0251">0251</option>
+                                </select>
+                                <input type="text" class="form-control numeric" id="numero_tlf" name="telefono" 
+                                    placeholder="Ejem: 1234567" maxlength="7" required>
+                            </div>
+                            <span id="phoneError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="email" style="font-size: 18px;">Correo electronico</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="email" class="form-control" id="email" name="email" 
+                                placeholder="user@gmail.com" maxlength="50" required>
+                            <span id="emailError" class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="form-group row justify-content-center mb-4">
+                        <div class="col-md-10 text-center">
+                            <label for="direccion" style="font-size: 18px;">Dirección</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="direccion2" name="direccion" 
+                                placeholder="Dirección" maxlength="120" required>
+                            <span id="addressError" class="error-message"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" onclick="cerrarModal()" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </div>
+</form>
+        </div>
+    </div>
+</div>
+
+<script>
+  document.getElementById('myBtn').addEventListener('click', function() {
+    $('#registrarClienteModal').modal('show');
+  });
+</script>
+
 
     <script src="views/js/carrusel.js"></script>
     <script src="views/js/carrito.js"></script>

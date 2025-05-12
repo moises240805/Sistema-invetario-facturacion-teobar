@@ -108,7 +108,7 @@ class ReporteModel extends Conexion {
     public function obtenerDatos9() {
         $query = "SELECT *
         FROM producto p 
-        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.ID  
+        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
         LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
         LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
         LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
@@ -125,7 +125,7 @@ return $stmt->fetchAll(PDO::FETCH_ASSOC);
     public function obtenerDatos10() {
         $query = "SELECT *
         FROM producto p 
-        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.ID  
+        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
         LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
         LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
         LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
