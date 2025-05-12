@@ -83,7 +83,7 @@
         </div>
         <div class="card-body">
         <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+    <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
         <thead class="thead-light">
             <tr>
                 <th>Nro Venta</th>
@@ -104,33 +104,34 @@
                 // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
                 // si lo tiene muestra la informacion
                 if(isset($venta) && is_array($venta) && !empty($venta)){ 
-                foreach ($venta as $venta): 
+                    foreach ($venta as $venta): 
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($venta['id_venta']); ?></td>
+                        <td><?php echo nl2br(htmlspecialchars($venta['nombre'])); ?></td>
+                        <td><?php echo htmlspecialchars($venta['id_cliente']) . " " . htmlspecialchars($venta['nombre_cliente']); ?></td>
+                        <td><?php echo nl2br(htmlspecialchars($venta['cantidad'])); ?></td>
+                        <td><?php echo htmlspecialchars($venta['fech_emision']); ?></td>
+                        <td><?php echo htmlspecialchars($venta['nombre_modalidad']) . ' ' . htmlspecialchars($venta['tlf']); ?></td>
+                        <td><?php echo htmlspecialchars($venta['monto']); ?></td>
+                        <td><?php echo htmlspecialchars($venta['tipo_entrega']); ?></td>
+                        <td><?php echo htmlspecialchars($venta['nombre_banco']); ?></td>
+                        <td>
+                            <a href="#" title="Modificar">
+                                <img src="views/img/edit.png" width="30px" height="30px">
+                            </a>
+                            <a href="#" title="Eliminar" style="margin-left: 1rem;">
+                                <img src="views/img/delet.png" width="30px" height="30px">
+                            </a>
+                        </td>
+                    </tr>
+                    <?php
+                    //Imprime esta informacion en caso de estar vacia la variable             
+                    endforeach; 
+                } else {
+                    echo "<tr><td colspan='6'>No hay ventas registrados.</td></tr>";
+                }
             ?>
-            <tr>
-                <td><?php echo htmlspecialchars($venta['id_venta']); ?></td>
-                <td><?php echo nl2br(htmlspecialchars($venta['nombre'])); ?></td>
-                <td><?php echo htmlspecialchars($venta['id_cliente']) . " " . htmlspecialchars($venta['nombre_cliente']); ?></td>
-                <td><?php echo nl2br(htmlspecialchars($venta['cantidad'])); ?></td>
-                <td><?php echo htmlspecialchars($venta['fech_emision']); ?></td>
-                <td><?php echo htmlspecialchars($venta['nombre_modalidad']) . ' ' . htmlspecialchars($venta['tlf']); ?></td>
-                <td><?php echo htmlspecialchars($venta['monto']); ?></td>
-                <td><?php echo htmlspecialchars($venta['tipo_entrega']); ?></td>
-                <td><?php echo htmlspecialchars($venta['nombre_banco']); ?></td>
-                <td>
-                    <a href="#" title="Modificar">
-                        <img src="views/img/edit.png" width="30px" height="30px">
-                    </a>
-                    <a href="#" title="Eliminar" style="margin-left: 1rem;">
-                        <img src="views/img/delet.png" width="30px" height="30px">
-                    </a>
-                </td>
-            </tr>
-            <?php
-            //Imprime esta informacion en caso de estar vacia la variable             
-            endforeach; 
-        } else {
-            echo "<tr><td colspan='6'>No hay ventas registrados.</td></tr>";
-        } ?>
         </tbody>
     </table>
 </div>
@@ -222,7 +223,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="id_venta">Nro Venta</label>
-                                    <input type="number" class="form-control" name="id_venta" placeholder="Nro VENTA" required oninput="validateInput(this)">
+                                    <input type="number" class="form-control" name="id_venta" placeholder="Nro VENTA" required oninput="validateInput(this)" value="<?=$numero_venta; ?>" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -259,7 +260,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Tipo de pago</label>
-                                    <select name="id_modalidad_pago" class="form-control">
+                                    <select id="id_modalidad_pago" name="id_modalidad_pago" class="form-control">
                                         <option value="">Selecione pago</option>
                                         <option value="1">Divisas</option>
                                         <option value="2">Efectivo</option>
@@ -278,7 +279,7 @@
                                         <option value="">Seleccione Banco</option>
                                         <?php foreach ($bancos as $banco): ?>
                                             <option value="<?php echo $banco['rif_banco']; ?>">
-                                                <?php echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
+                                                <?php if($banco['rif_banco']!="0"){ echo "0"; } echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -287,7 +288,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="tlf">Tlf o Nro.F</label>
-                                    <input type="number" id="tlf" name="tlf"  maxlength="11" onkeypress="return SoloNumeros(event)" class="form-control" oninput="validatePhoneNumber(this)">
+                                    <!-- onkeypress="return SoloNumeros(event)" -->
+                                    <input type="number" id="tlf" name="tlf"  maxlength="11"  oninput="validatePhoneNumber(this)" class="form-control" >
                                 </div>
                             </div>
                         </div>
@@ -296,7 +298,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fech_emision">F/E</label>
-                                    <input type="date" id="fecha_registro" name="fech_emision" class="form-control" placeholder="fecha_emision" required>
+                                    <input type="date" id="fecha_registro" min="<?=date('Y-m-d', time()-((60*60)*24)); ?>" max="<?=date('Y-m-d'); ?>" name="fech_emision" class="form-control" placeholder="fecha_emision" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="`fech_vencimiento`">F/C</label>
+                                    <input type="date" id="fecha_vencimiento" min="<?=date('Y-m-d'); ?>" max="<?=date('Y-m-d', time()+(((60*60)*24*7))); ?>" value="<?=date('Y-m-d', time()+(((60*60)*24*7))); ?>" name="fech_vencimiento" class="form-control" placeholder="fecha_vencimiento" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -464,19 +472,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para manejar el tipo de compra
     function manejarTipoCompra() {
         const tipoCompra = tipoCompraSelect.value;
+        const filaTipoPago = document.querySelector('#id_modalidad_pago').closest('.form-group');
         const filaBanco = document.querySelector('#banco').closest('.form-group');
         const filaTlf = document.querySelector('#tlf').closest('.form-group');
         const filaTipoEntrega = document.querySelector('select[name="tipo_entrega"]').closest('.form-group');
-
         if (tipoCompra === '5') { // Crédito
+            filaTipoPago.style.display = 'none';
             filaBanco.style.display = 'none';
             filaTlf.style.display = 'none';
             filaTipoEntrega.style.display = 'none';
         } else if (tipoCompra === '6') { // Descontado
+            filaTipoPago.style.display = 'block';
             filaBanco.style.display = 'block';
             filaTlf.style.display = 'block';
             filaTipoEntrega.style.display = 'block';
         } else { // Sin selección
+            filaTipoPago.style.display = 'block';
             filaBanco.style.display = 'block';
             filaTlf.style.display = 'block';
             filaTipoEntrega.style.display = 'block';
@@ -508,5 +519,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="views/js/validate2.js"></script>
+
+<link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/jquery.js"></script>
+<script src="views/js/DataTables/datatables.js"></script>
+
 </body>
 </html>

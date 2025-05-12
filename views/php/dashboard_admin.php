@@ -88,7 +88,7 @@ if (!isset($_SESSION["s_usuario"])) {
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
                     <thead class="thead-light">
                         <tr>
                             <th>Usuario</th>
@@ -102,19 +102,19 @@ if (!isset($_SESSION["s_usuario"])) {
                             // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
                             // si lo tiene muestra la informacion
                             if(isset($admin) && is_array($admin) && !empty($admin)){
-                            foreach ($admin as $ad):
-                        ?>
-                            <tr>
-                                <td><?php echo $ad['usuario']; ?></td>
-                                <td><?php echo $ad['nombre_rol']; ?></td>
-                                <td>
-                                    <a onclick="abrirModalModificar(<?php echo $ad['ID']; ?>)" title="Modificar"><img src="views/img/edit.png" width="30px" height="30px"></a>
-                                    <a onclick="return eliminar()" href="index.php?action=usuario&a=eliminar&ID=<?php echo $ad['ID']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
-                                </td>
-                            </tr>
-                            <?php
-                                //Imprime esta informacion en caso de estar vacia la variable             
-                                endforeach; 
+                                foreach ($admin as $ad){
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $ad['usuario']; ?></td>
+                                        <td><?php echo $ad['nombre_rol']; ?></td>
+                                        <td>
+                                            <a onclick="abrirModalModificar(<?php echo $ad['ID']; ?>)" title="Modificar"><img src="views/img/edit.png" width="30px" height="30px"></a>
+                                            <a onclick="return eliminar()" href="index.php?action=usuario&a=eliminar&ID=<?php echo $ad['ID']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                    //Imprime esta informacion en caso de estar vacia la variable             
+                                } 
                             } else {
                                 echo "<tr><td colspan='6'>No hay usuarios registrados.</td></tr>";
                             } ?>
@@ -222,10 +222,15 @@ if (!isset($_SESSION["s_usuario"])) {
 
 
 
-<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <button type="button" id="openModalBtn" style="display: none;" data-bs-toggle="modal" data-bs-target="#successModal"></button>
 
 <script src="views/js/modal_user.js"></script>
 <script src="views/js/validate_usuario.js"></script>
+
+<link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/jquery.js"></script>
+<script src="views/js/DataTables/datatables.js"></script>
+
+
 </body>
 </html>

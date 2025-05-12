@@ -80,7 +80,7 @@
         </div>
         <div class="card-body">
     <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+    <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
         <thead class="thead-light">
             <tr>
                 <th>Fecha y hora</th>
@@ -108,6 +108,10 @@
 </div>
 
 
+ 
+<link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/jquery.js"></script>
+<script src="views/js/DataTables/datatables.js"></script>
 
 
 </body>

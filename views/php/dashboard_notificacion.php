@@ -113,5 +113,9 @@
         </div>
     </div>
 
+<link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/jquery.js"></script>
+<script src="views/js/DataTables/datatables.js"></script>
+
 </body>
 </html>
