@@ -88,7 +88,7 @@ if (!isset($_SESSION["s_usuario"])) {
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" max-width="100%" cellspacing="0">
                     <thead class="thead-light">
                         <tr>
                             <th>Usuario</th>

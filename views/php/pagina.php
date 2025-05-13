@@ -6,13 +6,6 @@
     <title>Teobar : Tienda Online</title>
     <link rel="stylesheet" href="views/css/styles.css">
     <link rel="shortcut icon" href="views/img/logo.jpeg">
-    <!-- Bootstrap CSS -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- jQuery, Popper.js y Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <?php require_once 'alert.php';
 require_once 'link.php'; ?>
 
@@ -61,7 +54,9 @@ require_once 'link.php'; ?>
                     <img src="views/img/avatar-male.png" alt="user" class="user-avatar">
                     <span class="user-name"><?php echo $_SESSION['s_usuario']['usuario']; ?></span>
                     <a href="views/php/logout.php" class="logout-button">Cerrar Sesión</a>
+                    <?php if ($_SESSION['s_usuario']["rol"] != "Usuario"): ?>
                     <a href="index.php?action=dashboard" class="login-button">Home</a>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <a href="index.php?action=login" class="login-button">Iniciar Sesión</a>

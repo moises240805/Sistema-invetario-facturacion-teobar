@@ -118,6 +118,10 @@ switch ($action) {
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
             }
+            if($usuario["nombre_rol"]=="Contador"){
+            header("Location: index.php?action=dashboard");
+            exit(); // Asegúrate de salir después de redirigir 
+            }
             if($usuario["nombre_rol"]=="Vendedor"){
                 header("Location: index.php?action=venta&a=v");
                 exit(); // Asegúrate de salir después de redirigir 
@@ -196,6 +200,7 @@ function registeronline($controller, $clientes, $bitacora, $permiso, $modulo){
                 // Error: usar mensaje dinámico o genérico
                 $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
                 setError($mensajeError);
+                require_once "views/php/pagina.php"; // Redirect
             }  
         } catch (Exception $e) {
             //mensajes del expcecion del pdo 
