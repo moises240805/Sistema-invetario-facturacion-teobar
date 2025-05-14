@@ -17,101 +17,105 @@ class Cobrar extends Conexion{
         parent::__construct();
     }
 
-    public function setVentaData($cuenta) {
-        if (is_string($cuenta)) {
-            $cuenta = json_decode($cuenta, true);
+    private function setCuentaData($cuenta) {
+    if (is_string($cuenta)) {
+        $cuenta = json_decode($cuenta, true);
+    }
+
+    // Expresiones regulares y validaciones
+    $exp_id = "/^\d+$/";
+    $exp_tlf = "/^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/";
+    $exp_fecha = "/^\d{4}-\d{2}-\d{2}$/"; // Formato YYYY-MM-DD
+    $exp_monto = "/^\d+(\.\d{1,2})?$/";
+    $exp_rif = "/^[A-Z0-9\-]{5,20}$/i"; // Ejemplo para RIF, ajusta según formato exacto
+
+    // Validar id_cuenta
+    if (!isset($cuenta['id_cuenta']) || !preg_match($exp_id, $cuenta['id_cuenta'])) {
+        return ['status' => false, 'msj' => 'ID de cuenta inválido'];
+    }
+    $this->id_cuenta = (int)$cuenta['id_cuenta'];
+
+
+    // Validar fecha de emisión
+    $fecha = trim($cuenta['fech_emision'] ?? '');
+    if (!preg_match($exp_fecha, $fecha)) {
+        return ['status' => false, 'msj' => 'Fecha de emisión inválida'];
+    }
+    $this->fech_emision = $fecha;
+
+    // Validar id_modalidad_pago (id_pago)
+    if (!isset($cuenta['id_pago']) || !preg_match($exp_id, $cuenta['id_pago'])) {
+        return ['status' => false, 'msj' => 'ID de modalidad de pago inválido'];
+    }
+    $this->id_modalidad_pago = (int)$cuenta['id_pago'];
+
+    // Validar monto
+    $monto = trim($cuenta['monto'] ?? '');
+    if (!preg_match($exp_monto, $monto) || $monto <= 0) {
+        return ['status' => false, 'msj' => 'Monto inválido'];
+    }
+    $this->monto = (float)$monto;
+
+    return ['status' => true, 'msj' => 'Datos de cuenta validados correctamente'];
+}
+
+    private function setValideId($cuenta) {
+    if (is_string($cuenta)) {
+        $cuenta = json_decode($cuenta, true);
+    }
+
+    // Expresiones regulares y validaciones
+    $exp_id = "/^\d+$/";
+        // Validar id_cuenta
+    if (!isset($cuenta['id_cuenta']) || !preg_match($exp_id, $cuenta['id_cuenta'])) {
+        return ['status' => false, 'msj' => 'ID de cuenta inválido'];
+    }
+    $this->id_cuenta = (int)$cuenta['id_cuenta'];
+    return ['status' => true, 'msj' => 'Datos de cuenta validados correctamente'];
+    
+}
+
+    
+
+       //Metodos
+
+    //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $cuenta) {
+        switch ($accion) {
+
+            case 'agregar':
+                $validacion=$this->setCuentaData($cuenta);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Actualizar_Cuenta();
+                }
+                break;
+
+            case 'obtener':
+
+                    return $this->obtenerCuentasID($cuenta);
+                
+                break;
+
+            case 'consultar':
+
+                    return $this->obtenerCuentas();
+                
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
         }
-    
-        $this->id_cuenta = $cuenta['id_cuenta'] ?? null;
-        $this->tlf = $cuenta['tlf'] ?? null;
-        $this->id_cliente = $cuenta['id_cliente'] ?? null;
-        $this->fech_emision = $cuenta['fech_emision'] ?? null;
-        $this->id_modalidad_pago = $cuenta['id_pago'] ?? null;
-        $this->monto = $cuenta['monto'] ?? null;
-        $this->rif_banco = $cuenta['rif_banco'] ?? null;
-    }
-    
-
-    // Getters
-    public function getIdCuenta() {
-        return $this->id_cuenta;
-    }
-
-    public function getIdProducto() {
-        return $this->id_producto;
-    }
-
-
-
-    public function getTlf() {
-        return $this->tlf;
-    }
-
-    public function getIdCliente() {
-        return $this->id_cliente;
-    }
-
-
-
-    public function getFechEmision() {
-        return $this->fech_emision;
-    }
-
-    public function getIdModalidadPago() {
-        return $this->id_modalidad_pago;
-    }
-
-    public function getMonto() {
-        return $this->monto;
-    }
-
-
-
-    public function getRifBanco() {
-        return $this->rif_banco;
-    }
-
-
-
-    // Setters
-    public function setIdCuenta($id_cuenta) {
-        $this->id_cuenta = $id_cuenta;
-    }
-
-
-
-    public function setTlf($tlf) {
-        $this->tlf = $tlf;
-    }
-
-    public function setIdCliente($id_cliente) {
-        $this->id_cliente = $id_cliente;
-    }
-
-
-    public function setFechEmision($fech_emision) {
-        $this->fech_emision = $fech_emision;
-    }
-
-    public function setIdModalidadPago($id_modalidad_pago) {
-        $this->id_modalidad_pago = $id_modalidad_pago;
-    }
-
-    public function setMonto($monto) {
-        $this->monto = $monto;
-    }
-
-
-
-    public function setRifBanco($rif_banco) { 
-        $this->$rif_banco= $rif_banco;  
     }
 
 
 
 
-
-    public function obtenerCuentas() {
+    private function obtenerCuentas() {
         $query = "SELECT 
                     c.id_cuentaCobrar, 
                     c.fecha_cuentaCobrar, 
@@ -131,6 +135,7 @@ class Cobrar extends Conexion{
                     venta v ON c.id_cuentaCobrar = v.id_venta
                     LEFT JOIN cliente s ON s.id_cliente = v.id_cliente
                     LEFT JOIN modalidad_de_pago m ON c.id_pago = m.id_modalidad_pago 
+                  WHERE c.status = 1 
                   GROUP BY 
                     c.id_cuentaCobrar"; 
     
@@ -142,7 +147,7 @@ class Cobrar extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerCuentasID($id_cuenta) {
+    private function obtenerCuentasID($cuenta) {
         $query = "SELECT 
                     c.id_cuentaCobrar, 
                     c.fecha_cuentaCobrar, 
@@ -163,65 +168,67 @@ class Cobrar extends Conexion{
     
         // Prepara la consulta
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_cuenta', $id_cuenta, PDO::PARAM_INT);
+        $stmt->bindParam(':id_cuenta', $cuenta, PDO::PARAM_INT);
         // Ejecuta la consulta
         $stmt->execute();
         // Retorna los resultados como un arreglo asociativo
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function Actualizar_Cuenta() {
-        try {
-            // Iniciar la transacción
-            $this->conn->beginTransaction();
-            // Paso 1: Obtener el monto actual
-            $querySelect = "SELECT monto_cuentaCobrar FROM cuenta_por_cobrar WHERE id_cuentaCobrar = :id_cuenta";
-            $stmtSelect = $this->conn->prepare($querySelect);
-            $stmtSelect->bindParam(":id_cuenta", $this->id_cuenta);
-            $stmtSelect->execute();
-    
-            if ($stmtSelect->rowCount() > 0) {
-                $currentMonto = (float)$stmtSelect->fetchColumn();
-                $montoArestar = (float)$this->monto;
-    
-                // Validar que el nuevo monto no sea negativo
-                if ($currentMonto - $montoArestar < 0) {
-                    echo "El monto a restar es mayor que el monto actual.";
-                    return false;
-                }
-    
-                $nuevoMonto = $currentMonto - $montoArestar;
-    
-                // Paso 4: Actualizar la tabla con el nuevo monto
-                $queryUpdate = "UPDATE cuenta_por_cobrar SET monto_cuentaCobrar = :monto, fecha_cuentaCobrar = :fech_emision, id_pago = :id_modalidad_pago WHERE id_cuentaCobrar = :id_cuenta";
-                $stmtUpdate = $this->conn->prepare($queryUpdate);
-    
-                // Vincula los parámetros
-                $stmtUpdate->bindParam(":id_cuenta", $this->id_cuenta);
-                $stmtUpdate->bindParam(":fech_emision", $this->fech_emision);
-                $stmtUpdate->bindParam(":id_modalidad_pago", $this->id_modalidad_pago);
-                $stmtUpdate->bindParam(":monto", $nuevoMonto);
-    
-                if ($stmtUpdate->execute()) {
-                    // Confirmar la transacción
-                    $this->conn->commit();
-                    return true;
-                } else {
-                    // Deshacer la transacción en caso de error
-                    $this->conn->rollBack();
-                    echo "Error al actualizar el registro.";
-                    return false;
-                }
-            } else {
-                echo "No se encontró la venta con ID: " . $this->id_cuenta;
-                return false;
+private function Actualizar_Cuenta()
+{
+    $conn = $this->conn;
+    try {
+        // Iniciar la transacción
+        $conn->beginTransaction();
+
+        // Paso 1: Obtener el monto actual
+        $querySelect = "SELECT monto_cuentaCobrar FROM cuenta_por_cobrar WHERE id_cuentaCobrar = :id_cuenta";
+        $stmtSelect = $conn->prepare($querySelect);
+        $stmtSelect->bindParam(":id_cuenta", $this->id_cuenta);
+        $stmtSelect->execute();
+
+        if ($stmtSelect->rowCount() > 0) {
+            $currentMonto = (float)$stmtSelect->fetchColumn();
+            $montoArestar = (float)$this->monto;
+
+            // Validar que el nuevo monto no sea negativo
+            if ($currentMonto - $montoArestar < 0) {
+                return ['status' => false, 'msj' => 'El monto a restar es mayor que el monto actual.'];
             }
-        } catch (PDOException $e) {
-            // Deshacer la transacción en caso de excepción
-            $this->conn->rollBack();
-            echo "Error en la consulta: " . $e->getMessage();
-            return false;
+
+            $nuevoMonto = $currentMonto - $montoArestar;
+
+            // Actualizar la tabla con el nuevo monto
+            $queryUpdate = "UPDATE cuenta_por_cobrar 
+                            SET monto_cuentaCobrar = :monto, 
+                                fecha_cuentaCobrar = :fech_emision, 
+                                id_pago = :id_modalidad_pago 
+                            WHERE id_cuentaCobrar = :id_cuenta";
+            $stmtUpdate = $conn->prepare($queryUpdate);
+
+            $stmtUpdate->bindParam(":id_cuenta", $this->id_cuenta);
+            $stmtUpdate->bindParam(":fech_emision", $this->fech_emision);
+            $stmtUpdate->bindParam(":id_modalidad_pago", $this->id_modalidad_pago);
+            $stmtUpdate->bindParam(":monto", $nuevoMonto);
+
+            if ($stmtUpdate->execute()) {
+                // Confirmar la transacción
+                $conn->commit();
+                return ['status' => true, 'msj' => 'Cuenta actualizada correctamente'];
+            } else {
+                // Deshacer la transacción en caso de error
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'Error al actualizar el registro.'];
+            }
+        } else {
+            return ['status' => false, 'msj' => 'No se encontró la cuenta con ID: ' . $this->id_cuenta];
         }
+    } catch (PDOException $e) {
+        $conn->rollBack();
+        return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
     }
+}
+
 }
     ?>

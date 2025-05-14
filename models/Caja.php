@@ -14,18 +14,61 @@ class Caja extends Conexion{
         parent::__construct();
     }
 
-    public function setCajaData($data) {
-        if (is_string($data)) {
-            $data = json_decode($data, true);
-        }
-    
-        $this->id_cajas = $ingreso_data['id_cajas'] ?? null;
-        $this->id_pago = $ingreso_data['id_pago'] ?? null;
-        $this->movimiento = $ingreso_data['movimiento'] ?? null;
-        $this->fecha = $ingreso_data['fecha'] ?? null;
-        $this->monto = $ingreso_data['monto'] ?? null;
-        $this->descripcion = $ingreso_data['descripcion'] ?? null;
+    private function setCajaData($data) {
+    if (is_string($data)) {
+        $data = json_decode($data, true);
     }
+
+    // Expresiones regulares y validaciones
+    $exp_id = "/^\d+$/";
+    $exp_movimiento = "/^(ingreso|egreso)$/i";
+    $exp_fecha = "/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/"; // YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS]
+    $exp_monto = "/^\d+(\.\d{1,2})?$/";
+    $exp_descripcion = "/^[\w\s\.,#\-]{0,100}$/u";
+
+    // Validar id_cajas
+    if (!isset($data['id_cajas']) || !preg_match($exp_id, $data['id_cajas'])) {
+        return ['status' => false, 'msj' => 'ID de caja inválido'];
+    }
+    $this->id_cajas = (int)$data['id_cajas'];
+
+    // Validar id_pago
+    if (!isset($data['id_pago']) || !preg_match($exp_id, $data['id_pago'])) {
+        return ['status' => false, 'msj' => 'ID de pago inválido'];
+    }
+    $this->id_pago = (int)$data['id_pago'];
+
+    // Validar movimiento (ingreso o egreso)
+    $movimiento = strtolower(trim($data['movimiento'] ?? ''));
+    if (!preg_match($exp_movimiento, $movimiento)) {
+        return ['status' => false, 'msj' => 'Movimiento inválido (debe ser ingreso o egreso)'];
+    }
+    $this->movimiento = $movimiento;
+
+    // Validar fecha
+    $fecha = trim($data['fecha'] ?? '');
+    if (!preg_match($exp_fecha, $fecha)) {
+        return ['status' => false, 'msj' => 'Fecha inválida'];
+    }
+    $this->fecha = $fecha;
+
+    // Validar monto
+    $monto = trim($data['monto'] ?? '');
+    if (!preg_match($exp_monto, $monto) || $monto <= 0) {
+        return ['status' => false, 'msj' => 'Monto inválido'];
+    }
+    $this->monto = (float)$monto;
+
+    // Validar descripción (opcional)
+    $descripcion = trim($data['descripcion'] ?? '');
+    if ($descripcion !== '' && !preg_match($exp_descripcion, $descripcion)) {
+        return ['status' => false, 'msj' => 'Descripción inválida'];
+    }
+    $this->descripcion = $descripcion;
+
+    return ['status' => true, 'msj' => 'Datos de caja validados correctamente'];
+}
+
 
     // Métodos set y get
     public function setIdBitacora($id_cajas) {
@@ -76,6 +119,37 @@ class Caja extends Conexion{
     public function getDescripcion() {
         return $this->descripcion;
     }
+
+
+     //Metodos
+
+    //Indiferentemente sea la accion primero la funcion manejar accion llama a la 
+    //funcion setcliente data que validad todos los valores
+    //luego de que todo los datos sean validados correctamente
+    //verifica que la variable validacion que contiene el status de la funcion sea correcta 
+    //si es incorrecta retorna el status de mensajes de errores 
+    //si es correcta me llama la funcion correspondiente 
+    public function manejarAccion($accion, $caja) {
+        switch ($accion) {
+
+            case 'agregar':
+                $validacion=$this->setIngresoEgresoData($caja);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Guardar_Caja();
+                }
+                break;
+
+            case 'consultar':
+
+                    return $this->Mostrar_Caja();
+                
+            default:
+                return ['status' => false, 'msj' => 'Accion invalida'];
+        }
+    }
+
     public function Update_SaldoCaja()
     {
         try {
@@ -94,7 +168,7 @@ class Caja extends Conexion{
     }
 
 
-    public function Mostrar_Caja() {
+    private function Mostrar_Caja() {
         // Consulta SQL para seleccionar todos los registros de la tabla bitacora
         $query = "SELECT * FROM cajas ";
         // Prepara la consulta

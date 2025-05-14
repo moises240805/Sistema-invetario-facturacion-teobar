@@ -33,7 +33,7 @@ switch ($action) {
         break;
     case "eliminar":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            eliminaVenta($modelo, $bitacora, $usuario, $modulo);
+            eliminarVenta($modelo, $bitacora, $usuario, $modulo);
         }
         break;
     case "v":
@@ -153,8 +153,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
                 ]);
                 $bitacora->setBitacoraData($bitacora_data);
                 $bitacora->Guardar_Bitacora();
-                $ingreso->setIngresoEgresoData($ingreso_data);
-                $ingreso->Guardar_IngresoEgreso($ingreso_data); 
+                $ingreso->manejarAccion("agregar",$ingreso_data); 
 
                 /*// Verificar stock después de la venta
                     $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
@@ -187,6 +186,72 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
     setError("Error accion no permitida ");
     require_once 'views/php/dashboard_venta.php';
     exit();
+}
+
+
+
+function eliminarVenta($modelo, $bitacora, $usuario, $modulo){
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {            
+                   
+        $id_venta = $_GET['id_venta'];
+            if (!filter_var($id_venta, FILTER_VALIDATE_INT)) {
+                setError("ID inválido");
+                header("Location: index.php?action=venta&a=v");
+                exit();
+            }
+
+            // Obtener los valores de tipo_producto y presentacion antes de eliminar
+            $accion="obtener";
+            $res = $modelo->manejarAccion($accion,$id_presentacion);
+            
+            if (!$res) {
+                setError("El registro no existe");
+                header("Location: index.php?action=venta&a=v");
+                exit();
+            }
+
+            try {
+
+                // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+                $resultado = $modelo->manejarAccion('eliminar', $id_venta);
+                   
+        
+                //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                if (isset($resultado['status']) && $resultado['status'] === true) {
+                    //usar mensaje dinámico del modelo
+                    setSuccess($resultado['msj']);
+
+                    $bitacora_data = json_encode([
+                        'id_admin' => $_SESSION['s_usuario']['id'],
+                        'movimiento' => "Eliminar",
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'modulo' => $modulo,
+                        'descripcion' => "Eliminao una venta"
+                    ]);
+                    $bitacora->setBitacoraData($bitacora_data);
+                    $bitacora->Guardar_Bitacora();
+                } else {
+                    // Error: usar mensaje dinámico o genérico
+                    $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+                    setError($mensajeError);
+                }
+            } catch (Exception $e) {
+                //mensajes del expcecion del pdo 
+                error_log("Error al eliminar: " . $e->getMessage());
+                setError("Error en operación");
+            }
+            
+            header("Location: index.php?action=venta&a=v");
+            exit();
+            }
+            //muestra un modal de info que dice acceso no permitido
+            setError("Error accion no permitida ");
+            require_once 'views/php/dashboard_venta.php';
+            exit();
 }
 
 

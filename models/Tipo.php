@@ -142,8 +142,8 @@ class Tipo extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "INSERT INTO presentacion (tipo_producto, presentacion) 
-                      VALUES (:tipo_producto, :presentacion)";
+            $query = "INSERT INTO presentacion (tipo_producto, presentacion, status) 
+                      VALUES (:tipo_producto, :presentacion, 1)";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":tipo_producto", $this->tipo_producto, PDO::PARAM_STR);
@@ -189,7 +189,7 @@ class Tipo extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "SELECT * FROM presentacion";
+            $query = "SELECT * FROM presentacion WHERE status = 1";
             $stmt = $conn->prepare($query);
 
             if (!$stmt->execute()) {
@@ -235,7 +235,7 @@ class Tipo extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "DELETE FROM presentacion WHERE id_presentacion = :id_presentacion";
+            $query = "UPDATE presentacion SET status = 1 WHERE id_presentacion = :id_presentacion";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_presentacion", $id_presentacion, PDO::PARAM_INT);
 

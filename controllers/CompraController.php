@@ -16,7 +16,6 @@ $producto = new Producto();
 $proveedor = new Proveedor();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
-$ingreso = new Manejo();
 $controller = new Compra();
 $usuario = new Roles();
 
@@ -34,7 +33,7 @@ switch ($action) {
         break;
     case "eliminar":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            eliminaCompra($modelo, $bitacora, $usuario, $modulo);
+            eliminarCompra($modelo, $bitacora, $usuario, $modulo);
         }
         break;
     case "c":
@@ -94,14 +93,14 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
         // Lógica de caja según modalidad de pago
         $id_cajas = ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) ? 1 : 2;
 
-        $egreso_data = [
+        $egreso_data = json_encode([
             'id_cajas' => $id_cajas,
             'movimiento' => "Egreso",
             'fecha' => $fech_emision,
             'monto' => $monto,
             'id_pago' => $id_modalidad_pago,
             'descripcion' => "Compra de productos"
-        ];
+        ]);
 
         try {
 
@@ -123,8 +122,7 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
                 $bitacora->setBitacoraData($bitacora_data);
                 $bitacora->Guardar_Bitacora();
 
-                $ingreso->setIngresoEgresoData(json_encode($egreso_data));
-                $ingreso->Guardar_IngresoEgreso(json_encode($egreso_data));
+                $ingreso->manejarAccion("agregar",$egreso_data);
 
                 // Aquí notificación 
 
@@ -146,6 +144,72 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
     setError("Error acción no permitida");
     require_once 'views/php/dashboard_compra.php';
     exit();
+}
+
+
+
+function eliminarCompra($modelo, $bitacora, $usuario, $modulo){
+    
+    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
+    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
+    //action y el rol de usuario
+    if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {            
+                   
+        $id_compra = $_GET['id_compra'];
+            if (!filter_var($id_compra, FILTER_VALIDATE_INT)) {
+                setError("ID inválido");
+                header("Location: index.php?action=compra&a=c");
+                exit();
+            }
+
+            // Obtener los valores de tipo_producto y presentacion antes de eliminar
+            $accion="obtener";
+            $res = $modelo->manejarAccion($accion,$id_presentacion);
+            
+            if (!$res) {
+                setError("El registro no existe");
+                header("Location: index.php?action=compra&a=c");
+                exit();
+            }
+
+            try {
+
+                // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+                $resultado = $modelo->manejarAccion('eliminar', $id_compra);
+                   
+        
+                //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                if (isset($resultado['status']) && $resultado['status'] === true) {
+                    //usar mensaje dinámico del modelo
+                    setSuccess($resultado['msj']);
+
+                    $bitacora_data = json_encode([
+                        'id_admin' => $_SESSION['s_usuario']['id'],
+                        'movimiento' => "Eliminar",
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'modulo' => $modulo,
+                        'descripcion' => "Eliminao una compra"
+                    ]);
+                    $bitacora->setBitacoraData($bitacora_data);
+                    $bitacora->Guardar_Bitacora();
+                } else {
+                    // Error: usar mensaje dinámico o genérico
+                    $mensajeError = $resultado['msj'] ?? "ERROR AL ELIMINAR...";
+                    setError($mensajeError);
+                }
+            } catch (Exception $e) {
+                //mensajes del expcecion del pdo 
+                error_log("Error al eliminar: " . $e->getMessage());
+                setError("Error en operación");
+            }
+            
+            header("Location: index.php?action=compra&a=c");
+            exit();
+            }
+            //muestra un modal de info que dice acceso no permitido
+            setError("Error accion no permitida ");
+            require_once 'views/php/dashboard_compra.php';
+            exit();
 }
 
 

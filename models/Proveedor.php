@@ -254,10 +254,10 @@ class Proveedor extends Conexion{
 
             // Insertar nuevo proveedor
             $query = "INSERT INTO proveedor (id_proveedor, nombre_proveedor, direccion, 
-                      tlf, id_representante, nombre_representante, tlf_representante, tipo_id, tipo_id2) 
+                      tlf, id_representante, nombre_representante, tlf_representante, tipo_id, tipo_id2, status) 
                       VALUES (:id_proveedor, :nombre_proveedor, :direccion_proveedor, 
                       :tlf_proveedor, :id_representante_legal, :nombre_representante_legal, 
-                      :tlf_representante_legal, :tipo, :tipo2)";
+                      :tlf_representante_legal, :tipo, :tipo2, 1)";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":id_proveedor", $this->id_proveedor);
@@ -287,7 +287,7 @@ class Proveedor extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "SELECT * FROM proveedor";
+            $query = "SELECT * FROM proveedor WHERE status = 1";
             $stmt = $conn->prepare($query);
 
             if (!$stmt->execute()) {
@@ -371,7 +371,7 @@ class Proveedor extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "DELETE FROM proveedor WHERE id_proveedor = :id_proveedor";
+            $query = "UPDATE proveedor SET status = 0 WHERE id_proveedor = :id_proveedor";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
 

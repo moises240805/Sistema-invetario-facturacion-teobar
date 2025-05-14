@@ -323,12 +323,9 @@ class Venta extends Conexion{
                 break;
 
             case 'eliminar':
-                $validacion=$this->setValideId($venta);
-                if(!$validacion['status']){
-                    return $validacion;
-                }else{
+
                     return $this->Eliminar_Venta($venta);
-                }
+                
 
             case 'consultar':
 
@@ -374,7 +371,7 @@ class Venta extends Conexion{
                 } 
                 
                 // Registrar la venta 
-                $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_producto, id_cliente, cantidad, fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf) VALUES (:id_venta, :id_producto, :id_cliente, :cantidad, :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf)"); 
+                $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_producto, id_cliente, cantidad, fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf, status) VALUES (:id_venta, :id_producto, :id_cliente, :cantidad, :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf, 1)"); 
                 $stmt2->bindParam(':id_venta', $this->id_venta); 
                 $stmt2->bindParam(':tipo_compra', $this->tipo_compra); 
                 $stmt2->bindParam(':tlf', $this->tlf); 
@@ -470,6 +467,7 @@ class Venta extends Conexion{
                     bancos b ON b.rif_banco = v.rif_banco
                   LEFT JOIN 
                     modalidad_de_pago m ON m.id_modalidad_pago = v.id_modalidad_pago
+                  WHERE v.status = 1 
                   GROUP BY 
                     v.id_venta"; 
     
@@ -542,12 +540,21 @@ class Venta extends Conexion{
         }
     }
     
-     function Eliminar_Venta($id_venta) {
-        $query = "DELETE FROM venta WHERE id_venta = :id_venta";
+    private function Eliminar_Venta($id_venta) {
+    try{
+        $query = "UPDATE venta SET status = 0 WHERE id_venta = :id_venta";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_venta", $this->id_venta, PDO::PARAM_INT);
-        $stmt->execute();
-        return true;
+        $stmt->bindParam(":id_venta", $id_venta, PDO::PARAM_INT);
+        if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Venta eliminada correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al eliminar la venta'];
+            }
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
     public function obtenerCuentas() {
@@ -606,12 +613,6 @@ class Venta extends Conexion{
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /*function Eliminar_Venta($id_venta) {
-        $query = "UPDATE venta SET is_active = 0 WHERE id_venta = :id_venta";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_venta", $id_venta, PDO::PARAM_INT);
-        $stmt->execute();
-        return true;
-    }*/
+
 }
 ?>

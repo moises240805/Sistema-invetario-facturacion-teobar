@@ -7,6 +7,7 @@
     <title>Movimientos</title>
     <?php 
         require_once "link.php";
+        require_once "alert.php";
     ?>
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 </head>
@@ -71,26 +72,19 @@
                         <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
-                    <?php
-require_once "controllers/CajaController.php";
-?>
-<!-- Contenedor de tarjetas -->
-<center><div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
-    <?php foreach ($caja as $caja): ?>
-        <!-- Tarjeta -->
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3>Manejo de cajas</h3>
-                </div>
-                <div class="card-body">
-                    <h4 class="card-title"><?php echo $caja["nombre_caja"]; ?></h4>
-                    <p class="card-text"><b style='font-size:1.2em;'><?=number_format($caja["saldo_caja"],2,',','.'); ?></b></p>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div></center><br>
+<!-- Botón para abrir el modal -->
+<center>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cajasModal">
+        Ver Manejo de Cajas
+    </button>
+
+<!-- Botón para abrir el modal -->
+
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ingresosEgresosModal">
+        Ver Ingresos y Egresos
+    </button>
+</center>
+<br>
 
                     <!-- Content Row -->
                     <div class="row mx-3">
@@ -116,6 +110,10 @@ require_once "controllers/CajaController.php";
         </thead>
         <tbody>
             <?php 
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($movimiento) && is_array($movimiento) && !empty($movimiento)){
                 foreach ($movimiento as $movimiento): 
             ?>
             <tr>
@@ -128,10 +126,120 @@ require_once "controllers/CajaController.php";
                 <td><?php echo $movimiento['fecha']; ?></td>
 
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="cajasModal" tabindex="-1" aria-labelledby="cajasModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl style="max-width: 110%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cajasModalLabel">Manejo de cajas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
+            <?php 
+            if(isset($caja) && is_array($caja) && !empty($caja)){
+            foreach ($caja as $item): ?>
+              <div class="col">
+                <div class="card h-100">
+                  <div class="card-header">
+                    <h3>Manejo de cajas</h3>
+                  </div>
+                  <div class="card-body">
+                    <h4 class="card-title"><?php echo htmlspecialchars($item["nombre_caja"]); ?></h4>
+                    <p class="card-text">
+                      <b style="font-size:1.2em;">
+                        <?= number_format($item["saldo_caja"], 2, ',', '.'); ?>
+                      </b>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
+        } ?>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="ingresosEgresosModal" tabindex="-1" aria-labelledby="ingresosEgresosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl "> <!-- modal-xl para mayor ancho, scrollable para scroll si hay mucho contenido -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ingresosEgresosModalLabel">Manejo de Ingresos y Egresos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Contenedor de tarjetas -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <?php 
+            if(isset($ingresosegresos) && is_array($ingresosegresos) && !empty($ingresosegresos)){
+            foreach ($ingresosegresos as $ingresoegreso): ?>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6><?php echo htmlspecialchars($ingresoegreso['nombre']); ?></h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text"><?php echo htmlspecialchars($ingresoegreso['descripcion']); ?></p>
+                            <p class="card-text">
+                                <b style="font-size:1.2em;">
+                                    $<?= number_format($ingresoegreso['monto'], 2, ',', '.'); ?>
+                                </b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
+        } ?>
+            <form action="" method="post">
+                <h5>Registrar Ingreso o Egreso Externo</h5>
+                <label for="nombre">
+                    <input class="form-control" type="text" placeholder='nombre' required>
+                </label>
+                    <label for="descripcion">
+                    <input class="form-control" type="text" placeholder='descripcion' required>
+                </label>
+                    <label for="monto">
+                    <input class="form-control" type="number" placeholder='monto' required>
+                </label>
+                <button type="submit" class='btn btn-primary'>Registrar</button>
+            </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 

@@ -94,10 +94,12 @@
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/PagarController.php";
-                $cuenta = new Pagar;
-                $venta = $cuenta->obtenerCuentas2();
-                foreach ($venta as $venta): 
+ 
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($cuenta) && is_array($cuenta) && !empty($cuenta)){
+                foreach($cuenta as $venta): 
             ?>
             <tr>
                 <td><?php echo $venta['id_cuentaPagar']; ?></td>
@@ -109,7 +111,12 @@
                     <a onclick="abrirModal(<?php echo $venta['id_cuentaPagar']; ?>)" class="btn btn-success btn-sm" title="Abono">Abono</a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>

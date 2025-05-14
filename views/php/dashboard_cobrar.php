@@ -7,6 +7,7 @@
     <title>Cuentas por Cobrar</title>
     <?php 
         require_once "link.php";
+        require_once "alert.php";
     ?>
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 </head>
@@ -94,10 +95,11 @@
         </thead>
         <tbody>
             <?php 
-                require_once "controllers/CobrarController.php";
-                $cuenta = new Cobrar;
-                $venta = $cuenta->obtenerCuentas();
-                foreach ($venta as $venta): 
+                //verifica si cliente existe o esta vacia en dado caso que este vacia muestra clientes no 
+                // registrados ya que si el usuario que realizo la pedticion no tiene el permiso en cambio 
+                // si lo tiene muestra la informacion
+                if(isset($cuenta) && is_array($cuenta) && !empty($cuenta)){
+                foreach ($cuenta as $venta): 
             ?>
             <tr>
                 <td><?php echo $venta['id_cuentaCobrar']; ?></td>
@@ -109,7 +111,12 @@
                     <a onclick="abrirModal(<?php echo $venta['id_cuentaCobrar']; ?>)" class="btn btn-success btn-sm" title="Abono">Abono</a>
                 </td>
             </tr>
-            <?php endforeach; ?>
+            <?php
+            //Imprime esta informacion en caso de estar vacia la variable             
+            endforeach; 
+        } else {
+            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
+        } ?>
         </tbody>
     </table>
 </div>

@@ -388,8 +388,8 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
-                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen)";
+            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace, status) 
+                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen, 1)";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT);
@@ -451,8 +451,8 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace) 
-                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen)";
+            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace, status) 
+                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen, 1)";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT);
@@ -514,7 +514,7 @@ class Producto extends Conexion{
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
-                      GROUP BY p.id_producto";
+                      WHERE p.status=1 GROUP BY p.id_producto ";
 
             $stmt = $conn->prepare($query);
             if (!$stmt->execute()) {
@@ -551,7 +551,7 @@ class Producto extends Conexion{
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
-                      GROUP BY p.id_producto";
+                      WHERE p.status=1 GROUP BY p.id_producto ";
 
             $stmt = $conn->prepare($query);
             if (!$stmt->execute()) {
@@ -579,7 +579,7 @@ class Producto extends Conexion{
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
-                      LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion";
+                      LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion WHERE p.status=1";
 
             $stmt = $conn->prepare($query);
             if (!$stmt->execute()) {
@@ -726,7 +726,7 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
     
-            $query = "DELETE FROM producto WHERE id_producto = :id_producto";
+            $query = "UPDATE producto SET status = 0 WHERE id_producto = :id_producto";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
             $stmt->execute();

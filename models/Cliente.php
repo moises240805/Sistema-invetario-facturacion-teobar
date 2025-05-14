@@ -193,8 +193,8 @@ class Cliente extends Conexion{
     
             if ($stmt->rowCount() == 0) {
                 // Insertar nuevo cliente
-                $query = "INSERT INTO cliente (id_cliente, nombre_cliente, tlf, direccion, email, tipo_id) 
-                          VALUES (:id_cliente, :nombre_cliente, :tlf_cliente, :direccion_cliente, :email_cliente, :tipo)";
+                $query = "INSERT INTO cliente (id_cliente, nombre_cliente, tlf, direccion, email, tipo_id, status) 
+                          VALUES (:id_cliente, :nombre_cliente, :tlf_cliente, :direccion_cliente, :email_cliente, :tipo, 1)";
                 $stmt = $conn->prepare($query);
                 $stmt->bindParam(":id_cliente", $this->id_cliente);
                 $stmt->bindParam(":tipo", $this->tipo);
@@ -226,7 +226,7 @@ class Cliente extends Conexion{
             try{
 
             // Consulta SQL para seleccionar todos los registros de la tabla personas
-            $query = "SELECT * FROM cliente";
+            $query = "SELECT * FROM cliente  WHERE status=1";
             // Prepara la consulta
             $conn=$this->getConnection();
             $stmt = $conn->prepare($query);
@@ -289,26 +289,27 @@ class Cliente extends Conexion{
     }
     
 
-    private function Eliminar_Cliente($id_cliente) {
-
+private function Eliminar_Cliente($id_cliente) {
     $conn = null;
-    try{
-        $query = "DELETE FROM cliente WHERE id_cliente = :id_cliente";
-        $conn=$this->getConnection();
+    try {
+        $query = "UPDATE cliente SET status = 0 WHERE id_cliente = :id_cliente";
+        $conn = $this->getConnection();
         $stmt = $conn->prepare($query);
-        $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
+
+        // Usar el parámetro recibido en la función
+        $stmt->bindParam(":id_cliente", $id_cliente, PDO::PARAM_INT);
 
         if ($stmt->execute()) {
             return ['status' => true, 'msj' => 'Cliente eliminado correctamente'];
         } else {
             return ['status' => false, 'msj' => 'Error al eliminar el cliente'];
         }
-        }catch (PDOException $e) {
-            // Retornar mensaje de error sin hacer echo
-            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-        } finally {
-            $conn = null;
-        }
+    } catch (PDOException $e) {
+        return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+    } finally {
+        $conn = null;
+    }
 }
+
 }
 ?>

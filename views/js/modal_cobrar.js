@@ -45,7 +45,7 @@ function abrirModal(id) {
     // Si necesitas obtener datos adicionales para llenar otros campos, puedes hacerlo mediante AJAX
      fetch('index.php?action=cobrar&a=abono&id_cuenta=' + id)
         .then(response => response.json())
-        .then(data => {
+        .then(data => { console.log(data);
            // Llenar los campos del formulario con los datos obtenidos
            document.getElementById('id_cuenta').value = data[0].id_cuentaCobrar;
            document.getElementById('cliente').value = data[0].nombre_cliente + ' ' + data[0].tipo_id + '' + data[0].id_cliente + ' tlf: ' + data[0].tlf;

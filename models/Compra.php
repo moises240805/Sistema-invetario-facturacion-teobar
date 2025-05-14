@@ -259,12 +259,9 @@ class Compra extends Conexion{
                     
 
             case 'eliminar':
-                $validacion=$this->setValideId($compra);
-                if(!$validacion['status']){
-                    return $validacion;
-                }else{
+
                     return $this->Eliminar_Compra($compra);
-                }
+                
 
             case 'consultar':
 
@@ -301,7 +298,7 @@ class Compra extends Conexion{
                 }
     
                 // Registrar la compra 
-                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto)"); 
+                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto, status) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto, 1)"); 
                 $stmt2->bindParam(':id_compra', $this->id_compra); 
                 $stmt2->bindParam(':id_producto', $producto_id); 
                 $stmt2->bindParam(':id_cliente', $this->id_cliente); 
@@ -384,6 +381,7 @@ class Compra extends Conexion{
                     proveedor c ON c.id_proveedor = v.rif_proveedor
                   LEFT JOIN 
                     modalidad_de_pago m ON m.id_modalidad_pago = v.pago
+                  WHERE v.status=1
                   GROUP BY 
                     v.id_compra"; 
     
@@ -449,14 +447,23 @@ class Compra extends Conexion{
     }
 
      function Eliminar_Compra($id_compra) {
-        $query = "DELETE FROM compra WHERE id_compra = :id_compra";
+    try{
+        $query = "UPDATE compra SET status = 0 WHERE id_compra = :id_compra";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_compra", $this->id_compra, PDO::PARAM_INT);
-        $stmt->execute();
-        return true;
+        $stmt->bindParam(":id_compra", $id_compra, PDO::PARAM_INT);
+        if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Compra eliminada correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al eliminar la compra'];
+            }
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $conn = null;
+        }
     }
 
-    public function obtenerCuentas2() {
+    private function obtenerCuentas2() {
         $query = "SELECT 
                     c.id_cuentaPagar, 
                     c.fecha_cuentaPagar, 

@@ -211,7 +211,7 @@ class Admin extends Conexion {
                 $hashedPassword = password_hash($this->pw, PASSWORD_DEFAULT);
                 
                 // Consulta SQL para insertar un nuevo registro en la tabla usuarios
-                $query = "INSERT INTO usuarios (usuario, pw, id_rol) VALUES (:username, :pw, :rol)";
+                $query = "INSERT INTO usuarios (usuario, pw, id_rol, status) VALUES (:username, :pw, :rol, 1)";
                 $stmt = $conn->prepare($query);
                 $stmt->bindParam(":username", $this->username);
                 $stmt->bindParam(":pw", $hashedPassword);
@@ -233,60 +233,7 @@ class Admin extends Conexion {
         }
     }
 
-    private function Register_Online($usuario){
-        
-        $conn=null;
-        try {
-            $this->conn->beginTransaction();
-            // Consulta para verificar si el cliente ya existe
-            $query = "SELECT * FROM cliente WHERE $usuario[id_cliente] = :id_cliente";
-            $conn=$this->getConnection();
-            $stmt = $conn->prepare($query);
-            $stmt->bindParam(":id_cliente", $this->id_cliente);
-            $stmt->execute();
     
-            if ($stmt->rowCount() == 0) {
-                // Insertar nuevo cliente
-                $query = "INSERT INTO cliente ($usuario[id_cliente], $usuairo[nombre_cliente], $usuario[tlf], $usuario[direccion], $usuaio[email], $usuario[tipo_id]) 
-                          VALUES (:id_cliente, :nombre_cliente, :tlf_cliente, :direccion_cliente, :email_cliente, :tipo)";
-                $stmt = $conn->prepare($query);
-                $stmt->bindParam(":id_cliente", $usuario['id_cliente']);
-                $stmt->bindParam(":tipo", $usuario['tipo_id']);
-                $stmt->bindParam(":nombre_cliente", $usuairo['nombre_cliente']);
-                $stmt->bindParam(":tlf_cliente", $usuario['tlf']);
-                $stmt->bindParam(":direccion_cliente", $usuario['direccion']);
-                $stmt->bindParam(":email_cliente", $usuaio['email']);
-
-                $hashedPassword = password_hash($usuario['pw'], PASSWORD_DEFAULT);
-                
-                // Consulta SQL para insertar un nuevo registro en la tabla usuarios
-                $query = "INSERT INTO usuarios ($usuario[username], $usuario[pw], $usuario[rol]) VALUES (:username, :pw, :rol)";
-                $stmt = $conn->prepare($query);
-                $stmt->bindParam(":username", $usuario['username']);
-                $stmt->bindParam(":pw", $hashedPassword);
-                $stmt->bindParam(":rol", $usuario['rol']);
-    
-            // Confirmar la transacción solo si todas las operaciones fueron exitosas
-            if ($this->conn->inTransaction()) {
-                $this->conn->commit(); 
-                    return ['statuzs' => true, 'msj' => 'Guardado correctamente'];
-                } else {
-                    return ['status' => false, 'msj' => 'Error al guardar'];
-                }
-            } else {
-                return ['status' => false, 'msj' => 'El registro ya existe'];
-            }
-        } catch (PDOException $e) {
-                if ($this->conn->inTransaction()) { 
-                $this->conn->rollBack(); 
-            } 
-            // Retornar mensaje de error sin hacer echo
-            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
-        } finally {
-            $conn = null;
-        }
-
-    }
     
 
     // Método para obtener todas las personas de la base de datos
@@ -295,7 +242,7 @@ class Admin extends Conexion {
         try {
             $conn = $this->getConnection();
             // Consulta SQL para seleccionar todos los registros de la tabla admin
-            $query = "SELECT * FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol";
+            $query = "SELECT * FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE u.status = 1";
             // Prepara la consulta
             $stmt = $conn->prepare($query);
             // Ejecuta la consulta
@@ -365,7 +312,7 @@ class Admin extends Conexion {
         $conn = null;
         try { 
             $conn = $this->getConnection();
-            $query = "DELETE FROM usuarios WHERE ID = :ID"; 
+            $query = "UPDATE usuarios SET status = 0 WHERE ID = :ID"; 
             $stmt = $conn->prepare($query); 
             $stmt->bindParam(":ID", $id, PDO::PARAM_INT); 
     

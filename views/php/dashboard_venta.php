@@ -120,9 +120,7 @@
                             <a href="#" title="Modificar">
                                 <img src="views/img/edit.png" width="30px" height="30px">
                             </a>
-                            <a href="#" title="Eliminar" style="margin-left: 1rem;">
-                                <img src="views/img/delet.png" width="30px" height="30px">
-                            </a>
+                                <a onclick="return eliminar()" href="index.php?action=venta&a=eliminar&id_venta=<?php echo $venta['id_venta']; ?>" title="Eliminar"><img src="views/img/delet.png" width="30px" height="30px"></a>
                         </td>
                     </tr>
                     <?php
