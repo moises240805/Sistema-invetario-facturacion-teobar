@@ -57,7 +57,7 @@ switch ($action) {
 }
 
 // Función para agregar un Producto
-function agregarProducto($controller, $bitacora, $usuario, $modulo) {
+function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 

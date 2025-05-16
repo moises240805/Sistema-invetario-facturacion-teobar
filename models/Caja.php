@@ -152,7 +152,9 @@ class Caja extends Conexion{
 
     public function Update_SaldoCaja()
     {
+        $this->closeConnection();
         try {
+            $conn=$this->getConnection();
             $query = "UPDATE cajas SET ID=id_cajas";
             
             $stmt = $this->conn->prepare($query);
@@ -165,18 +167,28 @@ class Caja extends Conexion{
             error_log("Error en Ingreso Egreso: " . $e->getMessage()); // Mejor que echo
             return false;
         }    
+        $this->closeConnection();
     }
 
 
     private function Mostrar_Caja() {
-        // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM cajas ";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT * FROM cajas ";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch(PDOException $e) {
+            error_log("Error en Ingreso Egreso: " . $e->getMessage()); // Mejor que echo
+            return false;
+        }    
+        $this->closeConnection();
     }
 }   
 ?>

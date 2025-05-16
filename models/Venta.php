@@ -340,7 +340,9 @@ class Venta extends Conexion{
 
     private function Guardar_Venta() 
     { 
-        try { 
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection(); 
             $this->conn->beginTransaction(); 
             
             // Recorrer los arrays de productos y medidas
@@ -436,6 +438,8 @@ class Venta extends Conexion{
                 $this->conn->rollBack(); 
             } 
             return ['status' => false, 'msj' => 'Error al registrar la venta: ' . $e->getMessage()]; 
+        } finally {
+            $this->closeConnection();
         } 
     }
     
@@ -443,6 +447,9 @@ class Venta extends Conexion{
 
     // Método para obtener todas las venta de la base de datos
     private function Mostrar_Venta() {
+        $this->closeConnection();
+        try {
+        $conn = $this->getConnection();
         // Consulta SQL para seleccionar todos los registros de la tabla venta
         $query = "SELECT 
                     v.id_venta, 
@@ -471,24 +478,44 @@ class Venta extends Conexion{
                   GROUP BY 
                     v.id_venta"; 
     
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
-    function Obtener_Venta($id_venta) {
-        $query = "SELECT * FROM venta WHERE id_venta = :id_venta";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_venta", $id_venta, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    function Actualizar_Venta() {
+    private function Obtener_Venta($id_venta) {
+        $this->closeConnection();
         try {
+            $conn = $this->getConnection();
+            $query = "SELECT * FROM venta WHERE id_venta = :id_venta";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id_venta", $id_venta, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            // Deshacer la transacción en caso de excepción
+            $this->conn->rollBack();
+            echo "Error en la consulta: " . $e->getMessage();
+            return false;
+        } 
+        finally {
+            $this->closeConnection();
+        }
+    }
+
+    private function Actualizar_Venta() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
             // Iniciar la transacción
             $this->conn->beginTransaction();
             // Paso 1: Obtener el monto actual
@@ -537,11 +564,15 @@ class Venta extends Conexion{
             $this->conn->rollBack();
             echo "Error en la consulta: " . $e->getMessage();
             return false;
+        } finally {
+            $this->closeConnection();
         }
     }
     
     private function Eliminar_Venta($id_venta) {
-    try{
+        $this->closeConnection();
+        try {
+        $conn = $this->getConnection();
         $query = "UPDATE venta SET status = 0 WHERE id_venta = :id_venta";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id_venta", $id_venta, PDO::PARAM_INT);
@@ -553,11 +584,14 @@ class Venta extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     public function obtenerCuentas() {
+        $this->closeConnection();
+        try {
+        $conn = $this->getConnection();
         $query = "SELECT 
                     c.id_cuentaCobrar, 
                     c.fecha_cuentaCobrar, 
@@ -575,44 +609,72 @@ class Venta extends Conexion{
                   GROUP BY 
                     c.id_cuentaCobrar"; 
     
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
     private function obtenerBancos() {
-        $query = "SELECT * FROM bancos";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "SELECT * FROM bancos";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
     private function obtenerPagos() {
-        $query = "SELECT * FROM modalidad_de_pago";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "SELECT * FROM modalidad_de_pago";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
     private function obtenerNumeroVenta() {
-        $query = "SELECT MAX(id_venta) as id_venta FROM venta LIMIT 1";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "SELECT MAX(id_venta) as id_venta FROM venta LIMIT 1";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
-
 
 }
 ?>

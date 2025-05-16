@@ -149,14 +149,14 @@
                                     <td>
                                         <div class="form-group">
                                             <label for="id_venta">Nro Compra</label>
-                                            <input type="text" class="form-control" name="id_venta" placeholder="Nro Compra" maxlength="11"required oninput="validateInput(this)">
+                                            <input type="text" class="form-control" name="id_compra" placeholder="Nro Compra" maxlength="11"required oninput="validateInput(this)">
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
                                             <label for="id_cliente">Proveedor</label>
                                             <div class="input-group">
-                                                <select name="id_cliente" class="form-control">
+                                                <select name="id_proveedor" class="form-control">
                                                     <option value="">Seleccione Proveedor</option>
                                                     <?php foreach ($proveedores as $proveedor): ?>
                                                         <option value="<?php echo $proveedor['id_proveedor']; ?>">

@@ -287,10 +287,10 @@
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3" >Bulto o Saco</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
-                            <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso" name="peso" placeholder="Peso" required oninput="calcularCantidad2()">
-                            <select class="form-control"  style="width: 5rem;" id="uni_medida" name="uni_medida" oninput="calcularCantidad2()">
+                            <input style="width: 6rem;" class="form-control" type="number" id="cantidad4" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="number" step="0.01" id="precio4" name="precio" maxlength='10' placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                            <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso4" name="peso" placeholder="Peso" required oninput="calcularCantidad()">
+                            <select class="form-control"  style="width: 5rem;" id="uni_medida" name="uni_medida" oninput="calcularCantidad()">
                                     <option value="4">Saco</option>
                                     <option value="3">Bulto</option>
                                     <option value="7">Galon</option>
@@ -301,9 +301,9 @@
                     <div class="form-group row">
                         <label for="precio" class="col-md-3">Kilogramo o Litros</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad2" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
-                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio2" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b>$ Bs</b>
-                            <select class="form-control"  style="width: 10rem;" id="uni_medida2" name="uni_medida2" readOnly>
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad5" name="cantidad2" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                            <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio5" name="precio2" readonly placeholder="Precio" required oninput="validateNumber()"><b>$ Bs</b>
+                            <select class="form-control"  style="width: 10rem;" id="uni_medida5" name="uni_medida2" readOnly>
                                     <option value="1">Kilogramos</option>
                                     <option value="5">Litros</option>
                                 </select>
@@ -313,13 +313,13 @@
                     <div class="form-group row">
                         <label for="uni_medida" class="col-md-3">Gramos o mililitros</label>
                         <div class="col-md-9 d-flex justify-content-between">
-                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad3" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
-                        <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio3" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
+                        <input style="width: 6rem;" class="form-control" type="text" id="cantidad6" name="cantidad3" readonly placeholder="Cantidad" required oninput="validateNumber()">
+                        <input style="width: 6rem;" class="form-control" type="text" step="0.01" id="precio6" name="precio3" readonly placeholder="Precio" required oninput="validateNumber()"><b> $ Bs</b>
                         <div style="margin-right: 10px;">
-                                <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso3" name="peso3" placeholder="Peso" required oninput="calcularCantidad2()">
+                                <input style="width: 4rem;" class="form-control" type="number" step="0.01" id="peso6" name="peso3" placeholder="Peso" required oninput="calcularCantidad()">
                             </div>
                             <div>
-                                <select class="form-control" id="uni_medida3" name="uni_medida3" readOnly>
+                                <select class="form-control" id="uni_medida6" name="uni_medida3" readOnly>
                                     <option value="2">Gramos</option>
                                     <option value="6">Mililitro</option>
                                 </select>

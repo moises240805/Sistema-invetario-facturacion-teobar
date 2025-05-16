@@ -1,80 +1,105 @@
 function calcularCantidad() {
-    const peso = document.querySelector('input[name="peso"]').value;
-    const peso3 = document.querySelector('input[name="peso3"]').value;
-    const cantidad1 = document.querySelector('input[name="cantidad"]').value;
-    const precio1 = document.querySelector('input[name="precio"]').value;
-    const precio2Input = document.querySelector('input[name="precio2"]');
-    const precio3Input = document.querySelector('input[name="precio3"]');
-    const uniMedida1 = document.querySelector('select[name="uni_medida"]').value;
-    const cantidad2Input = document.querySelector('input[name="cantidad2"]');
-    const uniMedida2Select = document.querySelector('select[name="uni_medida2"]');
-    const cantidad3Input = document.querySelector('input[name="cantidad3"]');
-    const uniMedid32Select = document.querySelector('select[name="uni_medida3"]');
+    // Obtener valores y elementos por ID
+    const peso = parseFloat(document.getElementById('peso4').value) || 0;
+    const peso3 = parseFloat(document.getElementById('peso6').value) || 0;
+    const cantidad1 = parseFloat(document.getElementById('cantidad4').value) || 0;
+    const precio1 = parseFloat(document.getElementById('precio4').value) || 0;
 
-    // Verificamos si la unidad medida es "Bulto"
-    if (uniMedida1 === "4") { 
-        const cantidadKilogramos = cantidad1 * peso; // Cambia 50 por el valor real de kg en un bulto
-        const cantidadgramos = cantidadKilogramos * 1000;
+    const precio2Input = document.getElementById('precio5');
+    const precio3Input = document.getElementById('precio6');
+    const uniMedida1 = document.getElementById('uni_medida').value;
+    const cantidad2Input = document.getElementById('cantidad5');
+    const uniMedida2Select = document.getElementById('uni_medida5');
+    const cantidad3Input = document.getElementById('cantidad6');
+    const uniMedida6Select = document.getElementById('uni_medida6');
 
-        const preciokilogramos = precio1 / peso;
-        const preciogramos = preciokilogramos * peso3;
-        
-        cantidad2Input.value = cantidadKilogramos;
-        precio2Input.value = preciokilogramos.toFixed(2);
-        uniMedida2Select.value = "1";
-        
-        cantidad3Input.value = cantidadgramos;
-        precio3Input.value = preciogramos.toFixed(2);
-        uniMedid32Select.value = "2";
+    if (uniMedida1 === "4") { // Saco
+        const cantidadKilogramos = cantidad1 * peso;
+        const cantidadGramos = cantidadKilogramos * 1000;
 
-        // Seleccionamos Kilogramos
-    }
-    if (uniMedida1 === "3") { // Asumiendo que "Bulto" tiene valor "3"
-        const cantidadKilogramos = cantidad1 * peso; // Cambia 50 por el valor real de kg en un bulto
-        const cantidadgramos = cantidadKilogramos * 1000;
+        const precioKilogramos = peso !== 0 ? precio1 / peso : 0;
+        const precioGramos = precioKilogramos * peso3;
 
-        const preciokilogramos = precio1 / peso;
-        const preciogramos = preciokilogramos * peso3;
-        
-        cantidad2Input.value = cantidadKilogramos;
-        precio2Input.value = preciokilogramos.toFixed(2);
-        uniMedida2Select.value = "1";
-        
-        cantidad3Input.value = cantidadgramos;
-        precio3Input.value = preciogramos.toFixed(2);
-        uniMedid32Select.value = "2";
+        cantidad2Input.value = cantidadKilogramos.toFixed(2);
+        precio2Input.value = precioKilogramos.toFixed(2);
+        uniMedida2Select.value = "1"; // Kilogramos
 
-                // Deshabilitar los selectores
-                uniMedida2Select.readOnly = true;
-        uniMedid32Select.readOnly = true;
+        cantidad3Input.value = cantidadGramos.toFixed(2);
+        precio3Input.value = precioGramos.toFixed(2);
+        uniMedida6Select.value = "2"; // Gramos
+
+        // Habilitar solo lectura en resultados
         cantidad2Input.readOnly = true;
-    precio2Input.readOnly = true;
-    cantidad3Input.readOnly = true;
-    precio3Input.readOnly = true;
+        precio2Input.readOnly = true;
+        cantidad3Input.readOnly = true;
+        precio3Input.readOnly = true;
+        uniMedida2Select.readOnly = true;
+        uniMedida6Select.readOnly = true;
 
-    }if (uniMedida1 === "7") { // Asumiendo que "Bulto" tiene valor "3"
-        const cantidadKilogramos = cantidad1 * 3.7854; // Cambia 50 por el valor real de kg en un bulto
-        const cantidadgramos = cantidadKilogramos * 1000;
+    } else if (uniMedida1 === "3") { // Bulto
+        const cantidadKilogramos = cantidad1 * peso;
+        const cantidadGramos = cantidadKilogramos * 1000;
 
-        const preciokilogramos = precio1 / cantidadKilogramos;
-        const preciogramos = preciokilogramos * peso3;
-        
-        cantidad2Input.value = cantidadKilogramos;
-        precio2Input.value = preciokilogramos.toFixed(2);
-        uniMedida2Select.value = "5";
-        
-        cantidad3Input.value = cantidadgramos;
-        precio3Input.value = preciogramos.toFixed(2);
-        uniMedid32Select.value = "6";
+        const precioKilogramos = peso !== 0 ? precio1 / peso : 0;
+        const precioGramos = precioKilogramos * peso3;
 
-                // Deshabilitar los selectores
-                uniMedida2Select.readOnly = true;
-        uniMedid32Select.readOnly = true;
+        cantidad2Input.value = cantidadKilogramos.toFixed(2);
+        precio2Input.value = precioKilogramos.toFixed(2);
+        uniMedida2Select.value = "1"; // Kilogramos
+
+        cantidad3Input.value = cantidadGramos.toFixed(2);
+        precio3Input.value = precioGramos.toFixed(2);
+        uniMedida6Select.value = "2"; // Gramos
+
+        // Deshabilitar selectores y inputs de resultados
         cantidad2Input.readOnly = true;
-    precio2Input.readOnly = true;
-    cantidad3Input.readOnly = true;
-    precio3Input.readOnly = true;
+        precio2Input.readOnly = true;
+        cantidad3Input.readOnly = true;
+        precio3Input.readOnly = true;
+        uniMedida2Select.readOnly = true;
+        uniMedida6Select.readOnly = true;
+
+    } else if (uniMedida1 === "7") { // Galón
+        const cantidadLitros = cantidad1 * 3.7854;
+        const cantidadMililitros = cantidadLitros * 1000;
+
+        const precioLitros = cantidadLitros !== 0 ? precio1 / cantidadLitros : 0;
+        const precioMililitros = precioLitros * peso3;
+
+        cantidad2Input.value = cantidadLitros.toFixed(2);
+        precio2Input.value = precioLitros.toFixed(2);
+        uniMedida2Select.value = "5"; // Litros
+
+        cantidad3Input.value = cantidadMililitros.toFixed(2);
+        precio3Input.value = precioMililitros.toFixed(2);
+        uniMedida6Select.value = "6"; // Mililitros
+
+        // Deshabilitar selectores y inputs de resultados
+        cantidad2Input.readOnly = true;
+        precio2Input.readOnly = true;
+        cantidad3Input.readOnly = true;
+        precio3Input.readOnly = true;
+        uniMedida2Select.readOnly = true;
+        uniMedida6Select.readOnly = true;
+
+    } else {
+        // Si no coincide ninguna unidad, limpiar campos y habilitar inputs
+        cantidad2Input.value = "";
+        precio2Input.value = "";
+        cantidad3Input.value = "";
+        precio3Input.value = "";
+        uniMedida2Select.value = "";
+        uniMedida6Select.value = "";
+
+        cantidad2Input.readOnly = false;
+        precio2Input.readOnly = false;
+        cantidad3Input.readOnly = false;
+        precio3Input.readOnly = false;
+        uniMedida2Select.readOnly = false;
+        uniMedida6Select.readOnly = false;
     }
+}
+
 
     function validateNumber() { 
             const idInput = document.getElementById('number'); 

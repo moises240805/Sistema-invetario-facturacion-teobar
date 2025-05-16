@@ -142,6 +142,12 @@ document.addEventListener('DOMContentLoaded', function() {
         clearCartButton.addEventListener('click', () => {
             cart = {};
             updateCartUI();
+            Swal.fire({
+                icon: 'success',
+                title: 'Carrito vaciado',
+                timer: 1500,
+                showConfirmButton: false
+            });
         });
     }
 
@@ -152,38 +158,110 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Pagar: enviar carrito JSON a API con fetch
+    // Pagar: enviar carrito JSON a API con fetch usando SweetAlert2 para mensajes
     if (checkoutButton) {
         checkoutButton.addEventListener('click', () => {
             if (Object.keys(cart).length === 0) {
-                alert("El carrito está vacío.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'El carrito está vacío',
+                    text: 'Agrega productos antes de pagar.'
+                });
                 return;
             }
 
-            console.log('Enviando carrito a la API...');
-            console.log(JSON.stringify(cart, null, 2)); // Para depuración
+            // Modal con cédula y modalidad de pago
+            Swal.fire({
+                title: 'Ingrese su cédula y seleccione modalidad de pago',
+                html:
+                    '<input id="swal-input-cedula" class="swal2-input" placeholder="Cédula">' +
+                    '<select id="swal-select-pago" class="swal2-select" style="width:60%; padding:0.375rem 0.75rem; font-size:1rem; line-height:1.5; border:1px solid #d9d9d9; border-radius:0.25rem;">' +
+                        '<option value="" disabled selected>Seleccione modalidad de pago</option>' +
+                        '<option value="3">Pago móvil</option>' +
+                        '<option value="4">Transferencia</option>' +
+                        '<option value="2">Efectivo</option>' +
+                    '</select>'+
+                    '<input id="swal-input-tlf" class="swal2-input" placeholder="Tlf o nro de referencia">' ,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const cedula = document.getElementById('swal-input-cedula').value.trim();
+                    const tlf = document.getElementById('swal-input-tlf').value.trim();
+                    const modalidadPago = document.getElementById('swal-select-pago').value;
+                    if (!cedula) {
+                        Swal.showValidationMessage('Por favor ingrese su cédula');
+                    }
+                    if (!tlf) {
+                        Swal.showValidationMessage('Por favor ingrese su tlf o nro de referencia');
+                    }
+                    if (!modalidadPago) {
+                        Swal.showValidationMessage('Por favor seleccione modalidad de pago');
+                    }
+                    return { cedula, modalidadPago, tlf };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const { cedula, modalidadPago, tlf } = result.value;
 
-            fetch('https://tu-api.com/endpoint', {  // Cambia esta URL por la de tu API real
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(cart)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error en la respuesta de la API');
-                return response.json();
-            })
-            .then(data => {
-                console.log('Respuesta de la API:', data);
-                alert('Pago procesado con éxito.');
-                // Opcional: limpiar carrito después de pagar
-                cart = {};
-                updateCartUI();
-            })
-            .catch(error => {
-                console.error('Error al enviar carrito:', error);
-                alert('Hubo un error al procesar el pago.');
+                    // Armar el JSON con toda la info del carrito y la modalidad de pago
+                    const productos = Object.entries(cart).map(([id, item]) => ({
+                        id: id,
+                        nombre: item.name,
+                        precio: item.price,
+                        medida: item.medida,
+                        nombre_medida: item.nombre_medida,
+                        cantidad: item.quantity
+                    }));
+
+                    const cartWithCedula = {
+                        cedula: cedula,
+                        modalidad_pago: modalidadPago,
+                        tlf: tlf,
+                        productos: productos
+                    };
+
+                    // Imprimir el JSON en consola
+                    console.log('JSON a enviar:', JSON.stringify(cartWithCedula, null, 2));
+
+                    Swal.fire({
+                        title: 'Procesando pago...',
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        allowOutsideClick: false
+                    });
+
+                    fetch('index.php?action=pedido&a=agregar', {  // Cambia esta URL por la de tu API real
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(cartWithCedula)
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta de la API');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pago procesado con éxito',
+                            text: 'Gracias por su compra.'
+                        });
+                        cart = {};
+                        updateCartUI();
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un error al procesar el pago.'
+                        });
+                        console.error('Error al enviar carrito:', error);
+                    });
+                }
             });
         });
     }

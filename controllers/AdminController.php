@@ -82,9 +82,11 @@ switch ($action) {
     }
 
     // Obtiene los datos del usuario desde el modelo
-    $usuario = $controller->Iniciar_Sesion($username);
+    $resultado = $controller->Iniciar_Sesion($username);
 
-    if ($usuario) {
+    if ($resultado['status']) {
+        $usuario=$resultado['data'];
+
         // Verifica la contraseña utilizando password_verify
         if (password_verify($pw, $usuario['pw'])) {
             // Asegúra de que la sesión esté iniciada
@@ -109,7 +111,7 @@ switch ($action) {
             ]);
             $bitacora->setBitacoraData($bitacora_data);
             $bitacora->Guardar_Bitacora();
-
+            setSuccess('Usuario autenticado correctamente');
             if($usuario["nombre_rol"]=="Superusuario"){
             header("Location: index.php?action=dashboard");
             exit(); // Asegúrate de salir después de redirigir 
@@ -131,16 +133,14 @@ switch ($action) {
                 exit(); // Asegúrate de salir después de redirigir 
                 }
         } else {
-            echo '<script type="text/javascript">
-                alert("ERROR...!! DATOS INCORRECTOS. VUELVA A INTRODUCIR LOS DATOS");
-            window.location.href="index.php?action=login";
-                </script>';
+        setError("Datos incorrectos intentelo de nuevo");
+        header("Location: index.php?action=login");
+        exit();
         }
     } else {
-        echo '<script type="text/javascript">
-            alert("ERROR...!! USUARIO NO ENCONTRADO");
-            window.location.href="index.php?action=login";
-            </script>';
+        setError("Usuario no encontrado");
+        header("Location: index.php?action=login");
+        exit();
     }
 }
 
@@ -286,7 +286,7 @@ function obtenerUsuario($controller, $bitacora, $permiso, $modulo) {
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+    //if ($permiso=$controller->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
         $id= $_GET['ID'];
@@ -302,11 +302,11 @@ function obtenerUsuario($controller, $bitacora, $permiso, $modulo) {
         header('Content-Type: application/json');
         echo json_encode($admin);
         exit();
-    }else{
-    setError("Error accion no permitida ");
+    //}else{
+    //setError("Error accion no permitida ");
     //require_once 'views/php/dashboard_admin.php';
-    exit();
-    }
+    //exit();
+    //}
 }
 // Función para actualizar un Usuario
 function actualizarUsuario($controller, $bitacora, $permiso, $modulo) {
@@ -328,7 +328,7 @@ function actualizarUsuario($controller, $bitacora, $permiso, $modulo) {
         try {
 
             // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-            $resultado = $controller->manejarAccion('obtener', $user);
+            $resultado = $controller->manejarAccion('actualizar', $user);
         
 
             //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true

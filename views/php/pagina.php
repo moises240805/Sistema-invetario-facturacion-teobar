@@ -43,9 +43,7 @@ require_once 'link.php'; ?>
         <span id="cart-count" class="cart-count">0</span>
     </button>
 </div>
-           <button type="button" class="btn btn-primary" id="myBtn" data-toggle="modal" data-target="#registrarClienteModal">
-  Registrar
-</button>
+
 
 
             <!-- Información del usuario -->
@@ -60,6 +58,9 @@ require_once 'link.php'; ?>
                 </div>
             <?php else: ?>
                 <a href="index.php?action=login" class="login-button">Iniciar Sesión</a>
+                           <button type="button" class="btn btn-primary" id="myBtn" data-toggle="modal" data-target="#registrarClienteModal">
+                            Registrar
+                            </button>
             <?php endif; ?>
 
         </div>
@@ -314,6 +315,29 @@ require_once 'link.php'; ?>
         </div>
     </div>
 </div>
+
+<div id="modal-cedula" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+    background: rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:20px; border-radius:5px; width:300px;">
+    <h3>Ingrese su cédula</h3>
+    <input type="text" id="input-cedula" placeholder="Cédula" />
+                                    <div class="form-group">
+                                    <label>Tipo de pago</label>
+                                    <select id="id_modalidad_pago" name="id_modalidad_pago" class="form-control">
+                                        <option value="">Selecione pago</option>
+                                        <option value="1">Divisas</option>
+                                        <option value="2">Efectivo</option>
+                                        <option value="3">Pago Movil</option>
+                                        <option value="4">Transferencia</option>
+                                    </select>
+                                </div>
+    <div style="margin-top:15px; text-align:right;">
+      <button id="cancel-cedula">Cancelar</button>
+      <button id="confirm-cedula">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
   document.getElementById('myBtn').addEventListener('click', function() {

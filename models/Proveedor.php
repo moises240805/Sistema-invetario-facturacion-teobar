@@ -84,14 +84,14 @@ class Proveedor extends Conexion{
     
         // Validar tipo (opcional)
         $tipo = trim($proveedor['tipo'] ?? '');
-        if ($tipo !== '' && !preg_match($exp_tipo, $tipo)) {
+        if ($tipo !== '' && !preg_match($exp_direccion, $tipo)) {
             return ['status' => false, 'msj' => 'Tipo inválido'];
         }
         $this->tipo = $tipo !== '' ? $tipo : null;
     
         // Validar tipo2 (opcional)
         $tipo2 = trim($proveedor['tipo2'] ?? '');
-        if ($tipo2 !== '' && !preg_match($exp_tipo, $tipo2)) {
+        if ($tipo2 !== '' && !preg_match($exp_direccion, $tipo2)) {
             return ['status' => false, 'msj' => 'Tipo2 inválido'];
         }
         $this->tipo2 = $tipo2 !== '' ? $tipo2 : null;
@@ -238,7 +238,7 @@ class Proveedor extends Conexion{
     
 
     private function Guardar_Proveedor() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -278,12 +278,12 @@ class Proveedor extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Mostrar_Proveedor() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -300,12 +300,12 @@ class Proveedor extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Obtener_Proveedor($id_proveedor) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -323,12 +323,12 @@ class Proveedor extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Actualizar_Proveedor() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -362,12 +362,12 @@ class Proveedor extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Eliminar_Proveedor($id_proveedor) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -383,7 +383,7 @@ class Proveedor extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 }

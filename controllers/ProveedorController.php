@@ -55,7 +55,7 @@ function agregarProveedor($controller, $bitacora, $usuario, $modulo){
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+    if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
     // Sanitiza y valida datos
@@ -143,7 +143,7 @@ function obtenerProveedor($controller, $bitacora, $usuario, $modulo) {
 }
 
 
-function actualizarCliente($controller, $bitacora, $usuario, $modulo) {
+function actualizarProveedor($controller, $bitacora, $usuario, $modulo) {
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -282,7 +282,7 @@ try {
         setError("Error en operación");
     }
     
-    header("Location: index.php?proveedor&a=d");
+    header("Location: index.php?action=proveedor&a=d");
     exit();
     }
 }

@@ -97,16 +97,24 @@ class IngresoEgreso extends Conexion{
     }
 
     private function Mostrar_IngresoEgreso() {
-        // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM ingresos
-                UNION ALL
-                SELECT * FROM egresos";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT * FROM ingresos
+                    UNION ALL
+                    SELECT * FROM egresos";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
 }   

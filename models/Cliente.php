@@ -182,7 +182,7 @@ class Cliente extends Conexion{
 
     private function Guardar_Cliente()
     {
-        $conn=null;
+        $this->closeConnection();
         try {
             // Consulta para verificar si el cliente ya existe
             $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
@@ -215,14 +215,14 @@ class Cliente extends Conexion{
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     // Método para obtener todas las personas de la base de datos
     private function Mostrar_Cliente() {
 
-            $conn = null;
+            $this->closeConnection();
             try{
 
             // Consulta SQL para seleccionar todos los registros de la tabla personas
@@ -239,13 +239,13 @@ class Cliente extends Conexion{
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Obtener_Cliente($id_cliente) {
 
-        $conn = null;
+        $this->closeConnection();
         try{
             $query = "SELECT * FROM cliente WHERE id_cliente = :id_cliente";
             $conn=$this->getConnection();
@@ -257,19 +257,19 @@ class Cliente extends Conexion{
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Actualizar_Cliente() {
 
-        $conn = null;
+        $this->closeConnection();
         try {
             $query = "UPDATE cliente SET nombre_cliente = :nombre, tlf = :tlf, direccion = :direccion, email = :email_cliente, tipo_id = :tipo WHERE id_cliente = :id_cliente";
             $conn=$this->getConnection();
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_cliente", $this->id_cliente, PDO::PARAM_INT);
-            $stmt->bindParam(":tipo", $this->tipo, PDO::PARAM_STR); // Corregido aquí
+            $stmt->bindParam(":tipo", $this->tipo, PDO::PARAM_STR); 
             $stmt->bindParam(":nombre", $this->nombre_cliente, PDO::PARAM_STR);
             $stmt->bindParam(":tlf", $this->tlf_cliente, PDO::PARAM_STR);
             $stmt->bindParam(":direccion", $this->direccion_cliente, PDO::PARAM_STR);
@@ -284,13 +284,13 @@ class Cliente extends Conexion{
                 // Retornar mensaje de error sin hacer echo
                 return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
             } finally {
-                $conn = null;
+                $this->closeConnection();
             }
     }
     
 
 private function Eliminar_Cliente($id_cliente) {
-    $conn = null;
+    $this->closeConnection();
     try {
         $query = "UPDATE cliente SET status = 0 WHERE id_cliente = :id_cliente";
         $conn = $this->getConnection();
@@ -307,7 +307,7 @@ private function Eliminar_Cliente($id_cliente) {
     } catch (PDOException $e) {
         return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
     } finally {
-        $conn = null;
+        $this->closeConnection();
     }
 }
 

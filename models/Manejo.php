@@ -18,67 +18,61 @@ class Manejo extends Conexion{
     public function __construct() {
         parent::__construct();
     }
-private function setIngresoEgresoData($ingreso_data) {
-    if (is_string($ingreso_data)) {
-        $ingreso_data = json_decode($ingreso_data, true);
+    private function setIngresoEgresoData($ingreso_data) {
+        if (is_string($ingreso_data)) {
+            $ingreso_data = json_decode($ingreso_data, true);
+        }
+    
+        // Expresiones regulares y validaciones
+        $exp_id = "/^\d+$/";
+        $exp_movimiento = "/^(ingreso|egreso)$/i";
+        $exp_fecha = "/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/"; // Formato YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS]
+        $exp_monto = "/^\d+(\.\d{1,2})?$/";
+        $exp_descripcion = "/^[\w\s\.,#\-]{0,100}$/u";
+    
+        // Validar id_cajas
+        if (!isset($ingreso_data['id_cajas']) || !preg_match($exp_id, $ingreso_data['id_cajas'])) {
+            return ['status' => false, 'msj' => 'ID de caja inválido'];
+        }
+        $this->id_cajas = (int)$ingreso_data['id_cajas'];
+    
+        // Validar id_pago
+        if (!isset($ingreso_data['id_pago']) || !preg_match($exp_id, $ingreso_data['id_pago'])) {
+            return ['status' => false, 'msj' => 'ID de pago inválido'];
+        }
+        $this->id_pago = (int)$ingreso_data['id_pago'];
+    
+        // Validar movimiento (solo 'ingreso' o 'egreso')
+        $movimiento = strtolower(trim($ingreso_data['movimiento'] ?? ''));
+        if (!preg_match($exp_movimiento, $movimiento)) {
+            return ['status' => false, 'msj' => 'Movimiento inválido (debe ser ingreso o egreso)'];
+        }
+        $this->movimiento = $movimiento;
+    
+        // Validar fecha (YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS])
+        $fecha = trim($ingreso_data['fecha'] ?? '');
+        if (!preg_match($exp_fecha, $fecha)) {
+            return ['status' => false, 'msj' => 'Fecha inválida'];
+        }
+        $this->fecha = $fecha;
+    
+        // Validar monto (positivo, hasta 2 decimales)
+        $monto = trim($ingreso_data['monto'] ?? '');
+        if (!preg_match($exp_monto, $monto) || $monto <= 0) {
+            return ['status' => false, 'msj' => 'Monto inválido'];
+        }
+        $this->monto = (float)$monto;
+    
+        // Validar descripción (opcional, máximo 100 caracteres)
+        $descripcion = trim($ingreso_data['descripcion'] ?? '');
+        if ($descripcion !== '' && !preg_match($exp_descripcion, $descripcion)) {
+            return ['status' => false, 'msj' => 'Descripción inválida'];
+        }
+        $this->descripcion = $descripcion;
+    
+        return ['status' => true, 'msj' => 'Datos de ingreso/egreso validados correctamente'];
     }
-
-    // Expresiones regulares y validaciones
-    $exp_id = "/^\d+$/";
-    $exp_movimiento = "/^(Ingreso|Egreso)$/i";
-    $exp_fecha = "/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}(:\d{2})?)?$/"; // Formato YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS]
-    $exp_monto = "/^\d+(\.\d{1,2})?$/";
-    $exp_descripcion = "/^[\w\s\.,#\-]{0,100}$/u";
-
-    // Validar id_cajas
-    if (!isset($ingreso_data['id_cajas']) || !preg_match($exp_id, $ingreso_data['id_cajas'])) {
-        return ['status' => false, 'msj' => 'ID de caja inválido'];
-    }
-    $this->id_cajas = (int)$ingreso_data['id_cajas'];
-
-    // Validar id_pago
-    if (!isset($ingreso_data['id_pago']) || !preg_match($exp_id, $ingreso_data['id_pago'])) {
-        return ['status' => false, 'msj' => 'ID de pago inválido'];
-    }
-    $this->id_pago = (int)$ingreso_data['id_pago'];
-
-    // Validar movimiento (solo 'ingreso' o 'egreso')
-    $movimiento = strtolower(trim($ingreso_data['movimiento'] ?? ''));
-    if (!preg_match($exp_movimiento, $movimiento)) {
-        return ['status' => false, 'msj' => 'Movimiento inválido (debe ser ingreso o egreso)'];
-    }
-    $this->movimiento = $movimiento;
-
-    // Validar fecha (YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS])
-    $fecha = trim($ingreso_data['fecha'] ?? '');
-    if (!preg_match($exp_fecha, $fecha)) {
-        return ['status' => false, 'msj' => 'Fecha inválida'];
-    }
-    $this->fecha = $fecha;
-
-    // Validar fecha (YYYY-MM-DD o YYYY-MM-DD HH:MM[:SS])
-    $fechav = trim($ingreso_data['fechav'] ?? '');
-    if (!preg_match($exp_fecha, $fechav)) {
-        return ['status' => false, 'msj' => 'Fecha inválida'];
-    }
-    $this->fechav = $fechav;
-
-    // Validar monto (positivo, hasta 2 decimales)
-    $monto = trim($ingreso_data['monto'] ?? '');
-    if (!preg_match($exp_monto, $monto) || $monto <= 0) {
-        return ['status' => false, 'msj' => 'Monto inválido'];
-    }
-    $this->monto = (float)$monto;
-
-    // Validar descripción (opcional, máximo 100 caracteres)
-    $descripcion = trim($ingreso_data['descripcion'] ?? '');
-    if ($descripcion !== '' && !preg_match($exp_descripcion, $descripcion)) {
-        return ['status' => false, 'msj' => 'Descripción inválida'];
-    }
-    $this->descripcion = $descripcion;
-
-    return ['status' => true, 'msj' => 'Datos de ingreso/egreso validados correctamente'];
-}
+    
 
 
     private function setValideId($ingreso_data){
@@ -126,9 +120,9 @@ private function setIngresoEgresoData($ingreso_data) {
 
     private function Guardar_Movimiento()
     {
-        try {
-            // Iniciar transacción
-            $this->conn->beginTransaction();
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
     
             // Insertar el movimiento en la tabla movimientos_caja
             $query = "INSERT INTO movimientos_caja (id_cajas, tipo_movimiento, monto_movimiento, concepto, fecha, id_pago)
@@ -181,6 +175,8 @@ private function setIngresoEgresoData($ingreso_data) {
             $this->conn->rollBack();
             error_log("Error en Guardar_IngresoEgreso: " . $e->getMessage());
             return false;
+        }finally {
+            $this->closeConnection();
         }
     }
     
@@ -188,16 +184,25 @@ private function setIngresoEgresoData($ingreso_data) {
 
 
     private function Mostrar_Movimiento() {
-        // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM movimientos_caja m
-        LEFT JOIN cajas c ON m.id_cajas=c.ID
-        LEFT JOIN modalidad_de_pago p ON m.id_pago=p.id_modalidad_pago";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT * FROM movimientos_caja m
+            LEFT JOIN cajas c ON m.id_cajas=c.ID
+            LEFT JOIN modalidad_de_pago p ON m.id_pago=p.id_modalidad_pago";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
 }   

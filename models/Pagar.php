@@ -114,9 +114,9 @@ class Pagar extends Conexion{
 
     private function Actualizar_Cuenta()
 {
-    $conn = $this->conn;
-    try {
-        // Iniciar la transacción
+    $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
         $conn->beginTransaction();
 
         // Paso 1: Obtener el monto actual
@@ -164,6 +164,9 @@ class Pagar extends Conexion{
     } catch (PDOException $e) {
         $conn->rollBack();
         return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+    } 
+    finally {
+        $this->closeConnection();
     }
 }
 
@@ -197,6 +200,9 @@ class Pagar extends Conexion{
     }
 
 private function obtenerCuentasID($id_cuenta) {
+    $this->closeConnection();
+    try{
+     $conn=$this->getConnection();
     $query = "SELECT 
                 c.id_cuentaPagar, 
                 c.fecha_cuentaPagar, 
@@ -209,16 +215,22 @@ private function obtenerCuentasID($id_cuenta) {
                 compra v ON c.id_cuentaPagar = v.id_compra
               LEFT JOIN proveedor p ON p.id_proveedor = v.rif_proveedor
               WHERE id_cuentaPagar=:id_cuenta
-              GROUP BY 
-                c.id_cuentaPagar"; 
+                GROUP BY 
+                    c.id_cuentaPagar"; 
 
-    // Prepara la consulta
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':id_cuenta', $id_cuenta, PDO::PARAM_INT);
-    // Ejecuta la consulta
-    $stmt->execute();
-    // Retorna los resultados como un arreglo asociativo
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Prepara la consulta
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id_cuenta', $id_cuenta, PDO::PARAM_INT);
+        // Ejecuta la consulta
+        $stmt->execute();
+        // Retorna los resultados como un arreglo asociativo
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } 
+    catch (PDOException $e) {
+        return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+    } finally {
+        $this->closeConnection();
+    }
 }
 }
 ?>

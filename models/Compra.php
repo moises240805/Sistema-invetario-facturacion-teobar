@@ -6,7 +6,7 @@ class Compra extends Conexion{
     //Atributos
     private $id_compra;
     private $id_producto;
-    private $id_cliente;
+    private $id_proveedor;
     private $cantidad;
     private $fech_emision;
     private $id_modalidad_pago;
@@ -274,9 +274,10 @@ class Compra extends Conexion{
 
 
     private function Guardar_Compra() { 
+        $this->closeConnection();
         try { 
+            $conn=$this->getConnection();
             $this->conn->beginTransaction(); 
-            
             // Recorrer los arrays de productos y medidas
             for ($i = 0; $i < count($this->id_producto); $i++) {
                 $producto_id = $this->id_producto[$i];
@@ -298,10 +299,10 @@ class Compra extends Conexion{
                 }
     
                 // Registrar la compra 
-                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto, status) VALUES (:id_compra, :id_producto, :id_cliente, :cantidad, :fech_emision, :id_modalidad_pago, :monto, 1)"); 
+                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto, status) VALUES (:id_compra, :id_producto, :id_proveedor, :cantidad, :fech_emision, :id_modalidad_pago, :monto, 1)"); 
                 $stmt2->bindParam(':id_compra', $this->id_compra); 
                 $stmt2->bindParam(':id_producto', $producto_id); 
-                $stmt2->bindParam(':id_cliente', $this->id_cliente); 
+                $stmt2->bindParam(':id_proveedor', $this->id_proveedor); 
                 $stmt2->bindParam(':cantidad', $cantidad); 
                 $stmt2->bindParam(':fech_emision', $this->fech_emision); 
                 $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
@@ -355,46 +356,65 @@ class Compra extends Conexion{
             } 
             return ['status' => false, 'msj' => 'Error al registrar la compra: ' . $e->getMessage()]; 
         } 
+         finally {
+            $this->closeConnection();
+        }
     }
     
     
 
     // Método para obtener todas las venta de la base de datos
     private function Mostrar_Compra() {
-        // Consulta SQL para seleccionar todos los registros de la tabla venta
-        $query = "SELECT 
-                    v.id_compra, 
-                    v.fecha, 
-                    c.nombre_proveedor AS nombre_cliente,
-                    c.id_proveedor,
-                    c.tipo_id,
-                    p.nombre AS nombre,
-                    m.nombre_modalidad,
-                    v.monto,
-                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
-                    GROUP_CONCAT(v.cantidad_compra SEPARATOR '\n ') AS cantidad
-                  FROM 
-                    compra v 
-                  LEFT JOIN 
-                    producto p ON p.id_producto = v.id_producto
-                  LEFT JOIN 
-                    proveedor c ON c.id_proveedor = v.rif_proveedor
-                  LEFT JOIN 
-                    modalidad_de_pago m ON m.id_modalidad_pago = v.pago
-                  WHERE v.status=1
-                  GROUP BY 
-                    v.id_compra"; 
-    
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        try{
+            // Consulta SQL para seleccionar todos los registros de la tabla venta
+            $conn=$this->getConnection();
+            $query = "SELECT 
+                        v.id_compra, 
+                        v.fecha, 
+                        c.nombre_proveedor AS nombre_cliente,
+                        c.id_proveedor,
+                        c.tipo_id,
+                        p.nombre AS nombre,
+                        m.nombre_modalidad,
+                        v.monto,
+                        GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
+                        GROUP_CONCAT(v.cantidad_compra SEPARATOR '\n ') AS cantidad
+                    FROM 
+                        compra v 
+                    LEFT JOIN 
+                        producto p ON p.id_producto = v.id_producto
+                    LEFT JOIN 
+                        proveedor c ON c.id_proveedor = v.rif_proveedor
+                    LEFT JOIN 
+                        modalidad_de_pago m ON m.id_modalidad_pago = v.pago
+                    WHERE v.status=1
+                    GROUP BY 
+                        v.id_compra"; 
+        
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            // Deshacer la transacción en caso de excepción
+            $this->conn->rollBack();
+            echo "Error en la consulta: " . $e->getMessage();
+            return false;
+        }
+         finally {
+            $this->closeConnection();
+        }
+        
     }
 
     function Actualizar_Compra() {
+        $this->closeConnection();
         try {
+            $conn=$this->getConnection();
             // Iniciar la transacción
             $this->conn->beginTransaction();
             // Paso 1: Obtener el monto actual
@@ -444,26 +464,34 @@ class Compra extends Conexion{
             echo "Error en la consulta: " . $e->getMessage();
             return false;
         }
+         finally {
+            $this->closeConnection();
+        }
     }
 
      function Eliminar_Compra($id_compra) {
-    try{
-        $query = "UPDATE compra SET status = 0 WHERE id_compra = :id_compra";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":id_compra", $id_compra, PDO::PARAM_INT);
-        if ($stmt->execute()) {
-                return ['status' => true, 'msj' => 'Compra eliminada correctamente'];
-            } else {
-                return ['status' => false, 'msj' => 'Error al eliminar la compra'];
-            }
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            $query = "UPDATE compra SET status = 0 WHERE id_compra = :id_compra";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id_compra", $id_compra, PDO::PARAM_INT);
+            if ($stmt->execute()) {
+                    return ['status' => true, 'msj' => 'Compra eliminada correctamente'];
+                } else {
+                    return ['status' => false, 'msj' => 'Error al eliminar la compra'];
+                }
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function obtenerCuentas2() {
+        $this->closeConnection();
+        try{
+        $conn=$this->getConnection();
         $query = "SELECT 
                     c.id_cuentaPagar, 
                     c.fecha_cuentaPagar, 
@@ -481,32 +509,54 @@ class Compra extends Conexion{
                   GROUP BY 
                     c.id_cuentaPagar"; 
     
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
     private function obtenerBancos() {
-        $query = "SELECT * FROM bancos";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            $query = "SELECT * FROM bancos";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 
     private function obtenerPagos() {
-        $query = "SELECT * FROM modalidad_de_pago";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            $query = "SELECT * FROM modalidad_de_pago";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
     }
 }
 ?>

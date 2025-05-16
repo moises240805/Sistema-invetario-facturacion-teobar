@@ -107,7 +107,9 @@ class Roles extends Conexion {
     }
 
     public function verificarPermiso($modulo, $action, $id_rol) {
+        $this->closeConnection();
         try {
+            $conn = $this->getConnection();
             $query = "SELECT a.estatus, p.nombre_permiso 
                       FROM accesos a
                       JOIN modulos m ON a.id_modulo = m.id_modulo
@@ -135,6 +137,8 @@ class Roles extends Conexion {
         } catch(PDOException $e) {
             error_log("Error de permisos: " . $e->getMessage());
             return false;
+        } finally {
+            $this->closeConnection();
         }
     }
     
@@ -143,7 +147,9 @@ class Roles extends Conexion {
 
 
     private function Mostrar_Roles() {
+        $this->closeConnection();
         try {
+            $conn = $this->getConnection();
             $query = "SELECT 
             a.*, 
             r.nombre_rol,
@@ -165,6 +171,8 @@ class Roles extends Conexion {
         } catch(PDOException $e) {
             error_log("Error de permisos: " . $e->getMessage());
             return false;
+        } finally {
+            $this->closeConnection();
         }
     }
     
@@ -174,7 +182,9 @@ class Roles extends Conexion {
 
 
     private function Actualizar_Roles() {
+        $this->closeConnection();
         try {
+            $conn = $this->getConnection();
             $query = "UPDATE accesos 
                       SET estatus = :estatus 
                       WHERE id_modulo = :id_modulo 
@@ -196,6 +206,8 @@ class Roles extends Conexion {
         } catch(PDOException $e) {
             error_log("Error actualizando permisos: " . $e->getMessage());
             return false;
+        } finally {
+            $this->closeConnection();
         }
     }
     

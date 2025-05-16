@@ -44,6 +44,13 @@ class Producto extends Conexion{
         $exp_decimal = "/^\d+(\.\d+)?$/"; // Números enteros o decimales positivos
         $exp_entero = "/^\d+$/"; // Números enteros positivos
     
+
+        if (!is_numeric($producto['id_producto']) ) {
+            return ['status' => false, 'msj' => 'ID invalida'];
+        }
+        $this->id_producto = (int)$producto['id_producto'];
+
+
         // Validar nombre_producto (obligatorio, max 30 caracteres)
         $nombre = trim($producto['nombre_producto'] ?? '');
         if ($nombre === '' || !preg_match($exp_nombre_marca, $nombre)) {
@@ -383,7 +390,7 @@ class Producto extends Conexion{
     
 
     private function Guardar_Producto() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $conn->beginTransaction();
@@ -441,12 +448,12 @@ class Producto extends Conexion{
             }
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     public function Guardar_Producto2() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $conn->beginTransaction();
@@ -491,12 +498,12 @@ class Producto extends Conexion{
             }
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Mostrar_Producto() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -527,12 +534,12 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     public function Mostrar_ProductoE() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -564,13 +571,13 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
 
     private function Mostrar_Producto2() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -592,12 +599,12 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
-    public function Obtener_Producto($id_producto) {
-        $conn = null;
+    private function Obtener_Producto($id_producto) {
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -621,12 +628,12 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Actualizar_Producto() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -689,12 +696,12 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     public function obtenerStockProducto($id_producto) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -716,12 +723,12 @@ class Producto extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Eliminar_Producto($id_producto) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $conn->beginTransaction();
@@ -744,7 +751,7 @@ class Producto extends Conexion{
             }
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
     

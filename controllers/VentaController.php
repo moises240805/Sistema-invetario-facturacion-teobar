@@ -176,7 +176,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         } catch (Exception $e) {
             //mensajes del expcecion del pdo 
             error_log("Error al registrar: " . $e->getMessage());
-            setError("Error en operación");
+            //setError("Error en operación");
         }
 
         header("Location: index.php?action=venta&a=v"); // Redirect

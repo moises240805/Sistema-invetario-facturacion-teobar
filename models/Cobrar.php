@@ -116,69 +116,90 @@ class Cobrar extends Conexion{
 
 
     private function obtenerCuentas() {
-        $query = "SELECT 
-                    c.id_cuentaCobrar, 
-                    c.fecha_cuentaCobrar, 
-                    c.monto_cuentaCobrar,
-                    c.id_pago, 
-                    s.nombre_cliente,
-                    s.tlf,
-                    s.tipo_id,
-                    v.id_cliente,
-                    m.nombre_modalidad,
-                    GROUP_CONCAT(v.id_venta SEPARATOR '\n ') AS id_cuenta,
-                    GROUP_CONCAT(v.fech_emision SEPARATOR '\n ') AS fechas_ventas,
-                    GROUP_CONCAT(v.monto SEPARATOR ' $ Bs\n ') AS montos_ventas
-                  FROM 
-                    cuenta_por_cobrar c
-                  LEFT JOIN 
-                    venta v ON c.id_cuentaCobrar = v.id_venta
-                    LEFT JOIN cliente s ON s.id_cliente = v.id_cliente
-                    LEFT JOIN modalidad_de_pago m ON c.id_pago = m.id_modalidad_pago 
-                  WHERE c.status = 1 
-                  GROUP BY 
-                    c.id_cuentaCobrar"; 
-    
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            $query = "SELECT 
+                        c.id_cuentaCobrar, 
+                        c.fecha_cuentaCobrar, 
+                        c.monto_cuentaCobrar,
+                        c.id_pago, 
+                        s.nombre_cliente,
+                        s.tlf,
+                        s.tipo_id,
+                        v.id_cliente,
+                        m.nombre_modalidad,
+                        GROUP_CONCAT(v.id_venta SEPARATOR '\n ') AS id_cuenta,
+                        GROUP_CONCAT(v.fech_emision SEPARATOR '\n ') AS fechas_ventas,
+                        GROUP_CONCAT(v.monto SEPARATOR ' $ Bs\n ') AS montos_ventas
+                    FROM 
+                        cuenta_por_cobrar c
+                    LEFT JOIN 
+                        venta v ON c.id_cuentaCobrar = v.id_venta
+                        LEFT JOIN cliente s ON s.id_cliente = v.id_cliente
+                        LEFT JOIN modalidad_de_pago m ON c.id_pago = m.id_modalidad_pago 
+                    WHERE c.status = 1 
+                    GROUP BY 
+                        c.id_cuentaCobrar"; 
+        
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+                // Retornar mensaje de error sin hacer echo
+                return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+            } finally {
+                $this->closeConnection();
+            }
     }
 
     private function obtenerCuentasID($cuenta) {
-        $query = "SELECT 
-                    c.id_cuentaCobrar, 
-                    c.fecha_cuentaCobrar, 
-                    c.monto_cuentaCobrar,
-                    c.id_pago, 
-                    s.nombre_cliente,
-                    s.tlf,
-                    s.tipo_id,
-                    v.id_cliente
-                  FROM 
-                    cuenta_por_cobrar c
-                  LEFT JOIN 
-                    venta v ON c.id_cuentaCobrar = v.id_venta
-                    LEFT JOIN cliente s ON s.id_cliente = v.id_cliente
-                  WHERE id_cuentaCobrar=:id_cuenta
-                  GROUP BY 
-                    c.id_cuentaCobrar"; 
-    
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id_cuenta', $cuenta, PDO::PARAM_INT);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            $query = "SELECT 
+                        c.id_cuentaCobrar, 
+                        c.fecha_cuentaCobrar, 
+                        c.monto_cuentaCobrar,
+                        c.id_pago, 
+                        s.nombre_cliente,
+                        s.tlf,
+                        s.tipo_id,
+                        v.id_cliente
+                    FROM 
+                        cuenta_por_cobrar c
+                    LEFT JOIN 
+                        venta v ON c.id_cuentaCobrar = v.id_venta
+                        LEFT JOIN cliente s ON s.id_cliente = v.id_cliente
+                    WHERE id_cuentaCobrar=:id_cuenta
+                    GROUP BY 
+                        c.id_cuentaCobrar"; 
+        
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id_cuenta', $cuenta, PDO::PARAM_INT);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+                // Retornar mensaje de error sin hacer echo
+                return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+            } finally {
+                $this->closeConnection();
+            }
     }
 
 private function Actualizar_Cuenta()
 {
-    $conn = $this->conn;
+    $this->closeConnection();
     try {
+        $conn=$this->getConnection();
         // Iniciar la transacción
         $conn->beginTransaction();
 
@@ -228,7 +249,10 @@ private function Actualizar_Cuenta()
         $conn->rollBack();
         return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
     }
+    finally {
+        $this->closeConnection();
+    }
 }
 
 }
-    ?>
+?>

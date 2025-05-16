@@ -26,7 +26,7 @@ $action = isset($_GET['a']) ? $_GET['a'] : '';
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            agregarManelo($controller);
+            agregarManejo($controller);
         }
     case "":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {

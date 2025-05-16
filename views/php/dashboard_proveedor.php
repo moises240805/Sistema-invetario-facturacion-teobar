@@ -336,7 +336,7 @@
                                     <option value="0424">0424</option>
                                     <option value="0251">0251</option>
                                 </select>
-                                <input class="entrada form-control" type="text" name="numero_tlf_representante" id="numero_tlf_representante" maxlength="7" pattern="[0-9]{8}"onkeypress="return SoloNumeros(event)" required oninput="validatePhone()" required>
+                                <input class="entrada form-control" type="text" name="numero_tlf_representante" id="numero_tlf_representante" maxlength="7" onkeypress="return SoloNumeros(event)" required oninput="validatePhone()" required>
                             </div>
                         </div>
                     </div>

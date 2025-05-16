@@ -197,7 +197,7 @@ class Admin extends Conexion {
 
 
     private function Guardar_Usuario() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             // Consulta para verificar si el nombre de usuario ya existe
@@ -229,7 +229,7 @@ class Admin extends Conexion {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+        $this->closeConnection();
         }
     }
 
@@ -238,7 +238,7 @@ class Admin extends Conexion {
 
     // Método para obtener todas las personas de la base de datos
     private function Mostrar_Usuario() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             // Consulta SQL para seleccionar todos los registros de la tabla admin
@@ -252,12 +252,12 @@ class Admin extends Conexion {
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+        $this->closeConnection();
         }
     }
 
     private function Obtener_Usuario($id) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $query = "SELECT * FROM usuarios WHERE ID = :ID";
@@ -266,17 +266,17 @@ class Admin extends Conexion {
             if ($stmt->execute()) {
                 return $stmt->fetch(PDO::FETCH_ASSOC);
             }
-            return null; // No se encontró usuario
+            return ['status' => false, 'msj' => 'Usuario no encontrado ' . $e->getMessage()]; // No se encontró usuario
         } catch (PDOException $e) {
             echo "Error en la consulta: " . $e->getMessage();
-            return null;
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+        $this->closeConnection();
         }
     }
 
     private function Actualizar_Usuario() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
             // Consulta SQL para actualizar los datos del usuario
@@ -303,13 +303,13 @@ class Admin extends Conexion {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+        $this->closeConnection();
         }
     }
     
 
     private function Eliminar_Usuario($id) { 
-        $conn = null;
+        $this->closeConnection();
         try { 
             $conn = $this->getConnection();
             $query = "UPDATE usuarios SET status = 0 WHERE ID = :ID"; 
@@ -325,30 +325,46 @@ class Admin extends Conexion {
             // Retornar mensaje de error sin hacer echo
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+        $this->closeConnection();
         }
     }
     
 
-    public function Iniciar_Sesion($username) {
-        // Asegúrate de que la sesión esté iniciada
-        // Consulta SQL para seleccionar el registro del usuario
-        $query = "SELECT u.*, r.nombre_rol FROM usuarios u LEFT JOIN roles r ON u.id_rol=r.id_rol WHERE usuario = :username";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
+public function Iniciar_Sesion($username) {
+    $this->closeConnection();
+    try {
+        $conn = $this->getConnection();  // Usar la conexión local
+        $query = "SELECT u.*, r.nombre_rol 
+                FROM usuarios u 
+                LEFT JOIN roles r ON u.id_rol = r.id_rol 
+                WHERE usuario = :username 
+                AND u.status = 1";  // Incluir validación de estado
         
-        // Vincula el parámetro con el valor
-        $stmt->bindParam(":username", $username);
-        
-        // Ejecuta la consulta
+        $stmt = $conn->prepare($query);  // Usar conexión local
+        $stmt->bindParam(":username", $username, PDO::PARAM_STR);
         $stmt->execute();
-    
-        // Verifica si se encontró el usuario
+
         if ($stmt->rowCount() === 1) {
-            return $stmt->fetch(PDO::FETCH_ASSOC); // Retorna los datos del usuario
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            return [
+                'status' => true,
+                'msj' => 'Usuario autenticado',
+                'data' => $usuario  // Datos consistentes en estructura
+            ];
+        } else {
+            return [
+                'status' => false,
+                'msj' => 'Usuario no encontrado o inactivo'
+            ];
         }
-        
-        return null; // Retorna null si no se encontró el usuario
+    } catch (PDOException $e) {
+        return [
+            'status' => false,
+            'msj' => 'Error en la consulta: ' . $e->getMessage()
+        ];
+    } finally {
+    $this->closeConnection();
+    }
     }
 }
 

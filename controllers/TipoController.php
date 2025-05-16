@@ -54,7 +54,7 @@ switch ($action) {
         //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
         //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
         //action y el rol de usuario
-        if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+        if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
             // Ejecutar acción permitida
 
             // Sanitiza y valida datos
@@ -83,7 +83,7 @@ switch ($action) {
             try {
 
                 // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-                $resultado = $controller->manejarAccion($action, $tipo);
+                $resultado = $controller->manejarAccion("agregar", $tipo);
             
     
                 //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -169,7 +169,7 @@ switch ($action) {
             try {
 
                 // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-                $resultado = $controller->manejarAccion($action, $tipo);
+                $resultado = $controller->manejarAccion("actualizar", $tipo);
                    
         
                 //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -237,7 +237,7 @@ switch ($action) {
             try {
 
                 // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-                $resultado = $controller->manejarAccion($action, $id_presentacion);
+                $resultado = $controller->manejarAccion("eliminar", $id_presentacion);
                    
         
                 //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true

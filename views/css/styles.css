@@ -337,8 +337,8 @@ body {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(290px, 1fr)); /* Máximo de 5 columnas */
-  gap: 2rem;
+  grid-template-columns: repeat(3, minmax(290px, 1fr)); /* Máximo de 5 columnas */
+  gap: 3rem;
 }
 
 
@@ -631,4 +631,44 @@ body {
   margin-top: 20px;
   padding-top: 10px;
   border-top: 1px solid #555;
+}
+
+button, .add-to-cart-button, .login-button, .logout-button {
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+button:hover, .add-to-cart-button:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px) scale(1.03);
+}
+
+@media (max-width: 900px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.product-card {
+  background: linear-gradient(135deg, #ffffff 80%, #e9ecef 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.product-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.16);
+}
+
+#modal-cedula {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }

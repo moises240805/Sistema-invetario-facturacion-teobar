@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="views/img/logo.jpeg">
-    <?php require_once "views/php/link.php"; ?>
+    <?php 
+    require_once "views/php/link.php";
+    require_once "views/php/alert.php"; 
+    ?>
     <title>Teobar login</title>
 </head>
 <body class="bg-gradient-primary">

@@ -82,7 +82,9 @@ class Bitacora extends Conexion{
     //Metodos
     public function Guardar_Bitacora()
     {
+        $this->closeConnection();
         try {
+            $conn=$this->getConnection();
             $query = "INSERT INTO bitacora (id_admin, movimiento, fecha, modulo, descripcion) 
                       VALUES (:id_admin, :movimiento, :fecha, :modulo, :descripcion)";
             
@@ -99,20 +101,35 @@ class Bitacora extends Conexion{
         } catch(PDOException $e) {
             error_log("Error en bitácora: " . $e->getMessage()); // Mejor que echo
             return false;
-        }    
+        }  
+        finally {
+            $this->closeConnection();
+        }  
     }
 
     // Método para obtener la bitacora de la base de datos
     public function Mostrar_Bitacora() {
-        // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-        $query = "SELECT * FROM bitacora b 
-        LEFT JOIN usuarios u ON b.id_admin=u.ID";
-        // Prepara la consulta
-        $stmt = $this->conn->prepare($query);
-        // Ejecuta la consulta
-        $stmt->execute();
-        // Retorna los resultados como un arreglo asociativo
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT * FROM bitacora b 
+            LEFT JOIN usuarios u ON b.id_admin=u.ID";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         } 
+         catch(PDOException $e) {
+            error_log("Error en bitácora: " . $e->getMessage()); // Mejor que echo
+            return false;
+        }  
+        finally {
+            $this->closeConnection();
+        }
     }
-}   
+}
 ?>

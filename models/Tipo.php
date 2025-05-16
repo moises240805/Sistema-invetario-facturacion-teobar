@@ -138,7 +138,7 @@ class Tipo extends Conexion{
     
 
     private function Guardar_Tipo() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -157,12 +157,12 @@ class Tipo extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Obtener_Tipo($id_presentacion) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -180,12 +180,12 @@ class Tipo extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Mostrar_Tipo() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -202,12 +202,12 @@ class Tipo extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Actualizar_Tipo() {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
@@ -226,16 +226,16 @@ class Tipo extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 
     private function Eliminar_Tipo($id_presentacion) {
-        $conn = null;
+        $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
-            $query = "UPDATE presentacion SET status = 1 WHERE id_presentacion = :id_presentacion";
+            $query = "UPDATE presentacion SET status = 0 WHERE id_presentacion = :id_presentacion";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_presentacion", $id_presentacion, PDO::PARAM_INT);
 
@@ -247,7 +247,7 @@ class Tipo extends Conexion{
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
-            $conn = null;
+            $this->closeConnection();
         }
     }
 }

@@ -16,7 +16,6 @@ $producto = new Producto();
 $proveedor = new Proveedor();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
-$controller = new Compra();
 $usuario = new Roles();
 
 $modulo = 'Compras';
@@ -91,12 +90,17 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
         ];
 
         // Lógica de caja según modalidad de pago
-        $id_cajas = ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) ? 1 : 2;
+        if ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) {
+            $id_cajas = 1;
+        } else {
+            $id_cajas = 2;
+        }
 
-        $egreso_data = json_encode([
+        $ingreso_data = json_encode([
             'id_cajas' => $id_cajas,
-            'movimiento' => "Egreso",
+            'movimiento' => "egreso",
             'fecha' => $fech_emision,
+            'fechav' => $fech_vencimiento,
             'monto' => $monto,
             'id_pago' => $id_modalidad_pago,
             'descripcion' => "Compra de productos"
@@ -121,8 +125,7 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
                 ]);
                 $bitacora->setBitacoraData($bitacora_data);
                 $bitacora->Guardar_Bitacora();
-
-                $ingreso->manejarAccion("agregar",$egreso_data);
+                $ingreso->manejarAccion("agregar",$ingreso_data);
 
                 // Aquí notificación 
 
@@ -134,7 +137,7 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
         } catch (Exception $e) {
             //mensajes del expcecion del pdo
             error_log("Error al registrar: " . $e->getMessage());
-            setError("Error en operación");
+            //setError("Error en operación");
         }
 
         header("Location: index.php?action=compra&a=c");// Redirect

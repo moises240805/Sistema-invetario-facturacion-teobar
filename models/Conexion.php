@@ -26,5 +26,9 @@ class Conexion {
         }
         return $this->conn;
     }
+
+        protected function closeConnection() {
+        $this->conn = null; // Inicializa la propiedad conn en null
+        }
 }
 ?>
