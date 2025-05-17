@@ -7,6 +7,7 @@ require "models/Notificacion.php";
 require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
+require_once "models/Caja.php";
 require_once 'views/php/utils.php';
 date_default_timezone_set('America/Caracas');
 
@@ -16,6 +17,7 @@ $producto = new Producto();
 $cliente = new Cliente();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
+$caja = new Caja();
 
 $usuario = new Roles();
 
@@ -28,7 +30,7 @@ $action = isset($_GET['a']) ? $_GET['a'] : '';
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion); 
+            agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja); 
         }
         break;
     case "eliminar":
@@ -48,7 +50,7 @@ switch ($action) {
 
 // === FUNCIONES ===
 // funcion para registrar una venta
-function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion) {
+function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja) {
 
     
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -135,43 +137,49 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         
 
         try {
-            // print_r($_POST);
-            // echo "<br><br>";
-            // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-            $resultado = $modelo->manejarAccion("agregar", $venta);
-            //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
-            if (isset($resultado['status']) && $resultado['status'] === true) {
-                //usar mensaje dinámico del modelo
-                setSuccess($resultado['msj']);
+            $res = $caja->manejarAccion("status",null);
+            if(isset($res['status']) && $res['status'] === true) {
+                // print_r($_POST);
+                // echo "<br><br>";
+                // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+                $resultado = $modelo->manejarAccion("agregar", $venta);
+                //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                if (isset($resultado['status']) && $resultado['status'] === true) {
+                    //usar mensaje dinámico del modelo
+                    setSuccess($resultado['msj']);
 
-                $bitacora_data = json_encode([
-                    'id_admin' => $_SESSION['s_usuario']['id'],
-                    'movimiento' => 'Agregar',
-                    'fecha' => date('Y-m-d H:i:s'),
-                    'modulo' => $modulo,
-                    'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " " . 'ha registrado una venta'
-                ]);
-                $bitacora->setBitacoraData($bitacora_data);
-                $bitacora->Guardar_Bitacora();
-                $ingreso->manejarAccion("agregar",$ingreso_data); 
+                    $bitacora_data = json_encode([
+                        'id_admin' => $_SESSION['s_usuario']['id'],
+                        'movimiento' => 'Agregar',
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'modulo' => $modulo,
+                        'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " " . 'ha registrado una venta'
+                    ]);
+                    $bitacora->setBitacoraData($bitacora_data);
+                    $bitacora->Guardar_Bitacora();
+                    $ingreso->manejarAccion("agregar",$ingreso_data); 
 
-                /*// Verificar stock después de la venta
-                    $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
+                    /*// Verificar stock después de la venta
+                        $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
 
-                    if ($stock_actual <= 0) {
-                        // Notificar al administrador
-                        $id_admin = $_SESSION['s_usuario']['id']; // Cambia esto si el admin tiene un ID diferente
-                        $mensaje = "El producto  se ha agotado.";
-                        $enlace = "index.php?action=producto&a=d";
+                        if ($stock_actual <= 0) {
+                            // Notificar al administrador
+                            $id_admin = $_SESSION['s_usuario']['id']; // Cambia esto si el admin tiene un ID diferente
+                            $mensaje = "El producto  se ha agotado.";
+                            $enlace = "index.php?action=producto&a=d";
 
-                        $notificacion->insert($enlace,$mensaje, $id_admin, "Sin leer");
-                    }*/
-                
+                            $notificacion->insert($enlace,$mensaje, $id_admin, "Sin leer");
+                        }*/
+                    
+                }
+                else {
+                    // Error: usar mensaje dinámico o genérico
+                    $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+                    setError($mensajeError);
+                }
             }
-            else {
-                // Error: usar mensaje dinámico o genérico
-                $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
-                setError($mensajeError);
+            else{
+                setError($res["msj"]);
             }
         } catch (Exception $e) {
             //mensajes del expcecion del pdo 

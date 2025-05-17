@@ -7,6 +7,7 @@
     <title>Roles</title>
     <?php 
         require_once "link.php";
+        require_once "alert.php";
     ?>
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 </head>
@@ -120,11 +121,68 @@ foreach ($datos as $fila) {
     $estatusTabla[$fila['id_modulo']][$fila['id_rol']][$fila['id_permiso']] = $fila['estatus'];
 }
 ?>
+<!-- Fila superior: botones + tarjetas -->
+<!-- Botón para abrir el modal -->
 
+
+<!-- Modal -->
+<div class="modal fade" id="rolesModal" tabindex="-1" aria-labelledby="rolesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg"> <!-- modal-lg para tamaño grande -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rolesModalLabel">Gestión de Roles</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+            <!-- Columna formularios -->
+            <div class="col-md-6">
+              <!-- Formulario Crear Rol -->
+              <form action="index.php?action=roles&a=agregar" method="post" class="mb-4">
+                <h4>Crear Rol</h4>
+                <div class="mb-3">
+                  <label for="rol" class="form-label">Nombre Rol</label>
+                  <input class="form-control" type="text" name="rol" id="rol" placeholder="Nombre del rol" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Registrar</button>
+              </form>
+            </div>
+
+            <div class="col-md-6">
+              <!-- Formulario Eliminar Rol -->
+              <form action="index.php?action=roles&a=eliminar" method="post">
+                <h4>Eliminar Rol</h4>
+                <div class="mb-3">
+                  <label for="id_rol" class="form-label">Seleccione rol</label>
+                  <select class="form-select" name="id_rol" id="id_rol" required>
+                    <option value="" disabled selected>Seleccione rol</option>
+                    <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                      <option value="<?php echo htmlspecialchars($id_rol); ?>">
+                        <?php echo htmlspecialchars($nombre_rol); ?>
+                      </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <button class="btn btn-danger" type="submit">Eliminar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="container">
     <h1 class="mt-5 mb-4">Tabla de Permisos</h1>
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rolesModal">
+            Gestionar Roles
+        </button>
             <thead>
                 <tr>
                     <th rowspan="2" style="vertical-align: middle;">Módulo / Usuario</th>

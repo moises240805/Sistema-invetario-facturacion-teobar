@@ -440,6 +440,11 @@ if (!isset($_SESSION['s_usuario'])) {
 
         // Ejecutar acción permitida
         $admin =$controller->manejarAccion("consultar",null);
+        $datos =$permiso->manejarAccion("consultar",null);
+        $roles = [];
+        $permisos = [];
+        $modulos = [];
+        $estatusTabla = [];
         require_once 'views/php/dashboard_admin.php';
         exit();
     }

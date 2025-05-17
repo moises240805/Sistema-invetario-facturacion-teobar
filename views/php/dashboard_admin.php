@@ -126,8 +126,14 @@ if (!isset($_SESSION["s_usuario"])) {
 </div>
 
 
-
-
+<?php
+foreach ($datos as $fila) {
+    $roles[$fila['id_rol']] = $fila['nombre_rol'];
+    $permisos[$fila['id_permiso']] = $fila['nombre_permiso'];
+    $modulos[$fila['id_modulo']] = $fila['nombre_modulo'];
+    $estatusTabla[$fila['id_modulo']][$fila['id_rol']][$fila['id_permiso']] = $fila['estatus'];
+}
+?>
     <div id="myModal" class="modal">
     <div class="modal-content">
         <form class="formulario" action="index.php?action=usuario&a=agregar" method="post" name="form">
@@ -143,10 +149,9 @@ if (!isset($_SESSION["s_usuario"])) {
                 <div class="col-md-9">
                     <select class="form-control" name="rol" id="rol" required>
                         <option value="">...</option>
-                        <option value="2">Administrador</option>
-                        <option value="3">Usuario</option>
-                        <option value="4">Vendedor</option>
-                        <option value="5">Contador</option>
+                        <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                        <option value=<?php echo $id_rol ?>><?php echo $nombre_rol ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -201,10 +206,10 @@ if (!isset($_SESSION["s_usuario"])) {
                 <label for="rol" class="col-md-3">Rol</label>
                 <div class="col-md-9">
                     <select class="form-control" name="roles" id="" required>
-                        <option value="2">Administrador</option>
-                        <option value="3">Usuario</option>
-                        <option value="4">Vendedor</option>
-                        <option value="5">Contador</option>
+                    <option value="">...</option>
+                        <?php foreach ($roles as $id_rol => $nombre_rol): ?>
+                        <option value=<?php echo $id_rol ?>><?php echo $nombre_rol ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>

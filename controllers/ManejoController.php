@@ -50,6 +50,7 @@ switch ($action) {
             $movimiento = $controller->manejarAccion("consultar",null);
             $ingresosegresos = $ingresoegreso->manejarAccion("consultar",null);
             $caja = $cajas->manejarAccion("consultar",null);
+            $status = $cajas->manejarAccion("movimiento",null);
             require_once 'views/php/dashboard_manejo.php';
             exit();
             }

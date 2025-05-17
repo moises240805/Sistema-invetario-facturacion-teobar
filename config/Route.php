@@ -16,6 +16,7 @@ $rutas = [
     'pagar' => 'controllers/PagarController.php',
     'pago' => 'views/php/dashboard_pago.php',
     'movimientos' => 'controllers/ManejoController.php',
+    'caja' => 'controllers/CajaController.php',
     'bitacora' => 'controllers/BitacoraController.php',
     'notificacion' => 'controllers/NotificacionController.php',
     'reportes' => 'controllers/ReportController.php',

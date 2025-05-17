@@ -142,9 +142,20 @@ class Caja extends Conexion{
                 break;
 
             case 'consultar':
-
-                    return $this->Mostrar_Caja();
-                
+                return $this->Mostrar_Caja();
+            break;
+            case 'movimiento':
+                return $this->Mostrar_Movimiento_Caja();
+            break;
+            case 'open':
+                return $this->Open_Caja();
+            break;
+            case 'close':
+                return $this->Close_Caja();
+            break;
+            case 'status':
+                return $this->Status_Caja();
+            break;
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -172,7 +183,7 @@ class Caja extends Conexion{
 
 
     private function Mostrar_Caja() {
-        
+        $this->closeConnection();
         try{
             $conn=$this->getConnection();
             // Consulta SQL para seleccionar todos los registros de la tabla bitacora
@@ -190,5 +201,187 @@ class Caja extends Conexion{
         }    
         $this->closeConnection();
     }
+
+    private function Mostrar_Movimiento_Caja() {
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT a.*,c.nombre_caja FROM aperturacierrecaja a 
+                    LEFT JOIN cajas c ON a.id_cajas=c.ID ";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch(PDOException $e) {
+            error_log("Error : " . $e->getMessage()); // Mejor que echo
+            return false;
+        }    
+        $this->closeConnection();
+    }
+
+    private function Open_Caja() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $conn->beginTransaction();
+    
+            // 1. Actualizar cajas cerradas a abiertas
+            $updateQuery = "UPDATE cajas SET status=1 WHERE status=0";
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->execute();
+    
+            // Verificar si se actualizaron filas
+            $rowCount = $updateStmt->rowCount();
+            if ($rowCount === 0) {
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'No hay cajas cerradas para abrir'];
+            }
+    
+            // 2. Obtener TODAS las cajas 
+            $selectQuery = "SELECT * FROM cajas";
+            $selectStmt = $conn->prepare($selectQuery);
+            $selectStmt->execute();
+            $cajas = $selectStmt->fetchAll(PDO::FETCH_ASSOC); 
+    
+            if (count($cajas) < 2) { // Verificar que haya al menos 2 cajas
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'Se necesitan al menos 2 cajas abiertas'];
+            }
+    
+            // 3. Acceder correctamente a los datos del array
+            $saldo1 = $cajas[0]['saldo_caja']; // Primer elemento del array
+            $saldo2 = $cajas[1]['saldo_caja']; // Segundo elemento del array
+            $id_cajas1 = $cajas[0]['ID']; 
+            $id_cajas2 = $cajas[1]['ID'];
+            $movimiento = "Apertura";
+            $fecha = date('Y-m-d H:i:s');
+    
+            $insertQuery = "INSERT INTO AperturaCierreCaja 
+                            (id_cajas, tipo_movimiento, monto, Fecha_hora) 
+                            VALUES  
+                            (:id_cajas1, :movimiento, :saldo1, :fecha),
+                            (:id_cajas2, :movimiento, :saldo2, :fecha)";
+    
+            $insertStmt = $conn->prepare($insertQuery);
+            $insertStmt->bindParam(":id_cajas1", $id_cajas1);
+            $insertStmt->bindParam(":id_cajas2", $id_cajas2);
+            $insertStmt->bindParam(":movimiento", $movimiento);
+            $insertStmt->bindParam(":saldo1", $saldo1);
+            $insertStmt->bindParam(":saldo2", $saldo2);
+            $insertStmt->bindParam(":fecha", $fecha);
+            $insertStmt->execute();
+    
+            $conn->commit();
+            return ['status' => true, 'msj' => 'Cajas abiertas y registros creados correctamente'];
+    
+        } catch (PDOException $e) {
+            if ($conn && $conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            error_log("Error en Open_Caja: " . $e->getMessage());
+            return ['status' => false, 'msj' => 'Error al abrir la caja: ' . $e->getMessage()];
+        } finally {
+            if ($conn) {
+                $this->closeConnection();
+            }
+        }
+    }
+    
+
+
+    private function Close_Caja() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $conn->beginTransaction();
+            // 1. Update cajas to "open" where closed
+            $updateQuery = "UPDATE cajas SET status=0 WHERE status=1 ";
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->execute();
+    
+            // Check if any rows were updated
+            $rowCount = $updateStmt->rowCount();
+            if ($rowCount === 0) {
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'No hay cajas abiertas para cerrar'];
+            }
+    
+            // 2. Get saldo_caja from the first updated caja
+            $selectQuery = "SELECT * FROM cajas ";
+            $selectStmt = $conn->prepare($selectQuery);
+            $selectStmt->execute();
+            $cajaData = $selectStmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            if (!$cajaData) {
+                return ['status' => false, 'msj' => 'Error al obtener saldo de caja'];
+            }
+    
+            $saldo1 = $cajaData[0]['saldo_caja'];
+            $saldo2 = $cajaData[1]['saldo_caja'];
+            $movimiento = "Cierre";
+            $fecha = date('Y-m-d H:i:s');
+            $id_cajas1 = $cajaData[0]['ID']; 
+            $id_cajas2 = $cajaData[1]['ID'];
+    
+            // 3. Insert into AperturaCierreCaja (adjust IDs as needed)
+            $insertQuery = "INSERT INTO AperturaCierreCaja 
+                            (id_cajas, tipo_movimiento, monto, Fecha_hora) 
+                            VALUES  
+                            (:id_cajas1, :movimiento, :saldo1, :fecha),
+                            (:id_cajas2, :movimiento, :saldo2, :fecha)";
+    
+            $insertStmt = $conn->prepare($insertQuery);
+            $insertStmt->bindParam(":id_cajas1", $id_cajas1); // Define these properly
+            $insertStmt->bindParam(":id_cajas2", $id_cajas2);
+            $insertStmt->bindParam(":movimiento", $movimiento);
+            $insertStmt->bindParam(":saldo1", $saldo1);
+            $insertStmt->bindParam(":saldo2", $saldo2);
+            $insertStmt->bindParam(":fecha", $fecha);
+            $insertStmt->execute();
+            
+            $conn->commit();
+            return ['status' => true, 'msj' => 'Caja cerrada y registro creado'];
+    
+        } catch (PDOException $e) {
+            if ($conn && $conn->inTransaction()) {
+                $conn->rollBack(); // Revertir cambios si hay error
+            }
+            error_log("Error en Open_Caja: " . $e->getMessage());
+            return ['status' => false, 'msj' => 'Error al cerrar la caja'];
+        } finally {
+            if ($conn) {
+                $this->closeConnection();
+            }
+        }
+    }
+    
+
+    private function Status_Caja() {
+        try {
+            $conn = $this->getConnection(); 
+    
+            $query = "SELECT status FROM cajas WHERE status = 1";
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
+    
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($result && $result['status'] > 0) {
+                return ['status' => true, 'msj' => 'Caja abierta'];
+            } else {
+                return ['status' => false, 'msj' => 'Caja cerrada'];
+            }
+        } catch (PDOException $e) {
+            error_log("Error en Status_Caja: " . $e->getMessage());
+            return ['status' => false, 'msj' => 'Error al consultar el estado de la caja'];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+    
 }   
 ?>

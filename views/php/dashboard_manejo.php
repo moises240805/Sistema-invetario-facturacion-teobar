@@ -139,39 +139,86 @@
 
 <!-- Modal -->
 <div class="modal fade" id="cajasModal" tabindex="-1" aria-labelledby="cajasModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl style="max-width: 110%;">
+  <div class="modal-dialog modal-xl" style="max-width: 110%;">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="cajasModalLabel">Manejo de cajas</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div class="container">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
-            <?php 
-            if(isset($caja) && is_array($caja) && !empty($caja)){
-            foreach ($caja as $item): ?>
-              <div class="col">
-                <div class="card h-100">
-                  <div class="card-header">
-                    <h3>Manejo de cajas</h3>
-                  </div>
-                  <div class="card-body">
-                    <h4 class="card-title"><?php echo htmlspecialchars($item["nombre_caja"]); ?></h4>
-                    <p class="card-text">
-                      <b style="font-size:1.2em;">
-                        <?= number_format($item["saldo_caja"], 2, ',', '.'); ?>
-                      </b>
-                    </p>
-                  </div>
-                </div>
+        <div class="container-fluid">
+          <!-- Fila superior: botones + tarjetas -->
+          <div class="row mb-3">
+            <!-- Columna botones -->
+            <div class="col-md-3 d-flex flex-column gap-2">
+              <form action="index.php?action=caja&a=open" method="post">
+                <button class="btn btn-primary w-100" type="submit">Aperturar Caja</button>
+              </form>
+              <form action="index.php?action=caja&a=close" method="post">
+                <button class="btn btn-primary w-100" type="submit">Cerrar Caja</button>
+              </form>
+            </div>
+            <!-- Columna tarjetas -->
+            <div class="col-md-9">
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <?php 
+                if(isset($caja) && is_array($caja) && !empty($caja)){
+                  foreach ($caja as $item): ?>
+                    <div class="col">
+                      <div class="card h-100">
+                        <div class="card-header">
+                          <h3>Manejo de cajas</h3>
+                        </div>
+                        <div class="card-body">
+                          <h4 class="card-title"><?php echo htmlspecialchars($item["nombre_caja"]); ?></h4>
+                          <p class="card-text">
+                            <b style="font-size:1.2em;">
+                              <?= number_format($item["saldo_caja"], 2, ',', '.'); ?>
+                            </b>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                <?php
+                  endforeach; 
+                } else {
+                  echo "<p>No hay registros.</p>";
+                } ?>
               </div>
-            <?php
-            //Imprime esta informacion en caso de estar vacia la variable             
-            endforeach; 
-        } else {
-            echo "<tr><td colspan='6'>No hay registros.</td></tr>";
-        } ?>
+            </div>
+          </div>
+          <!-- Fila inferior: tabla -->
+          <div class="row">
+            <div class="col-12 table-responsive">
+              <table class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" id="dataTable" width="100%" cellspacing="0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Nro</th>
+                    <th>Caja</th>
+                    <th>Tipo de movimiento</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php 
+                  if(isset($status) && is_array($status) && !empty($status)){
+                    foreach ($status as $item): ?>
+                      <tr>
+                        <td><?php echo htmlspecialchars($item["ID"]); ?></td>
+                        <td><?php echo htmlspecialchars($item["nombre_caja"]); ?></td>
+                        <td><?php echo htmlspecialchars($item['tipo_movimiento']); ?></td>
+                        <td><?php echo htmlspecialchars($item['monto']); ?></td>
+                        <td><?php echo htmlspecialchars($item['Fecha_hora']); ?></td>
+                      </tr>
+                  <?php
+                    endforeach; 
+                  } else {
+                    echo "<tr><td colspan='4'>No hay registros.</td></tr>";
+                  } ?>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -181,6 +228,7 @@
     </div>
   </div>
 </div>
+
 
 
 <!-- Modal -->

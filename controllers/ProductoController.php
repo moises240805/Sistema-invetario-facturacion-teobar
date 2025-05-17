@@ -461,7 +461,7 @@ function eliminarProducto($controller, $bitacora, $usuario, $modulo) {
         try {
 
         // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-        $resultado = $controller->manejarAccion($action, $id_producto);
+        $resultado = $controller->manejarAccion("eliminar", $id_producto);
            
 
         //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true

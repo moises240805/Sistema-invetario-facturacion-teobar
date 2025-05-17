@@ -7,6 +7,7 @@ require_once "models/Notificacion.php";
 require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
+require_once "models/Caja.php";
 require_once 'views/php/utils.php';
 date_default_timezone_set('America/Caracas');
 
@@ -17,6 +18,7 @@ $proveedor = new Proveedor();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
 $usuario = new Roles();
+$caja = new Caja();
 
 $modulo = 'Compras';
 
@@ -27,7 +29,7 @@ $action = isset($_GET['a']) ? $_GET['a'] : '';
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion);
+            agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja);
         }
         break;
     case "eliminar":
@@ -48,7 +50,7 @@ switch ($action) {
 // === FUNCIONES ===
 
 // funcion para registrar una compra
-function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion) {
+function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja) {
     
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
@@ -107,42 +109,47 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
         ]);
 
         try {
+            $res = $caja->manejarAccion("status",null);
+            if(isset($res['status']) && $res['status'] === true) {
+                // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
+                $resultado = $modelo->manejarAccion("agregar", json_encode($compra));
 
-            // Llama a la funcion manejarAccion del modelo donde pasa el objeto cliente y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-            $resultado = $modelo->manejarAccion("agregar", json_encode($compra));
+                //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
+                if (isset($resultado['status']) && $resultado['status'] === true) {
+                    //usar mensaje dinámico del modelo
+                    setSuccess($resultado['msj']);
 
-            //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
-            if (isset($resultado['status']) && $resultado['status'] === true) {
-                //usar mensaje dinámico del modelo
-                setSuccess($resultado['msj']);
+                    $bitacora_data = json_encode([
+                        'id_admin' => $_SESSION['s_usuario']['id'],
+                        'movimiento' => 'Agregar',
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'modulo' => $modulo,
+                        'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " ha registrado una compra"
+                    ]);
+                    $bitacora->setBitacoraData($bitacora_data);
+                    $bitacora->Guardar_Bitacora();
+                    $ingreso->manejarAccion("agregar",$ingreso_data);
 
-                $bitacora_data = json_encode([
-                    'id_admin' => $_SESSION['s_usuario']['id'],
-                    'movimiento' => 'Agregar',
-                    'fecha' => date('Y-m-d H:i:s'),
-                    'modulo' => $modulo,
-                    'descripcion' =>'El usuario: '.$_SESSION['s_usuario']['usuario']. " ha registrado una compra"
-                ]);
-                $bitacora->setBitacoraData($bitacora_data);
-                $bitacora->Guardar_Bitacora();
-                $ingreso->manejarAccion("agregar",$ingreso_data);
+                    // Aquí notificación 
 
-                // Aquí notificación 
-
-            } else {
-                // Error: usar mensaje dinámico o genérico
-                $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
-                setError($mensajeError);
+                } else {
+                    // Error: usar mensaje dinámico o genérico
+                    $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
+                    setError($mensajeError);
+                }
             }
-        } catch (Exception $e) {
-            //mensajes del expcecion del pdo
-            error_log("Error al registrar: " . $e->getMessage());
-            //setError("Error en operación");
-        }
+            else{
+                setError($res["msj"]);
+            }
+            } catch (Exception $e) {
+                //mensajes del expcecion del pdo
+                error_log("Error al registrar: " . $e->getMessage());
+                //setError("Error en operación");
+            }
 
-        header("Location: index.php?action=compra&a=c");// Redirect
-        exit();
-    }
+            header("Location: index.php?action=compra&a=c");// Redirect
+            exit();
+        }
     //muestra un modal de info que dice acceso no permitido
     setError("Error acción no permitida");
     require_once 'views/php/dashboard_compra.php';

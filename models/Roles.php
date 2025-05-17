@@ -21,6 +21,29 @@ class Roles extends Conexion {
         $this->estatus = intval($data['estatus']);     
     }
 
+    private function setValideId($id){
+
+        // Validar id_cliente y tipo_id como numéricos
+    if (!is_numeric($id) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+    $this->id = (int)$id;
+    return ['status' => true, 'msj' => 'ID validado correctamente'];
+    }
+
+    private function setValideRol($rol){
+
+        // Validar id_cliente y tipo_id como numéricos
+        if (mb_strlen($rol) > 50) {
+            return ['status' => false, 'msj' => 'El nombre rol no puede tener más de 50 caracteres'];
+        }
+    $this->rol = $rol;
+    return ['status' => true, 'msj' => 'ID validado correctamente'];
+    }
+
+
+
+
     // Métodos Getter y Setter
     public function getUsername() {
         return $this->username;
@@ -88,19 +111,27 @@ class Roles extends Conexion {
     //si es correcta me llama la funcion correspondiente 
     public function manejarAccion($accion, $data) {
         switch ($accion) {
-
-
             case 'actualizar':
                 $this->setRolesData($data);
-
-                    return $this->Actualizar_Roles(); 
-                
-
-
+               return $this->Actualizar_Roles(); 
+            break;
+            case 'agregar':
+                $validacion = $this->setValideRol($data);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
+                return $this->Guardar_Roles($data);
+            break;
+            case 'eliminar':
+                $validacion = $this->setValideId($data);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
+                return $this->Eliminar_Roles();
+            break;    
             case 'consultar':
-
-                    return $this->Mostrar_Roles();
-                
+                return $this->Mostrar_Roles();
+            break;
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -142,6 +173,58 @@ class Roles extends Conexion {
         }
     }
     
+
+
+
+    private function Guardar_Roles($data) {
+        $conn = null;
+        try {
+            $this->closeConnection(); // Cierra conexión previa si la hay
+            $conn = $this->getConnection();
+            $conn->beginTransaction();
+    
+            // 1. Insertar nuevo rol
+            $query = "INSERT INTO roles (nombre_rol, status) VALUES (:rol, 1)";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":rol", $this->rol, PDO::PARAM_STR);
+            $stmt->execute();
+    
+            // 2. Obtener el ID del rol insertado
+            $id_rol = $conn->lastInsertId();
+    
+            if (!$id_rol) {
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'No se pudo obtener el ID del rol'];
+            }
+    
+            // 3. Insertar accesos para el nuevo rol
+            // Definimos los módulos y permisos (puedes ajustar según tu sistema)
+            $accesos = [];
+            for ($modulo = 1; $modulo <= 16; $modulo++) {
+                for ($permiso = 1; $permiso <= 4; $permiso++) {
+                    $accesos[] = "($id_rol, $modulo, $permiso, 0)";
+                }
+            }
+    
+            $insertAccesosQuery = "INSERT INTO accesos (id_rol, id_modulo, id_permiso, estatus) VALUES " . implode(", ", $accesos);
+            $conn->exec($insertAccesosQuery);
+    
+            // 4. Confirmar transacción
+            $conn->commit();
+    
+            return ['status' => true, 'msj' => 'Rol guardado y accesos asignados correctamente'];
+    
+        } catch (PDOException $e) {
+            if ($conn && $conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            error_log("Error en Guardar_Roles: " . $e->getMessage());
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+    
     
 
 
@@ -156,9 +239,10 @@ class Roles extends Conexion {
             p.nombre_permiso,
             m.nombre_modulo
              FROM accesos a
-            LEFT JOIN roles r ON a.id_rol=r.id_rol
+            LEFT JOIN roles r ON a.id_rol=r.id_rol AND r.status=1
             LEFT JOIN permisos p ON a.id_permiso=p.id_permiso
             LEFT JOIN modulos m ON a.id_modulo=m.id_modulo
+            WHERE status=1
             GROUP BY 
                     a.id_accesos";  // Opcional para optimizar
             
@@ -211,6 +295,33 @@ class Roles extends Conexion {
         }
     }
     
+
+    private function Eliminar_Roles() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "UPDATE roles 
+                      SET status = 0 
+                      WHERE id_rol = :id_rol 
+                        ";
+    
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(':id_rol', $this->id, PDO::PARAM_INT);
+    
+            $stmt->execute();
+    
+            if ($stmt->execute()) {
+                return ['status' => true, 'msj' => 'Rol eliminado correctamente'];
+            } else {
+                return ['status' => false, 'msj' => 'Error al eliminar el Rol'];
+            }
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
     
     }
     ?>
