@@ -516,11 +516,72 @@ document.addEventListener('DOMContentLoaded', () => {
     manejarTipoPago();
 });
 </script>
-<script src="views/js/validate2.js"></script>
 
+
+
+<h2>Ventas por Mes</h2>
+    <canvas id="graficaVentas" width="400" height="200"></canvas>
+
+    <h2>Ventas por Producto</h2>
+    <canvas id="graficaProducto" width="400" height="200"></canvas>
+
+    <h2>Ventas por Cliente</h2>
+    <canvas id="graficaCliente" width="400" height="200"></canvas>
+
+    <h2>Ventas por Modalidad de Pago</h2>
+    <canvas id="graficaModalidad" width="400" height="200"></canvas>
+
+    <!-- Paso las variables PHP a JavaScript en un bloque script -->
+    <script>
+      const labels = <?php echo json_encode($labels); ?>;
+      const data = <?php echo json_encode($data); ?>;
+
+      const labelsProducto = <?php echo json_encode($labelsProducto); ?>;
+      const dataProducto = <?php echo json_encode($dataProducto); ?>;
+
+      const labelsCliente = <?php echo json_encode($labelsCliente); ?>;
+      const dataCliente = <?php echo json_encode($dataCliente); ?>;
+
+      const labelsModalidad = <?php echo json_encode($labelsModalidad); ?>;
+      const dataModalidad = <?php echo json_encode($dataModalidad); ?>;
+    </script>
+
+<div class="row justify-content-center">
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="text-center">Ventas</h4>
+                            <form method="POST" action="index.php?action=reportes">
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" type="submit" name="ventas_pdf"><b>PDF</b></button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="opciones">Filtrar por:</label>
+                                    <select name="option" id="opciones" class="form-control">
+                                        <option value="">...</option>
+                                        <option value="trans">Transferencias</option>
+                                        <option value="movil">Pago móvil</option>
+                                        <option value="divisa">Divisa y efectivo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-secondary btn-block" type="submit" name="enviar_opcion"><b>Filtrar</b></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                
+                
+
+<script src="views/js/validate2.js"></script>
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>
-<script src="views/js/DataTables/datatables.js"></script>
-
+<script src="views/js/DataTables/datatables.js"></script>             
+<script src="views/js/reports/Venta.js"></script>
 </body>
 </html>

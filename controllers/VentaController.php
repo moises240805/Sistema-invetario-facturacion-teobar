@@ -3,7 +3,7 @@
 require_once "models/Venta.php";
 require_once "models/Producto.php";
 require_once "models/Cliente.php";
-require "models/Notificacion.php";
+require_once "models/Notificacion.php";
 require_once "models/Manejo.php";
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
@@ -283,6 +283,55 @@ function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $produc
             $numero_venta=0;
         }
         $numero_venta++;
+        // Agrupa ventas por mes
+        $ventasPorMes = [];
+        foreach ($venta as $v) {
+            $mes = date('F', strtotime($v['fech_emision'])); // Ejemplo: "January"
+            if (!isset($ventasPorMes[$mes])) {
+                $ventasPorMes[$mes] = 0;
+            }
+            $ventasPorMes[$mes] += $v['monto'];
+        }
+
+        // Prepara los datos para JS
+        $labels = array_keys($ventasPorMes);
+        $data = array_values($ventasPorMes);
+
+        // 2. Ventas por cliente
+        $ventasPorCliente = [];
+        foreach ($venta as $v) {
+            $cliente = $v['nombre_cliente'];
+            if (!isset($ventasPorCliente[$cliente])) {
+                $ventasPorCliente[$cliente] = 0;
+            }
+            $ventasPorCliente[$cliente] += $v['monto'];
+        }
+        $labelsCliente = array_keys($ventasPorCliente);
+        $dataCliente = array_values($ventasPorCliente);
+
+        // 3. Ventas por modalidad de pago
+        $ventasPorModalidad = [];
+        foreach ($venta as $v) {
+            $modalidad = $v['nombre_modalidad'];
+            if (!isset($ventasPorModalidad[$modalidad])) {
+                $ventasPorModalidad[$modalidad] = 0;
+            }
+            $ventasPorModalidad[$modalidad] += $v['monto'];
+        }
+        $labelsModalidad = array_keys($ventasPorModalidad);
+        $dataModalidad = array_values($ventasPorModalidad);
+        
+        // 4. Ventas por producto
+        $ventasPorProducto = [];
+        foreach ($venta as $v) {
+            $producto = $v['nombre']; // nombre del producto
+            if (!isset($ventasPorProducto[$producto])) {
+                $ventasPorProducto[$producto] = 0;
+            }
+            $ventasPorProducto[$producto] += $v['monto'];
+        }
+        $labelsProducto = array_keys($ventasPorProducto);
+        $dataProducto = array_values($ventasPorProducto);
         require_once "views/php/dashboard_venta.php";
     }
     else{

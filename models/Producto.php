@@ -371,7 +371,15 @@ class Producto extends Conexion{
 
             case 'obtenerProductos':
                 return $this->Mostrar_Producto2();
+            break;
 
+            case 'stock':
+                return $this->obtenerStockProducto();
+            break;
+
+            case 'vencidos':
+                return $this->obtenerProductosVencidos();
+            break;
     
             case 'eliminar':
                 $validacion = $this->setValideId($producto);
@@ -700,25 +708,48 @@ class Producto extends Conexion{
         }
     }
 
-    public function obtenerStockProducto($id_producto) {
+    private function obtenerStockProducto() {
         $this->closeConnection();
         try {
             $conn = $this->getConnection();
 
-            $sql = "SELECT GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad
-                    FROM producto p  
-                    LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
-                    LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
-                    LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
-                    LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
-                    WHERE p.id_producto = :id_producto";
+            $sql = "SELECT *
+        FROM producto p 
+        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
+        LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
+        LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
+        LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+        WHERE cp.cantidad < 10";
 
             $stmt = $conn->prepare($sql);
-            $stmt->bindParam(":id_producto", $id_producto);
             $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $cantidad = $stmt->fetchColumn();
-            return ['status' => true, 'data' => $cantidad];
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+
+    private function obtenerProductosVencidos() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+
+            $sql = "SELECT *
+        FROM producto p 
+        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
+        LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
+        LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
+        LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+        WHERE p.id_motivoActualizacion = 2";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];

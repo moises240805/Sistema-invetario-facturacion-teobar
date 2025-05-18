@@ -355,6 +355,22 @@ function validateInput(input) {
 </script>
 <script src="views/js/validate.js"></script>
 
+
+
+<script>
+  const labelsCompra = <?php echo json_encode($labelsCompra); ?>;
+  const dataCompra = <?php echo json_encode($dataCompra); ?>;
+
+  const labelsProveedor = <?php echo json_encode($labelsProveedor); ?>;
+  const dataProveedor = <?php echo json_encode($dataProveedor); ?>;
+
+  const labelsModalidadCompra = <?php echo json_encode($labelsModalidadCompra); ?>;
+  const dataModalidadCompra = <?php echo json_encode($dataModalidadCompra); ?>;
+
+  const labelsProductoCompra = <?php echo json_encode($labelsProductoCompra); ?>;
+  const dataProductoCompra = <?php echo json_encode($dataProductoCompra); ?>;
+</script>
+
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>

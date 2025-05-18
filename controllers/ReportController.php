@@ -1,16 +1,115 @@
 <?php
-require_once 'models/Report.php'; // Asegúrate de incluir el modelo
+require_once "models/Admin.php";
+require_once "models/Producto.php";
+require_once "models/Tipo.php";
+require_once "models/Cliente.php";
+require_once "models/Proveedor.php";
+require_once "models/Venta.php";
+require_once "models/Compra.php";
+require_once "models/Cobrar.php";
+require_once "models/Pagar.php";
+require_once "models/Manejo.php";
+require_once "models/Caja.php";
 
-class ReporteController {
-    private $model;
 
-    public function __construct() {
-        $this->model = new ReporteModel(); // Instancia el modelo, que ya maneja la conexión
+$usuarios=new Admin();
+$productos=new Producto();
+$tipos=new Tipo();
+$clientes=new Cliente();
+$proveedores=new Proveedor();
+$ventas=new Venta();
+$compras=new Compra();
+$cuentascobrar=new Cobrar();
+$cuentaspagar=new Pagar();
+$manejos=new Manejo();
+$cajas=new Caja();
+
+$action = isset($_GET['a']) ? $_GET['a'] : '';
+
+//Indiferentemente sea la accion por el post o get el switch llama a cada funcion 
+switch ($action) {
+    case "":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            consultar(); 
+        }
+        break;
     }
 
-    public function generarPDF() { 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $option = htmlspecialchars($_POST['option'] ?? '');
+
+    switch ($option) {
+        case 'tipo_producto':
+            TiposPDF($tipos);
+            break;
+        case 'fecha':
+            ProductosVencidosPDF($productos);
+            break;
+        case 'stock':
+            ProductosStockPDF($productos);
+        break;
+        case 'cliente_v':
+            ClientesVentasPDF($ventas);
+            break;
+        case 'proveedor_c':
+            ProveedoresComprasPDF($compras);
+            break;
+        case 'trans':
+            VentasTransferenciasPDF($ventas);
+            break;
+        case 'movil':
+            VentasPagoMovilPDF($ventas);
+            break;
+        case 'divisa':
+            VentasEfectivoPDF($ventas);
+            break;
+        case 'trans_c':
+            ComprasTransferenciaPDF($compras);
+            break;
+        case 'movil_c':
+            ComprasPagoMovilPDF($compras);
+            break;
+        case 'divisa_c':
+            ComprasEfectivoPDF($compras);
+            break;
+        case '':
+            
+            break;
+        default:
+            break;
+    }
+
+    // Manejo de las otras acciones según POST
+    if (isset($_POST['productos_pdf'])) {
+        ProductosPDF($productos);
+    } elseif (isset($_POST['clientes_pdf'])) {
+        ClientesPDF($clientes);
+    } elseif (isset($_POST['proveedores_pdf'])) {
+        ProveedoresPDF($proveedores);
+    } elseif (isset($_POST['ventas_pdf'])) {
+        VentasPDF($ventas);
+    } elseif (isset($_POST['compras_pdf'])) {
+        ComprasPDF($compras);
+    } elseif (isset($_POST['cobrar_pdf'])) {
+        CuentasCobrarPDF($cuentascobrar);
+    } elseif (isset($_POST['pagar_pdf'])) {
+        CuentasPagarPDF($cuentaspagar);
+    }
+}
+
+
+
+
+
+
+    function consultar(){
+        require_once "views/php/dashboard_reporte.php";
+    }
+
+
+    function ProductosPDF($productos) { 
         require_once 'libs/fpdf.php'; 
-        $datos = $this->model->obtenerDatos(); 
+        $datos = $productos->manejarAccion("consultar",null); 
     
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -61,9 +160,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_productos.pdf');
     }
 
-    public function generarPDF2() {
+     function ClientesPDF($clientes) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos2();
+        $datos = $clientes->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -110,9 +209,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_clientes.pdf');
     }
 
-    public function generarPDF3() {
+     function ProveedoresPDF($proveedores) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos3();
+        $datos = $proveedores->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -146,7 +245,7 @@ class ReporteController {
 
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['tipo_id'] . $row['id_proveedor']);
-            $pdf->Cell(27, 10, $row['nombre']);
+            $pdf->Cell(27, 10, $row['nombre_proveedor']);
             $pdf->Cell(40, 10, $row['direccion']);
             $pdf->Cell(37, 10, $row['tlf']);
             $pdf->Cell(30, 10, $row['tipo_id2'] . $row['id_representante']);
@@ -157,9 +256,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_proveedores.pdf');
     }
 
-    public function generarPDF4() {
+     function VentasPDF($ventas) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos5();
+        $datos = $ventas->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -198,7 +297,7 @@ class ReporteController {
             $pdf->Cell(37, 10, $row['id_cliente'] . $row['nombre_cliente']);
             $pdf->Cell(22, 10, $row['cantidad']);
             $pdf->Cell(24, 10, $row['fech_emision']);
-            $pdf->Cell(22, 10, $row['id_modalidad_pago']);
+            $pdf->Cell(22, 10, $row['nombre_modalidad']);
             $pdf->Cell(22, 10, $row['monto']);
             $pdf->Cell(22, 10, $row['tipo_entrega']);
             $pdf->Cell(22, 10, $row['nombre_banco']);
@@ -208,9 +307,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_ventas.pdf');
     }
 
-    public function generarPDF6() {
+     function ComprasPDF($compras) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos6();
+        $datos = $compras->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -246,10 +345,10 @@ class ReporteController {
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['id_compra']);
             $pdf->Cell(22, 10, $row['nombre']);
-            $pdf->Cell(37, 10, $row['rif_proveedor'] . $row['nombre_proveedor']);
-            $pdf->Cell(22, 10, $row['cantidad_compra']);
+            $pdf->Cell(37, 10, $row['id_proveedor'] . $row['nombre_cliente']);
+            $pdf->Cell(22, 10, $row['cantidad']);
             $pdf->Cell(24, 10, $row['fecha']);
-            $pdf->Cell(22, 10, $row['pago']);
+            $pdf->Cell(22, 10, $row['nombre_modalidad']);
             $pdf->Cell(22, 10, $row['monto']);
             $pdf->Ln();
         }
@@ -257,9 +356,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_compras.pdf');
     }
 
-    public function generarPDF5() {
+    function CuentasCobrarPDF($cuentascobrar) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos4();
+        $datos = $cuentascobrar->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -291,19 +390,19 @@ class ReporteController {
         $pdf->Ln();
 
         foreach ($datos as $row) {
-            $pdf->Cell(22, 10, $row['id_venta']);
-            $pdf->Cell(37, 10, $row['id_cliente']);
-            $pdf->Cell(24, 10, $row['fech_emision']);
-            $pdf->Cell(22, 10, $row['monto']);
+            $pdf->Cell(22, 10, $row['id_cuentaCobrar']);
+            $pdf->Cell(37, 10, $row['id_cliente'] . $row["nombre_cliente"]);
+            $pdf->Cell(24, 10, $row['fecha_cuentaCobrar']);
+            $pdf->Cell(22, 10, $row['monto_cuentaCobrar']);
             $pdf->Ln();
         }
 
         $pdf->Output('D', 'reporte_Cobrar.pdf');
     }
 
-    public function generarPDF7() {
+     function CuentasPagarPDF($cuentaspagar) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos7();
+        $datos = $cuentaspagar->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -336,7 +435,7 @@ class ReporteController {
 
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['id_cuentaPagar']);
-            $pdf->Cell(37, 10, $row['rif_proveedor']);
+            $pdf->Cell(37, 10, $row['rif_proveedor'] . $row['nombre_proveedor']);
             $pdf->Cell(24, 10, $row['fecha_cuentaPagar']);
             $pdf->Cell(22, 10, $row['monto_cuentaPagar']);
             $pdf->Ln();
@@ -345,9 +444,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_Pagar.pdf');
     }
 
-    public function generarPDF8() { 
+     function TiposPDF($tipos) { 
         require_once 'libs/fpdf.php'; 
-        $datos = $this->model->obtenerDatos8(); 
+        $datos = $tipos->manejarAccion("consultar",null); 
     
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -388,9 +487,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_tipo_productos.pdf');
     }
 
-    public function generarPDF9() { 
+     function ProductosVencidosPDF($productos) { 
         require_once 'libs/fpdf.php'; 
-        $datos = $this->model->obtenerDatos9(); 
+        $datos = $productos->manejarAccion("vencidos",null); 
     
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -439,9 +538,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_productos_vencidos.pdf');
     }
 
-    public function generarPDF10() { 
+     function ProductosStockPDF($productos) { 
         require_once 'libs/fpdf.php'; 
-        $datos = $this->model->obtenerDatos10(); 
+        $datos = $productos->manejarAccion("stock",null); 
     
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -486,9 +585,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_productos_stock.pdf');
     }
 
-    public function generarPDF11() {
+     function ClientesVentasPDF($ventas) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos11();
+        $datos = $ventas->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -534,12 +633,12 @@ class ReporteController {
             $pdf->Ln();
         }
 
-        $pdf->Output('D', 'reporte_clientes_centas.pdf');
+        $pdf->Output('D', 'reporte_clientes_ventas.pdf');
     }
 
-    public function generarPDF12() {
+     function ProveedoresComprasPDF($compras) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos12();
+        $datos = $compras->manejarAccion("consultar",null);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -577,7 +676,7 @@ class ReporteController {
 
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['tipo_id'] . $row['id_proveedor']);
-            $pdf->Cell(27, 10, $row['nombre_proveedor']);
+            $pdf->Cell(27, 10, $row['nombre']);
             $pdf->Cell(37, 10, $row['tlf']);
             $pdf->Cell(25, 10, $row['id_compra']);
             $pdf->Cell(25, 10, $row['monto']);
@@ -588,9 +687,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_proveedor_compras.pdf');
     }
 
-    public function generarPDF13() {
+     function VentasTransferenciasPDF($ventas) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos13();
+        $datos = $ventas->manejarAccion("consultar_v",4);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -639,9 +738,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_ventas_trans.pdf');
     }
 
-    public function generarPDF14() {
+     function VentasPagoMovilPDF($ventas) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos14();
+        $datos = $ventas->manejarAccion("consultar_v",3);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -690,9 +789,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_ventas_PM.pdf');
     }
 
-    public function generarPDF15() {
+     function VentasEfectivoPDF($ventas) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos15();
+        $datos = $ventas->manejarAccion("consultar_v",2);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -741,9 +840,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_ventas_DE.pdf');
     }
 
-    public function generarPDF16() {
+     function ComprasTransferenciaPDF($compras) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos16();
+        $datos = $compras->manejarAccion("consultar_c",4);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -779,8 +878,8 @@ class ReporteController {
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['id_compra']);
             $pdf->Cell(22, 10, $row['nombre']);
-            $pdf->Cell(37, 10, $row['rif_proveedor'] . $row['nombre_proveedor']);
-            $pdf->Cell(22, 10, $row['cantidad_compra']);
+            $pdf->Cell(37, 10, $row['id_proveedor'] . $row['nombre_cliente']);
+            $pdf->Cell(22, 10, $row['cantidad']);
             $pdf->Cell(24, 10, $row['fecha']);
             $pdf->Cell(33, 10, $row['nombre_modalidad']);
             $pdf->Cell(22, 10, $row['monto']);
@@ -790,9 +889,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_compras_trans.pdf');
     }
 
-    public function generarPDF17() {
+     function ComprasPagoMovilPDF($compras) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos17();
+        $datos = $compras->manejarAccion("consultar_c",3);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -828,8 +927,8 @@ class ReporteController {
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['id_compra']);
             $pdf->Cell(22, 10, $row['nombre']);
-            $pdf->Cell(37, 10, $row['rif_proveedor'] . $row['nombre_proveedor']);
-            $pdf->Cell(22, 10, $row['cantidad_compra']);
+            $pdf->Cell(37, 10, $row['id_proveedor'] . $row['nombre_cliente']);
+            $pdf->Cell(22, 10, $row['cantidad']);
             $pdf->Cell(24, 10, $row['fecha']);
             $pdf->Cell(33, 10, $row['nombre_modalidad']);
             $pdf->Cell(22, 10, $row['monto']);
@@ -839,9 +938,9 @@ class ReporteController {
         $pdf->Output('D', 'reporte_compras_PM.pdf');
     }
 
-    public function generarPDF18() {
+     function ComprasEfectivoPDF($compras) {
         require_once 'libs/fpdf.php';
-        $datos = $this->model->obtenerDatos18();
+        $datos = $compras->manejarAccion("consultar_c",2);
 
         $pdf = new FPDF(); 
         $pdf->AddPage(); 
@@ -877,8 +976,8 @@ class ReporteController {
         foreach ($datos as $row) {
             $pdf->Cell(27, 10, $row['id_compra']);
             $pdf->Cell(22, 10, $row['nombre']);
-            $pdf->Cell(37, 10, $row['rif_proveedor'] . " ".  $row['nombre_proveedor']);
-            $pdf->Cell(22, 10, $row['cantidad_compra']);
+            $pdf->Cell(37, 10, $row['id_proveedor'] . " ".  $row['nombre_proveedor']);
+            $pdf->Cell(22, 10, $row['cantidad']);
             $pdf->Cell(24, 10, $row['fecha']);
             $pdf->Cell(33, 10, $row['nombre_modalidad']);
             $pdf->Cell(22, 10, $row['monto']);
@@ -887,5 +986,4 @@ class ReporteController {
 
         $pdf->Output('D', 'reporte_compras_DE.pdf');
     }
-}
 ?>

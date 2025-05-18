@@ -41,7 +41,8 @@
     <script src="views/js/validate_login.js"></script>
     <script src="views/js/confirm.js"></script>
 
-   
+    <script src="views/js/chart.js"></script>
+    <script src="views/js/charts.js"></script>
    <script src="views/js/DataTables/datatables.js"></script>
    <!-- <script src="views/js/DataTables/DataTables/js/dataTables.bootstrap.js"></script> -->
    <!-- <script src="views/js/DataTables/DataTables/js/dataTables.responsive.min.js"></script> -->

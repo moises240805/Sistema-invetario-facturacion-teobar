@@ -328,9 +328,11 @@ class Venta extends Conexion{
                 
 
             case 'consultar':
-
-                    return $this->Mostrar_Venta();
-                
+                return $this->Mostrar_Venta();
+                break;
+            case 'consultar_v':
+                return $this->Mostrar_VentasPagos($venta);
+                break;
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -456,6 +458,9 @@ class Venta extends Conexion{
                     v.fech_emision, 
                     c.nombre_cliente AS nombre_cliente,
                     c.id_cliente,
+                    c.tipo_id,
+                    c.tlf,
+                    c.direccion,
                     v.tipo_entrega,
                     b.nombre_banco,
                     p.nombre AS nombre,
@@ -475,6 +480,54 @@ class Venta extends Conexion{
                   LEFT JOIN 
                     modalidad_de_pago m ON m.id_modalidad_pago = v.id_modalidad_pago
                   WHERE v.status = 1 
+                  GROUP BY 
+                    v.id_venta"; 
+    
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+
+    private function Mostrar_VentasPagos($venta) {
+        $this->closeConnection();
+        try {
+        $conn = $this->getConnection();
+        // Consulta SQL para seleccionar todos los registros de la tabla venta
+        $query = "SELECT 
+                    v.id_venta, 
+                    v.fech_emision, 
+                    c.nombre_cliente AS nombre_cliente,
+                    c.id_cliente,
+                    c.tipo_id,
+                    c.tlf,
+                    c.direccion,
+                    v.tipo_entrega,
+                    b.nombre_banco,
+                    p.nombre AS nombre,
+                    m.nombre_modalidad,
+                    v.monto,
+                    v.tlf,
+                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
+                    GROUP_CONCAT(v.cantidad SEPARATOR '\n ') AS cantidad
+                  FROM 
+                    venta v 
+                  LEFT JOIN 
+                    producto p ON p.id_producto = v.id_producto
+                  LEFT JOIN 
+                    cliente c ON c.id_cliente = v.id_cliente
+                  LEFT JOIN 
+                    bancos b ON b.rif_banco = v.rif_banco
+                  LEFT JOIN 
+                    modalidad_de_pago m ON m.id_modalidad_pago = v.id_modalidad_pago
+                  WHERE v.id_modalidad_pago=$venta 
                   GROUP BY 
                     v.id_venta"; 
     

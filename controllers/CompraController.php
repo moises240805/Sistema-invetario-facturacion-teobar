@@ -225,25 +225,69 @@ function eliminarCompra($modelo, $bitacora, $usuario, $modulo){
 
 // funcion para consultar compras
 function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $producto, $ingreso, $notificacion) {
-    
-    //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
-    //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
-    //action y el rol de usuario
     if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
-        
         $compras = $modelo->manejarAccion("consultar", null);
         $proveedores = $proveedor->manejarAccion("consultar", null);
         $productos = $producto->manejarAccion("obtenerProductos", null);
         $bancos = $modelo->manejarAccion("obtenerBancos", null);
         $pagos = $modelo->manejarAccion("obtenerPagos", null);
+
+        // 1. Compras por mes
+        $comprasPorMes = [];
+        foreach ($compras as $c) {
+            $mes = date('F', strtotime($c['fecha'])); // Ejemplo: "January"
+            if (!isset($comprasPorMes[$mes])) {
+                $comprasPorMes[$mes] = 0;
+            }
+            $comprasPorMes[$mes] += $c['monto'];
+        }
+        $labelsCompra = array_keys($comprasPorMes);
+        $dataCompra = array_values($comprasPorMes);
+
+        // 2. Compras por proveedor
+        $comprasPorProveedor = [];
+        foreach ($compras as $c) {
+            $proveedor = $c['nombre_proveedor'];
+            if (!isset($comprasPorProveedor[$proveedor])) {
+                $comprasPorProveedor[$proveedor] = 0;
+            }
+            $comprasPorProveedor[$proveedor] += $c['monto'];
+        }
+        $labelsProveedor = array_keys($comprasPorProveedor);
+        $dataProveedor = array_values($comprasPorProveedor);
+
+        // 3. Compras por modalidad de pago
+        $comprasPorModalidad = [];
+        foreach ($compras as $c) {
+            $modalidad = $c['pago']; // Ajusta el campo si es necesario
+            if (!isset($comprasPorModalidad[$modalidad])) {
+                $comprasPorModalidad[$modalidad] = 0;
+            }
+            $comprasPorModalidad[$modalidad] += $c['monto'];
+        }
+        $labelsModalidadCompra = array_keys($comprasPorModalidad);
+        $dataModalidadCompra = array_values($comprasPorModalidad);
+
+        // 4. Compras por producto
+        $comprasPorProducto = [];
+        foreach ($compras as $c) {
+            $producto = $c['nombre']; // nombre del producto
+            if (!isset($comprasPorProducto[$producto])) {
+                $comprasPorProducto[$producto] = 0;
+            }
+            $comprasPorProducto[$producto] += $c['monto'];
+        }
+        $labelsProductoCompra = array_keys($comprasPorProducto);
+        $dataProductoCompra = array_values($comprasPorProducto);
+
         require_once "views/php/dashboard_compra.php";
     } else {
-        //muestra un modal de info que dice acceso no permitido
         setError("Error acción no permitida");
         require_once 'views/php/dashboard_compra.php';
         exit();
     }
 }
+
 
 function eliminaCompra($modelo, $bitacora, $usuario, $modulo) {
     // Implementa la lógica para eliminar compras si la necesitas

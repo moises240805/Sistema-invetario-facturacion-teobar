@@ -264,9 +264,11 @@ class Compra extends Conexion{
                 
 
             case 'consultar':
-
-                    return $this->Mostrar_Compra();
-                
+                return $this->Mostrar_Compra();
+                break;
+                case 'consultar_c':
+                return $this->Mostrar_ComprasPagos($compra);
+                break;
             default:
                 return ['status' => false, 'msj' => 'Accion invalida'];
         }
@@ -375,6 +377,8 @@ class Compra extends Conexion{
                         c.nombre_proveedor AS nombre_cliente,
                         c.id_proveedor,
                         c.tipo_id,
+                        c.tlf,
+                        c.direccion,
                         p.nombre AS nombre,
                         m.nombre_modalidad,
                         v.monto,
@@ -389,6 +393,55 @@ class Compra extends Conexion{
                     LEFT JOIN 
                         modalidad_de_pago m ON m.id_modalidad_pago = v.pago
                     WHERE v.status=1
+                    GROUP BY 
+                        v.id_compra"; 
+        
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            // Deshacer la transacción en caso de excepción
+            $this->conn->rollBack();
+            echo "Error en la consulta: " . $e->getMessage();
+            return false;
+        }
+         finally {
+            $this->closeConnection();
+        }
+        
+    }
+
+    private function Mostrar_ComprasPagos($compra) {
+
+        try{
+            // Consulta SQL para seleccionar todos los registros de la tabla venta
+            $conn=$this->getConnection();
+            $query = "SELECT 
+                        v.id_compra, 
+                        v.fecha, 
+                        c.nombre_proveedor AS nombre_cliente,
+                        c.id_proveedor,
+                        c.tipo_id,
+                        c.tlf,
+                        c.direccion,
+                        p.nombre AS nombre,
+                        m.nombre_modalidad,
+                        v.monto,
+                        GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
+                        GROUP_CONCAT(v.cantidad_compra SEPARATOR '\n ') AS cantidad
+                    FROM 
+                        compra v 
+                    LEFT JOIN 
+                        producto p ON p.id_producto = v.id_producto
+                    LEFT JOIN 
+                        proveedor c ON c.id_proveedor = v.rif_proveedor
+                    LEFT JOIN 
+                        modalidad_de_pago m ON m.id_modalidad_pago = v.pago
+                    WHERE v.pago=$compra
                     GROUP BY 
                         v.id_compra"; 
         
