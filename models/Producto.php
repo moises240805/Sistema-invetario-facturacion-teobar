@@ -156,6 +156,139 @@ class Producto extends Conexion{
         return ['status' => true, 'msj' => 'Datos validados correctamente'];
     }
 
+
+    private function setProducto2Data($producto) {
+        if (is_string($producto)) {
+            $producto = json_decode($producto, true);
+            if ($producto === null) {
+                return ['status' => false, 'msj' => 'JSON inválido'];
+            }
+        }
+    
+        // Expresiones regulares y validaciones
+        $exp_nombre_marca = "/^.{1,30}$/u"; // Cualquier caracter, máximo 30
+        $exp_fecha = "/^\d{4}-\d{2}-\d{2}$/"; // Formato YYYY-MM-DD
+        $exp_decimal = "/^\d+(\.\d+)?$/"; // Números enteros o decimales positivos
+        $exp_entero = "/^\d+$/"; // Números enteros positivos
+
+        // Validar id_cliente y tipo_id como numéricos
+    if (!is_numeric($producto['id_producto']) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+    $this->id_producto = (int)$producto['id_producto'];
+    return ['status' => true, 'msj' => 'ID validado correctamente'];
+
+        // Validar nombre_producto (obligatorio, max 30 caracteres)
+        $nombre = trim($producto['nombre_producto'] ?? '');
+        if ($nombre === '' || !preg_match($exp_nombre_marca, $nombre)) {
+            return ['status' => false, 'msj' => 'Nombre de producto inválido o demasiado largo (máx 30 caracteres)'];
+        }
+        $this->nombre_producto = $nombre;
+    
+        // Validar marca (opcional, si existe validar max 30 caracteres)
+        $marca = trim($producto['marca'] ?? '');
+        if ($marca !== '' && !preg_match($exp_nombre_marca, $marca)) {
+            return ['status' => false, 'msj' => 'Marca inválida o demasiado larga (máx 30 caracteres)'];
+        }
+        $this->marca = $marca;
+    
+        // Validar presentacion (obligatorio, entero positivo)
+        $presentacion = $producto['presentacion'] ?? null;
+        if ($presentacion === null || !preg_match($exp_entero, strval($presentacion))) {
+            return ['status' => false, 'msj' => 'Presentación inválida'];
+        }
+        $this->presentacion = (int)$presentacion;
+
+        $categoria = $producto['categoria'] ?? null;
+        if ($categoria === null || !preg_match($exp_entero, strval($categoria))) {
+            return ['status' => false, 'msj' => 'Presentación inválida'];
+        }
+        $this->categoria = (int)$categoria;
+    
+        // Validar fechas (opcional, si existen validar formato)
+        $fecha_venc = $producto['fecha_vencimiento'] ?? null;
+        if ($fecha_venc !== null && $fecha_venc !== '') {
+            if (!preg_match($exp_fecha, $fecha_venc) || !strtotime($fecha_venc)) {
+                return ['status' => false, 'msj' => 'Fecha de vencimiento inválida (debe ser YYYY-MM-DD)'];
+            }
+            $this->fech_vencimiento = $fecha_venc;
+        } else {
+            $this->fech_vencimiento = null;
+        }
+    
+        $fecha_reg = $producto['fecha_registro'] ?? null;
+        if ($fecha_reg !== null && $fecha_reg !== '') {
+            if (!preg_match($exp_fecha, $fecha_reg) || !strtotime($fecha_reg)) {
+                return ['status' => false, 'msj' => 'Fecha de registro inválida (debe ser YYYY-MM-DD)'];
+            }
+            $this->fecha_registro = $fecha_reg;
+        } else {
+            $this->fecha_registro = null;
+        }
+    
+        // Validar cantidades (obligatorio, entero positivo)
+        $cant1 = $producto['cantidad_producto'] ?? null;
+        if ($cant1 === null || !preg_match($exp_entero, strval($cant1))) {
+            return ['status' => false, 'msj' => 'Cantidad de producto inválida'];
+        }
+        $this->cantidad_producto = (int)$cant1;
+    
+        // Cantidades opcionales
+        $cant2 = $producto['cantidad2'] ?? null;
+        $this->cantidad_producto2 = ($cant2 !== null && preg_match($exp_entero, strval($cant2))) ? (int)$cant2 : null;
+    
+        $cant3 = $producto['cantidad3'] ?? null;
+        $this->cantidad_producto3 = ($cant3 !== null && preg_match($exp_entero, strval($cant3))) ? (int)$cant3 : null;
+    
+        // Validar precios (obligatorio, decimal positivo)
+        $precio1 = $producto['precio_producto'] ?? null;
+        if ($precio1 === null || !preg_match($exp_decimal, strval($precio1))) {
+            return ['status' => false, 'msj' => 'Precio de producto inválido'];
+        }
+        $this->precio_producto = (float)$precio1;
+    
+        // Precios opcionales
+        $precio2 = $producto['precio2'] ?? null;
+        $this->precio_producto2 = ($precio2 !== null && preg_match($exp_decimal, strval($precio2))) ? (float)$precio2 : null;
+    
+        $precio3 = $producto['precio3'] ?? null;
+        $this->precio_producto3 = ($precio3 !== null && preg_match($exp_decimal, strval($precio3))) ? (float)$precio3 : null;
+    
+        // Validar unidades de medida (obligatorio entero positivo)
+        $uni1 = $producto['uni_medida'];
+        if (!is_numeric($uni1)) {
+            return ['status' => false, 'msj' => 'Unidad de medida inválida'];
+        }
+        $this->uni_medida = (int)$uni1;
+    
+        // Unidades opcionales
+        $uni2 = $producto['uni_medida2'] ?? null;
+        $this->uni_medida2 = ($uni2 !== null && preg_match($exp_entero, strval($uni2))) ? (int)$uni2 : null;
+    
+        $uni3 = $producto['uni_medida3'] ?? null;
+        $this->uni_medida3 = ($uni3 !== null && preg_match($exp_entero, strval($uni3))) ? (int)$uni3 : null;
+    
+        // Validar id_actualizacion (opcional entero positivo)
+        $id_actualizacion = $producto['id_actualizacion'] ?? null;
+        $this->id_actualizacion = ($id_actualizacion !== null && preg_match($exp_entero, strval($id_actualizacion))) ? (int)$id_actualizacion : null;
+    
+        // Validar pesos (opcionales, decimales positivos)
+        $peso1 = $producto['peso'] ?? null;
+        $this->peso = ($peso1 !== null && preg_match($exp_decimal, strval($peso1))) ? (float)$peso1 : null;
+    
+        $peso2 = $producto['peso2'] ?? null;
+        $this->peso2 = ($peso2 !== null && preg_match($exp_decimal, strval($peso2))) ? (float)$peso2 : null;
+    
+        $peso3 = $producto['peso3'] ?? null;
+        $this->peso3 = ($peso3 !== null && preg_match($exp_decimal, strval($peso3))) ? (float)$peso3 : null;
+    
+        // Imagen y marca (opcional, sin validación específica aquí)
+        $this->imagen = $producto['imagen'];
+    
+        // Todo validado y asignado correctamente
+        return ['status' => true, 'msj' => 'Datos validados correctamente'];
+    }
+
     
 
     private function setValideId($producto){
@@ -357,11 +490,11 @@ class Producto extends Conexion{
                 return $this->Guardar_Producto2();
     
             case 'actualizar':
-                $validacion = $this->setProductoData($producto);
+                $validacion = $this->setProducto2Data($producto);
                 if (!$validacion['status']) {
                     return $validacion;
                 }
-                return $this->Actualizar_Producto();
+                return $this->Actualizar_Producto($producto);
     
             case 'obtener':
                 $validacion = $this->setValideId($producto);
@@ -650,62 +783,65 @@ class Producto extends Conexion{
         }
     }
 
-    private function Actualizar_Producto() {
+
+    private function Actualizar_Producto($producto) {
         $this->closeConnection();
         try {
             $conn = $this->getConnection();
-
-            $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, id_categoria = :categoria, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
+            if (is_string($producto)) {
+            $producto = json_decode($producto, true);
+            if ($producto === null) {
+                return ['status' => false, 'msj' => 'JSON inválido'];
+            }
+            }
+           $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto";
             $stmt = $conn->prepare($query);
 
-            $stmt->bindParam(":id_producto", $this->id_producto);
-            $stmt->bindParam(":nombre", $this->nombre_producto);
-            $stmt->bindParam(":marca", $this->marca);
-            $stmt->bindParam(":fecha_vencimiento", $this->fech_vencimiento);
-            $stmt->bindParam(":id_actualizacion", $this->id_actualizacion);
-            $stmt->bindParam(":presentacion", $this->presentacion);
-            $stmt->bindParam(":categoria", $this->categoria);
+            $stmt->bindParam(":id_producto", $producto['id_producto']);
+            $stmt->bindParam(":nombre",$producto['nombre_producto']);
+            $stmt->bindParam(":marca", $producto['marca']);
+            $stmt->bindParam(":fecha_vencimiento", $producto['fech_vencimiento']);
+            $stmt->bindParam(":id_actualizacion", $producto['id_actualizacion']);
+            $stmt->bindParam(":presentacion", $producto['presentacion']);
 
             $success1 = $stmt->execute();
 
             $query3 = "UPDATE cantidad_producto SET 
-                        cantidad = CASE 
-                            WHEN id_unidad_medida = :uni_medida THEN :cantidad_producto
-                            WHEN id_unidad_medida = :uni_medida2 THEN :cantidad_producto2
-                            WHEN id_unidad_medida = :uni_medida3 THEN :cantidad_producto3
-                            ELSE cantidad 
-                        END,
-                        precio = CASE 
-                            WHEN id_unidad_medida = :uni_medida THEN :precio_producto
-                            WHEN id_unidad_medida = :uni_medida2 THEN :precio_producto2
-                            WHEN id_unidad_medida = :uni_medida3 THEN :precio_producto3
-                            ELSE precio 
-                        END,
-                        peso = CASE 
-                            WHEN id_unidad_medida = :uni_medida THEN :peso
-                            WHEN id_unidad_medida = :uni_medida2 THEN :peso2
-                            WHEN id_unidad_medida = :uni_medida3 THEN :peso3
-                            ELSE peso 
-                        END
-                    WHERE id_producto = :id_producto 
-                    AND (id_unidad_medida = :uni_medida OR id_unidad_medida = :uni_medida2 OR id_unidad_medida = :uni_medida3);
-";
+                cantidad = CASE 
+                    WHEN id_unidad_medida = :uni_medida THEN :cantidad_producto
+                    WHEN id_unidad_medida = :uni_medida2 THEN :cantidad_producto2
+                    WHEN id_unidad_medida = :uni_medida3 THEN :cantidad_producto3
+                    ELSE cantidad 
+                END,
+                precio = CASE 
+                    WHEN id_unidad_medida = :uni_medida THEN :precio_producto
+                    WHEN id_unidad_medida = :uni_medida2 THEN :precio_producto2
+                    WHEN id_unidad_medida = :uni_medida3 THEN :precio_producto3
+                    ELSE precio 
+                END,
+                peso = CASE 
+                    WHEN id_unidad_medida = :uni_medida THEN :peso
+                    WHEN id_unidad_medida = :uni_medida2 THEN :peso2
+                    WHEN id_unidad_medida = :uni_medida3 THEN :peso3
+                    ELSE peso 
+                END
+                WHERE id_producto = :id_producto AND (id_unidad_medida = :uni_medida OR id_unidad_medida = :uni_medida2 OR id_unidad_medida = :uni_medida3)";
 
             $stmt3 = $conn->prepare($query3);
 
-            $stmt3->bindParam(":id_producto", $this->id_producto);
-            $stmt3->bindParam(":cantidad_producto", $this->cantidad_producto);
-            $stmt3->bindParam(":cantidad_producto2", $this->cantidad_producto2);
-            $stmt3->bindParam(":cantidad_producto3", $this->cantidad_producto3);
-            $stmt3->bindParam(":precio_producto", $this->precio_producto);
-            $stmt3->bindParam(":precio_producto2", $this->precio_producto2);
-            $stmt3->bindParam(":precio_producto3", $this->precio_producto3);
-            $stmt3->bindParam(":uni_medida", $this->uni_medida);
-            $stmt3->bindParam(":uni_medida2", $this->uni_medida2);
-            $stmt3->bindParam(":uni_medida3", $this->uni_medida3);
-            $stmt3->bindParam(":peso", $this->peso);
-            $stmt3->bindParam(":peso2", $this->peso2);
-            $stmt3->bindParam(":peso3", $this->peso3);
+            $stmt3->bindParam(":id_producto", $producto['id_producto']);
+            $stmt3->bindParam(":cantidad_producto", $producto['cantidad_producto']);
+            $stmt3->bindParam(":cantidad_producto2", $producto['cantidad2']);
+            $stmt3->bindParam(":cantidad_producto3", $producto['cantidad3']);
+            $stmt3->bindParam(":precio_producto", $producto['precio_producto']);
+            $stmt3->bindParam(":precio_producto2", $producto['precio2']);
+            $stmt3->bindParam(":precio_producto3", $producto['precio3']);
+            $stmt3->bindParam(":uni_medida", $producto['uni_medida']);
+            $stmt3->bindParam(":uni_medida2", $producto['uni_medida2']);
+            $stmt3->bindParam(":uni_medida3", $producto['uni_medida3']);
+            $stmt3->bindParam(":peso", $producto['peso']);
+            $stmt3->bindParam(":peso2", $producto['peso2']);
+            $stmt3->bindParam(":peso3", $producto['peso3']);
 
             $success3 = $stmt3->execute();
 
@@ -720,6 +856,7 @@ class Producto extends Conexion{
             $this->closeConnection();
         }
     }
+
 
     private function obtenerStockProducto() {
         $this->closeConnection();

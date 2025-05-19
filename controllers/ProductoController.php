@@ -372,6 +372,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         // Ejecutar acción permitida
 
     // Sanitiza y valida datos
+        $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -404,6 +405,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         $peso3 = $peso2 * 1000;
 
     $producto = json_encode([
+            'id_producto' => $id_producto,
             'nombre_producto' => $nombre_producto,
             'presentacion' => $presentacion,
             'categoria' => $categoria,
