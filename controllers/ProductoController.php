@@ -2,6 +2,7 @@
 // Incluye el archivo del modelo Producto
 require_once "models/Producto.php";
 require_once 'models/Tipo.php';
+require_once 'models/Categoria.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
 require_once 'views/php/utils.php';
@@ -12,6 +13,7 @@ $controller = new Producto();
 $tipo = new Tipo();
 $bitacora = new Bitacora();
 $usuario = new Roles();
+$categoria = new Categoria();
 
 //esta variables es para definir el modulo en la bitacora para cuando se cree el json 
 $modulo = 'Productos';
@@ -48,7 +50,7 @@ switch ($action) {
         break;
     case "d":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            consultarProducto($controller, $usuario, $modulo, $tipo);
+            consultarProducto($controller, $usuario, $modulo, $tipo, $categoria);
         }
         break;
     //default:
@@ -65,69 +67,75 @@ function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
     if ($usuario->verificarPermiso($modulo, "agregar", $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
-        // Sanitiza y valida datos
-        $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        // Sanitiza y valida
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
+        $cantidad_producto2 = filter_input(INPUT_POST, 'cantidad2', FILTER_SANITIZE_NUMBER_INT);
+        $cantidad_producto3 = filter_input(INPUT_POST, 'cantidad3', FILTER_SANITIZE_NUMBER_INT);
         $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $precio_producto2 = filter_input(INPUT_POST, 'precio2', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $precio_producto3 = filter_input(INPUT_POST, 'precio3', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
         $uni_medida2 = filter_input(INPUT_POST, 'uni_medida2', FILTER_SANITIZE_NUMBER_INT);
         $uni_medida3 = filter_input(INPUT_POST, 'uni_medida3', FILTER_SANITIZE_NUMBER_INT);
         $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $imagen = $_FILES['imagen'];
-        
-        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-            $imagen = $_FILES['imagen'];
 
-            // Validación básica de la imagen
-            $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
-            $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+            if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
+                $imagen = $_FILES['imagen'];
 
-            if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
-                setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
-                header("Location: index.php?action=producto&a=d");
-                exit();
-            }
-        
-
-
-            // Validación básica de la imagen
-            if (!empty($imagen['name'])) {
+                // Validación básica de la imagen
                 $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
                 $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
-        
+
                 if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
                     setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
                     header("Location: index.php?action=producto&a=d");
                     exit();
                 }
+            
+
+
+                // Validación básica de la imagen
+                if (!empty($imagen['name'])) {
+                    $tipoArchivo = pathinfo($imagen['name'], PATHINFO_EXTENSION);
+                    $tiposPermitidos = array('jpg', 'jpeg', 'png', 'gif');
+            
+                    if (!in_array(strtolower($tipoArchivo), $tiposPermitidos)) {
+                        setError("Sólo se permiten archivos de tipo JPG, JPEG, PNG y GIF.");
+                        header("Location: index.php?action=producto&a=d");
+                        exit();
+                    }
+                }
+
+            // Subir la imagen al directorio destino
+            $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
+        
+            if (!empty($imagen['name'])) {
+                $nombreArchivo = basename($imagen['name']);
+                $rutaSubida = $directorioSubida . $nombreArchivo;
+        
+                if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
+                    // La imagen se ha subido correctamente
+                    $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
+                } else {
+                    setError("Error al subir la imagen.");
+                    header("Location: index.php?action=producto&a=d");
+                    exit();
+                }
+            } 
+            } else {
+                $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
             }
 
-        // Subir la imagen al directorio destino
-        $directorioSubida = 'views/img/productos/'; // Asegúrate de que este directorio exista y tenga permisos de escritura
-    
-        if (!empty($imagen['name'])) {
-            $nombreArchivo = basename($imagen['name']);
-            $rutaSubida = $directorioSubida . $nombreArchivo;
-    
-            if (move_uploaded_file($imagen['tmp_name'], $rutaSubida)) {
-                // La imagen se ha subido correctamente
-                $imagenProducto = $rutaSubida; // Guarda el nombre de la imagen para usarlo en la base de datos
-            } else {
-                setError("Error al subir la imagen.");
-                header("Location: index.php?action=producto&a=d");
-                exit();
-            }
-        } 
-        } else {
-            $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
-        }
 
         // Validar que los campos obligatorios no estén vacíos
-        if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+        if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($fecha_registro) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
             setError("Todos los campos son requeridos");
             header("Location: index.php?action=producto&a=d");
             exit();
@@ -146,12 +154,17 @@ function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
         $peso3 = $peso2 * 1000;
 
         $producto = json_encode([
-            'id_producto' => $id_producto,
             'nombre_producto' => $nombre_producto,
             'presentacion' => $presentacion,
+            'categoria' => $categoria,
+            'fecha_registro' => $fecha_registro,
             'fecha_vencimiento' => $fecha_vencimiento,
             'cantidad_producto' => $cantidad_producto,
+            'cantidad2' => $cantidad_producto2,
+            'cantidad3' => $cantidad_producto3,
             'precio_producto' => $precio_producto,
+            'precio2' => $precio_producto2,
+            'precio3' => $precio_producto3,
             'uni_medida' => $uni_medida,
             'uni_medida2' => $uni_medida2,
             'uni_medida3' => $uni_medida3,
@@ -211,20 +224,20 @@ function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
     //la funcion que esta en el modulo admin donde envia el nombre del modulo luego la 
     //action y el rol de usuario
-    if ($usuario->verificarPermiso($modulo, $action, $_SESSION['s_usuario']['id_rol'])) {
+    if ($usuario->verificarPermiso($modulo, 'agregar', $_SESSION['s_usuario']['id_rol'])) {
         // Ejecutar acción permitida
 
             // Sanitiza y valida datos
-            $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $imagen = $_FILES['imagen'];
+        $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
+        $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
+        $imagen = $_FILES['imagen'];
 
             if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
                 $imagen = $_FILES['imagen'];
@@ -273,28 +286,28 @@ function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
                 $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
             }
 
-            if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+            if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
                 setError("Todos los campos son requeridos");
                 header("Location: index.php?action=producto&a=d");
                 exit();
             }
 
             $producto = json_encode([
-                'id_producto' => $id_producto,
                 'nombre_producto' => $nombre_producto,
                 'fecha_registro' => $fecha_registro,
                 'presentacion' => $presentacion,
+                'categoria' => $categoria,
                 'fecha_vencimiento' => $fecha_vencimiento,
                 'cantidad_producto' => $cantidad_producto,
                 'precio_producto' => $precio_producto,
                 'uni_medida' => $uni_medida,
                 'imagen' => $rutaSubida,
                 'marca' => $marca
-            ]);
+            ]);//echo $producto;
         try {
 
                     // Llama a la funcion manejarAccion del modelo donde pasa el objeto producto y la accion  y Capturar el resultado de manejarAccion en lo que pasa en el modelo
-                    $resultado = $controller->manejarAccion('agregar', $producto);
+                    $resultado = $controller->manejarAccion('agregar2', $producto);
                 
 
                     //verifica si esta definida y no es null el status de la captura resultado y comopara si ses true
@@ -359,35 +372,58 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         // Ejecutar acción permitida
 
     // Sanitiza y valida datos
-    $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
-    $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $id_actualizacion = filter_input(INPUT_POST, 'id_actualizacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $fecha_vencimiento = filter_input(INPUT_POST, 'fecha_vencimiento', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $cantidad_producto = filter_input(INPUT_POST, 'cantidad', FILTER_SANITIZE_NUMBER_INT);
+        $cantidad_producto2 = filter_input(INPUT_POST, 'cantidad2', FILTER_SANITIZE_NUMBER_INT);
+        $cantidad_producto3 = filter_input(INPUT_POST, 'cantidad3', FILTER_SANITIZE_NUMBER_INT);
+        $precio_producto = filter_input(INPUT_POST, 'precio', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $precio_producto2 = filter_input(INPUT_POST, 'precio2', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $precio_producto3 = filter_input(INPUT_POST, 'precio3', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $uni_medida = filter_input(INPUT_POST, 'uni_medida', FILTER_SANITIZE_NUMBER_INT);
+        $uni_medida2 = filter_input(INPUT_POST, 'uni_medida2', FILTER_SANITIZE_NUMBER_INT);
+        $uni_medida3 = filter_input(INPUT_POST, 'uni_medida3', FILTER_SANITIZE_NUMBER_INT);
+        $peso = filter_input(INPUT_POST, 'peso', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $id_actualizacion = filter_input(INPUT_POST, 'id_actualizacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        //$imagen = $_FILES['imagen'];
 
-    if (empty($nombre_producto) || empty($presentacion) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+    if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
         setError("Todos los campos son requeridos");
         header("Location: index.php?action=producto&a=d");
         exit();
     }
 
+
+     // Obtiene los valores del formulario y los sanitiza
+        $peso = htmlspecialchars($_POST['peso']);
+        $peso2 = $peso / $peso;
+        $peso3 = $peso2 * 1000;
+
     $producto = json_encode([
-        'id_producto' => $id_producto,
-        'nombre_producto' => $nombre_producto,
-        'presentacion' => $presentacion,
-        'fecha_vencimiento' => $fecha_vencimiento,
-        'cantidad_producto' => $cantidad_producto,
-        'precio_producto' => $precio_producto,
-        'uni_medida' => $uni_medida,
-        'id_actualizacion' => $id_actualizacion,
-        'peso' => $peso,
-        'marca' => $marca
-    ]);
+            'nombre_producto' => $nombre_producto,
+            'presentacion' => $presentacion,
+            'categoria' => $categoria,
+            'fecha_registro' => $fecha_registro,
+            'fecha_vencimiento' => $fecha_vencimiento,
+            'cantidad_producto' => $cantidad_producto,
+            'cantidad2' => $cantidad_producto2,
+            'cantidad3' => $cantidad_producto3,
+            'precio_producto' => $precio_producto,
+            'precio2' => $precio_producto2,
+            'precio3' => $precio_producto3,
+            'uni_medida' => $uni_medida,
+            'uni_medida2' => $uni_medida2,
+            'uni_medida3' => $uni_medida3,
+            'peso' => $peso,
+            'peso2' => $peso2,
+            'peso3' => $peso3,
+            'marca' => $marca,
+            'id_actualizacion' => $id_actualizacion
+        ]);//echo $producto;
 
     try {
 
@@ -420,6 +456,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         setError("Error en operación");
     }
 
+        //require_once 'views/php/dashboard_producto.php';
     header("Location: index.php?action=producto&a=d");
     exit();
     }
@@ -500,7 +537,7 @@ function eliminarProducto($controller, $bitacora, $usuario, $modulo) {
 
 
 // Función para consultar Productos
-function consultarProducto($controller, $usuario, $modulo, $tipo) {
+function consultarProducto($controller, $usuario, $modulo, $tipo, $categoria) {
 
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -511,6 +548,7 @@ function consultarProducto($controller, $usuario, $modulo, $tipo) {
         // Ejecutar acción permitida
         $producto =$controller->manejarAccion("consultar",null);
         $tipos =$tipo->manejarAccion("consultar",null);
+        $categorias =$categoria->manejarAccion("consultar",null);
         require_once 'views/php/dashboard_producto.php';
         exit();
     }

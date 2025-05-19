@@ -89,6 +89,7 @@
                         <th>Nombre</th>
                         <th>Marca</th>
                         <th>Presentación</th>
+                        <th>Categoria</th>
                         <th>F.R</th>
                         <th>F.V</th>
                         <th>Cantidad</th>
@@ -111,6 +112,7 @@
                             <td><?php echo $producto['nombre']; ?></td>
                             <td><?php echo $producto['marca']; ?></td>
                             <td><?php echo $producto['presentacion']; ?></td>
+                            <td><?php echo $producto['nombre_categoria']; ?></td>
                             <td><?php echo $producto['fecha_registro']; ?></td>
                             <td><?php echo $producto['fecha_vencimiento']; ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?></td>
@@ -169,8 +171,18 @@
                     </select>
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="presentacion" class="col-md-3">Categoria del Producto</label>
+                <div class="col-md-9">
+                    <select class="form-control" name="categoria">
+                        <?php foreach ($categorias as $cat): ?> 
+                            <option value="<?php echo $cat['ID'] ?>" <?php echo ($cat['ID'] == $producto['id_categoria']) ? 'selected' : ''; ?>><?php echo $cat['nombre_categoria'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
                 <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
-<div class="form-group row">
+                    <div class="form-group row">
                         <label for="cantidad" class="col-md-3" >Bulto o Saco</label>
                         <div class="col-md-9 d-flex justify-content-between">
                             <input style="width: 6rem;" class="form-control" type="number" id="cantidad" name="cantidad" maxlength='10' placeholder="Cantidad" required oninput="validateNumber()">
@@ -250,16 +262,7 @@
                 <h1 class="titulo_form" >Agregar Producto</h1>
             </div>
             <div class="modal-body">
-                <form class="formulario" action="index.php?action=producto&a=agregar" method="post" name="form">
-                    <?php 
-                       
-                    ?>
-                    <div class="form-group row">
-                        <label for="id_producto" class="col-md-3">Código del Producto</label>
-                        <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
-                        </div>
-                    </div>
+                <form class="formulario" action="index.php?action=producto&a=agregar" method="post" name="form" enctype="multipart/form-data">
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
@@ -281,6 +284,17 @@
                                     <?php endforeach; ?>
                                 </select>
                                 <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="presentacion" class="col-md-3">Categoria del Producto</label>
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="categoria" name="categoria">
+                                <?php foreach ($categorias as $cat): ?>
+                                    <option value="<?php echo $cat['ID'] ?>"><?php echo $cat['nombre_categoria'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarCategoriaModal">+</button>
                         </div>
                     </div>
                     <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
@@ -340,7 +354,7 @@
                             <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
                         </div>
                     </div>
-                    <div class="form-group row">
+                   <div class="form-group row">
                         <label for="imagen" class="col-md-3">Imagen del Producto</label>
                     <div class="col-md-9">
                     <input type="file" class="form-control" id="imagen" name="imagen" required">
@@ -370,13 +384,6 @@
             </div>
             <div class="modal-body">
                 <form class="formulario" action="index.php?action=producto&a=agregar2" method="post" name="form" enctype="multipart/form-data">
-
-                    <div class="form-group row">
-                        <label for="id_producto" class="col-md-3">Código del Producto</label>
-                        <div class="col-md-9">
-                            <input type="number" class="form-control" id="id_producto" name="id_producto" maxlength='10' placeholder="Código del Producto" required>
-                        </div>
-                    </div>
                     <div class="form-group row">
                         <label for="nombre" class="col-md-3">Nombre del Producto</label>
                         <div class="col-md-9">
@@ -398,6 +405,17 @@
                                 <?php endforeach; ?>
                             </select>
                             <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarTipoModal">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="presentacion" class="col-md-3">Categoria del Producto</label>
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="categoria" name="categoria">
+                                <?php foreach ($categorias as $cat): ?>
+                                    <option value="<?php echo $cat['ID'] ?>"><?php echo $cat['nombre_categoria'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarCategoriaModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -503,6 +521,43 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para Agregar categoria Producto -->
+<div class="modal fade show" id="agregarCategoriaModal" tabindex="-1" role="dialog" aria-labelledby="agregarCategoriaModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarCategoriaModalLabel">Agregar Categoria de Producto</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=categoria&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-21">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tipo_producto" style="font-size: 18px;">Categoria de Producto</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="Categoria" name="categoria"  maxlength="70"  onkeypress="return onlyLetters(event)" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 <script src="views/js/modal_producto.js"></script>

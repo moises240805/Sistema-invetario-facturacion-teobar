@@ -14,9 +14,7 @@ if ($controlador == '') {
     if (isset($rutas[$controlador])) {
         require_once $rutas[$controlador];
         
-        } else {
-                    //require_once 'controllers/AdminController.php';
-                }
+        }
             
         }
 

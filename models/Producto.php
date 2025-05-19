@@ -43,12 +43,6 @@ class Producto extends Conexion{
         $exp_fecha = "/^\d{4}-\d{2}-\d{2}$/"; // Formato YYYY-MM-DD
         $exp_decimal = "/^\d+(\.\d+)?$/"; // Números enteros o decimales positivos
         $exp_entero = "/^\d+$/"; // Números enteros positivos
-    
-
-        if (!is_numeric($producto['id_producto']) ) {
-            return ['status' => false, 'msj' => 'ID invalida'];
-        }
-        $this->id_producto = (int)$producto['id_producto'];
 
 
         // Validar nombre_producto (obligatorio, max 30 caracteres)
@@ -71,6 +65,12 @@ class Producto extends Conexion{
             return ['status' => false, 'msj' => 'Presentación inválida'];
         }
         $this->presentacion = (int)$presentacion;
+
+        $categoria = $producto['categoria'] ?? null;
+        if ($categoria === null || !preg_match($exp_entero, strval($categoria))) {
+            return ['status' => false, 'msj' => 'Presentación inválida'];
+        }
+        $this->categoria = (int)$categoria;
     
         // Validar fechas (opcional, si existen validar formato)
         $fecha_venc = $producto['fecha_vencimiento'] ?? null;
@@ -101,10 +101,10 @@ class Producto extends Conexion{
         $this->cantidad_producto = (int)$cant1;
     
         // Cantidades opcionales
-        $cant2 = $producto['cantidad_producto2'] ?? null;
+        $cant2 = $producto['cantidad2'] ?? null;
         $this->cantidad_producto2 = ($cant2 !== null && preg_match($exp_entero, strval($cant2))) ? (int)$cant2 : null;
     
-        $cant3 = $producto['cantidad_producto3'] ?? null;
+        $cant3 = $producto['cantidad3'] ?? null;
         $this->cantidad_producto3 = ($cant3 !== null && preg_match($exp_entero, strval($cant3))) ? (int)$cant3 : null;
     
         // Validar precios (obligatorio, decimal positivo)
@@ -115,15 +115,15 @@ class Producto extends Conexion{
         $this->precio_producto = (float)$precio1;
     
         // Precios opcionales
-        $precio2 = $producto['precio_producto2'] ?? null;
+        $precio2 = $producto['precio2'] ?? null;
         $this->precio_producto2 = ($precio2 !== null && preg_match($exp_decimal, strval($precio2))) ? (float)$precio2 : null;
     
-        $precio3 = $producto['precio_producto3'] ?? null;
+        $precio3 = $producto['precio3'] ?? null;
         $this->precio_producto3 = ($precio3 !== null && preg_match($exp_decimal, strval($precio3))) ? (float)$precio3 : null;
     
         // Validar unidades de medida (obligatorio entero positivo)
-        $uni1 = $producto['uni_medida'] ?? null;
-        if ($uni1 === null || !preg_match($exp_entero, strval($uni1))) {
+        $uni1 = $producto['uni_medida'];
+        if (!is_numeric($uni1)) {
             return ['status' => false, 'msj' => 'Unidad de medida inválida'];
         }
         $this->uni_medida = (int)$uni1;
@@ -150,11 +150,12 @@ class Producto extends Conexion{
         $this->peso3 = ($peso3 !== null && preg_match($exp_decimal, strval($peso3))) ? (float)$peso3 : null;
     
         // Imagen y marca (opcional, sin validación específica aquí)
-        $this->imagen = $producto['imagen'] ?? null;
+        $this->imagen = $producto['imagen'];
     
         // Todo validado y asignado correctamente
         return ['status' => true, 'msj' => 'Datos validados correctamente'];
     }
+
     
 
     private function setValideId($producto){
@@ -403,15 +404,14 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace, status) 
-                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, enlace, status) 
+                      VALUES (:nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :categoria, :imagen, 1)";
             $stmt = $conn->prepare($query);
-
-            $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
             $stmt->bindParam(":fech_venci", $this->fech_vencimiento);
             $stmt->bindParam(":fecha_registro", $this->fecha_registro);
             $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
+            $stmt->bindParam(":categoria", $this->categoria, PDO::PARAM_STR);
             $stmt->bindParam(":imagen", $this->imagen);
             $stmt->bindParam(":marca", $this->marca);
 
@@ -420,13 +420,17 @@ class Producto extends Conexion{
                 return ['status' => false, 'msj' => 'Error al guardar el producto'];
             }
 
+            // Obtener el id_producto generado
+            $id_producto = $conn->lastInsertId();
+
+            
             $query = "INSERT INTO cantidad_producto (id_producto, cantidad, precio, id_unidad_medida, peso)  
                       VALUES (:id_producto, :cantidad_producto, :precio_producto, :uni_medida, :peso),
                              (:id_producto, :cantidad_producto2, :precio_producto2, :uni_medida2, :peso2),
                              (:id_producto, :cantidad_producto3, :precio_producto3, :uni_medida3, :peso3)";
             $stmt = $conn->prepare($query);
 
-            $stmt->bindParam(":id_producto", $this->id_producto);
+            $stmt->bindParam(":id_producto", $id_producto);
             $stmt->bindParam(":cantidad_producto", $this->cantidad_producto, PDO::PARAM_INT);
             $stmt->bindParam(":precio_producto", $this->precio_producto);
             $stmt->bindParam(":uni_medida", $this->uni_medida, PDO::PARAM_INT);
@@ -460,21 +464,20 @@ class Producto extends Conexion{
         }
     }
 
-    public function Guardar_Producto2() {
+    private function Guardar_Producto2() {
         $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (id_producto, nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, enlace, status) 
-                      VALUES (:id_producto, :nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, enlace, status) 
+                      VALUES (:nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :categoria, :imagen, 1)";
             $stmt = $conn->prepare($query);
-
-            $stmt->bindParam(":id_producto", $this->id_producto, PDO::PARAM_INT);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
             $stmt->bindParam(":fech_venci", $this->fech_vencimiento);
             $stmt->bindParam(":fecha_registro", $this->fecha_registro);
             $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
+            $stmt->bindParam(":categoria", $this->categoria, PDO::PARAM_STR);
             $stmt->bindParam(":imagen", $this->imagen);
             $stmt->bindParam(":marca", $this->marca);
 
@@ -482,18 +485,23 @@ class Producto extends Conexion{
                 $conn->rollBack();
                 return ['status' => false, 'msj' => 'Error al guardar el producto'];
             }
+           
+            // Obtener el id_producto generado
+            $id_producto = $conn->lastInsertId();
 
-            $query = "INSERT INTO cantidad_producto (id_producto, cantidad, precio, id_unidad_medida)  
-                      VALUES (:id_producto, :cantidad_producto, :precio_producto, :uni_medida)";
+            $query = "INSERT INTO cantidad_producto (id_producto, cantidad, precio, id_unidad_medida, peso)  
+                      VALUES (:id_producto, :cantidad_producto, :precio_producto, :uni_medida, 0)";
             $stmt = $conn->prepare($query);
 
-            $stmt->bindParam(":id_producto", $this->id_producto);
+            $stmt->bindParam(":id_producto", $id_producto);
             $stmt->bindParam(":cantidad_producto", $this->cantidad_producto, PDO::PARAM_INT);
             $stmt->bindParam(":precio_producto", $this->precio_producto);
             $stmt->bindParam(":uni_medida", $this->uni_medida, PDO::PARAM_INT);
 
+            echo $producto;
             if (!$stmt->execute()) {
                 $conn->rollBack();
+                echo $this->uni_medida;
                 return ['status' => false, 'msj' => 'Error al guardar cantidad del producto'];
             }
 
@@ -523,12 +531,14 @@ class Producto extends Conexion{
                         GROUP_CONCAT(cp.peso SEPARATOR '\n ') AS peso,
                         GROUP_CONCAT(m.nombre_medida SEPARATOR '\n ') AS nombre_medida, 
                         a.nombre_motivo,
-                        s.presentacion
+                        s.presentacion,
+                        c.nombre_categoria
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+                      LEFT JOIN categoria c ON p.id_categoria = c.ID
                       WHERE p.status=1 GROUP BY p.id_producto ";
 
             $stmt = $conn->prepare($query);
@@ -645,7 +655,7 @@ class Producto extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
+            $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, id_categoria = :categoria, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto;";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":id_producto", $this->id_producto);
@@ -654,29 +664,32 @@ class Producto extends Conexion{
             $stmt->bindParam(":fecha_vencimiento", $this->fech_vencimiento);
             $stmt->bindParam(":id_actualizacion", $this->id_actualizacion);
             $stmt->bindParam(":presentacion", $this->presentacion);
+            $stmt->bindParam(":categoria", $this->categoria);
 
             $success1 = $stmt->execute();
 
             $query3 = "UPDATE cantidad_producto SET 
-                cantidad = CASE 
-                    WHEN id_unidad_medida = :uni_medida THEN :cantidad_producto
-                    WHEN id_unidad_medida = :uni_medida2 THEN :cantidad_producto2
-                    WHEN id_unidad_medida = :uni_medida3 THEN :cantidad_producto3
-                    ELSE cantidad 
-                END,
-                precio = CASE 
-                    WHEN id_unidad_medida = :uni_medida THEN :precio_producto
-                    WHEN id_unidad_medida = :uni_medida2 THEN :precio_producto2
-                    WHEN id_unidad_medida = :uni_medida3 THEN :precio_producto3
-                    ELSE precio 
-                END,
-                peso = CASE 
-                    WHEN id_unidad_medida = :uni_medida THEN :peso
-                    WHEN id_unidad_medida = :uni_medida2 THEN :peso2
-                    WHEN id_unidad_medida = :uni_medida3 THEN :peso3
-                    ELSE peso 
-                END
-                WHERE id_producto = :id_producto AND id_unidad_medida IN (:uni_medida, :uni_medida2, :uni_medida3);";
+                        cantidad = CASE 
+                            WHEN id_unidad_medida = :uni_medida THEN :cantidad_producto
+                            WHEN id_unidad_medida = :uni_medida2 THEN :cantidad_producto2
+                            WHEN id_unidad_medida = :uni_medida3 THEN :cantidad_producto3
+                            ELSE cantidad 
+                        END,
+                        precio = CASE 
+                            WHEN id_unidad_medida = :uni_medida THEN :precio_producto
+                            WHEN id_unidad_medida = :uni_medida2 THEN :precio_producto2
+                            WHEN id_unidad_medida = :uni_medida3 THEN :precio_producto3
+                            ELSE precio 
+                        END,
+                        peso = CASE 
+                            WHEN id_unidad_medida = :uni_medida THEN :peso
+                            WHEN id_unidad_medida = :uni_medida2 THEN :peso2
+                            WHEN id_unidad_medida = :uni_medida3 THEN :peso3
+                            ELSE peso 
+                        END
+                    WHERE id_producto = :id_producto 
+                    AND (id_unidad_medida = :uni_medida OR id_unidad_medida = :uni_medida2 OR id_unidad_medida = :uni_medida3);
+";
 
             $stmt3 = $conn->prepare($query3);
 

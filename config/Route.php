@@ -8,6 +8,7 @@ $rutas = [
     'usuario' => 'controllers/AdminController.php',
     'producto' => 'controllers/ProductoController.php',
     'tipo' => 'controllers/TipoController.php',
+    'categoria' => 'controllers/CategoriaController.php',
     'cliente' => 'controllers/ClienteController.php',
     'proveedor' => 'controllers/ProveedorController.php',
     'venta' => 'controllers/VentaController.php',

@@ -19,6 +19,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
                 <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=usuario&a=d" class="aside__link nav-link">Usuarios</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=categoria" class="aside__link nav-link">Categorias</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=producto&a=d" class="aside__link nav-link">Productos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=tipo&a=t" class="aside__link nav-link">Tipo Productos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
