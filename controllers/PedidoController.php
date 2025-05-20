@@ -1,6 +1,8 @@
 <?php
 require_once 'models/Pedido.php';
+require_once 'models/Producto.php';
 $controller = new Pedido();
+$producto = new Producto();
 
 $action = isset($_GET['a']) ? $_GET['a'] : '';
 
@@ -9,7 +11,11 @@ switch ($action) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             agregar($controller);
         }
+    case 'ecommerce':
+        ecommerce($producto);
         break;
+    default:
+        pagina();
     // Otros casos...
 }
 
@@ -31,5 +37,16 @@ function agregar($controller){
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => $resultado['msj']]);
     }
+}
+
+function ecommerce($producto){
+    $productos=$producto->manejarAccion('consultar',null);
+    require_once 'views/php/ecommerce.php';
+}
+
+
+
+function pagina(){
+    require_once 'views/php/pagina.php';
 }
 ?>

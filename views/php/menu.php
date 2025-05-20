@@ -17,7 +17,8 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
         <?php if ($rol == 'Superusuario'): ?>
               <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
-                <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pedido&a=ecommerce" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pagina" class="aside__link nav-link">Pagina</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=usuario&a=d" class="aside__link nav-link">Usuarios</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=categoria" class="aside__link nav-link">Categorias</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=producto&a=d" class="aside__link nav-link">Productos</a></li>
@@ -37,7 +38,8 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
 
                 <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
-                <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pedido&a=ecommerce" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pagina" class="aside__link nav-link">Pagina</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=producto&a=d" class="aside__link nav-link">Productos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=tipo&a=t" class="aside__link nav-link">Tipo Productos</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
@@ -52,7 +54,8 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
             <?php elseif ($rol == 'Contador'): ?>
                 <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
-                <li class="aside__item nav-item"><a href="index.php" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pedido&a=ecommerce" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pagina" class="aside__link nav-link">Pagina</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=proveedor&a=d" class="aside__link nav-link">Proveedores</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=compra&a=c" class="aside__link nav-link">Compras</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>
@@ -62,6 +65,8 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
 
             <?php elseif ($rol == 'Vendedor'): ?>
                 <!-- Limited Menu for Cajero -->
+                <li class="aside__item nav-item"><a href="index.php?action=pedido&a=ecommerce" class="aside__link nav-link">E-conmerce</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=pagina" class="aside__link nav-link">Pagina</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=cliente&a=d" class="aside__link nav-link">Clientes</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=venta&a=v" class="aside__link nav-link">Ventas</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pago" class="aside__link nav-link">Pagos</a></li>

@@ -3,6 +3,7 @@
 // config.php o rutas.php
 $rutas = [
     'pagina' => 'views/php/pagina.php',
+    'ecommerce' => 'views/php/ecommerce.php',
     'login' => 'views/php/login.php',
     'dashboard' => 'views/php/dashboard.php',
     'usuario' => 'controllers/AdminController.php',

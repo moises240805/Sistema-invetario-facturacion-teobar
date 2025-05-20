@@ -129,8 +129,12 @@ switch ($action) {
                 exit(); // Asegúrate de salir después de redirigir 
                 }
             if($usuario["nombre_rol"]=="Usuario"){
-                header("Location: index.php?action=pagina");
+                header("Location: index.php?action=pedido&a=ecommerce");
                 exit(); // Asegúrate de salir después de redirigir 
+                }
+                else{
+                header("Location: index.php?action=pedido&a=ecommerce");
+                exit();
                 }
         } else {
         setError("Datos incorrectos intentelo de nuevo");
@@ -159,7 +163,7 @@ function registeronline($controller, $clientes, $bitacora, $permiso, $modulo){
     //Verifica si todos los campos existen y no esta vacios
     if (empty($tipo_id) || empty($id_cliente) || empty($nombre_cliente) || empty($telefono) || empty($direccion) || empty($email) || empty($username) || empty($pw)) {
         setError("Todos los campos son requeridos");
-        header("Location: index.php?action=pagina");
+        header("Location: index.php?action=pedido&a=ecommerce");
         exit();
     }
 
@@ -200,7 +204,7 @@ function registeronline($controller, $clientes, $bitacora, $permiso, $modulo){
                 // Error: usar mensaje dinámico o genérico
                 $mensajeError = $resultado['msj'] ?? "ERROR AL REGISTRAR...";
                 setError($mensajeError);
-                require_once "views/php/pagina.php"; // Redirect
+                header("Location: index.php?action=pedido&a=ecommerce"); // Redirect
             }  
         } catch (Exception $e) {
             //mensajes del expcecion del pdo 

@@ -196,11 +196,16 @@ class Roles extends Conexion {
                 $conn->rollBack();
                 return ['status' => false, 'msj' => 'No se pudo obtener el ID del rol'];
             }
+
+            //$query = "SELECT id_modulo FROM modulos";
+            //$stmt = $conn->prepare($query);
+            //$stmt->bindParam(":rol", $this->rol, PDO::PARAM_STR);
+            //$stmt->execute();
     
             // 3. Insertar accesos para el nuevo rol
             // Definimos los módulos y permisos (puedes ajustar según tu sistema)
             $accesos = [];
-            for ($modulo = 1; $modulo <= 16; $modulo++) {
+            for ($modulo = 1; $modulo <= 17; $modulo++) {
                 for ($permiso = 1; $permiso <= 4; $permiso++) {
                     $accesos[] = "($id_rol, $modulo, $permiso, 0)";
                 }

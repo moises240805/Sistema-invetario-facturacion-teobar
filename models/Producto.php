@@ -665,7 +665,8 @@ class Producto extends Conexion{
                         GROUP_CONCAT(m.nombre_medida SEPARATOR '\n ') AS nombre_medida, 
                         a.nombre_motivo,
                         s.presentacion,
-                        c.nombre_categoria
+                        c.nombre_categoria,
+                        cp.id_unidad_medida
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
