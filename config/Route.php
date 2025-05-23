@@ -10,6 +10,7 @@ $rutas = [
     'producto' => 'controllers/ProductoController.php',
     'tipo' => 'controllers/TipoController.php',
     'categoria' => 'controllers/CategoriaController.php',
+    'marca' => 'controllers/MarcaController.php',
     'cliente' => 'controllers/ClienteController.php',
     'proveedor' => 'controllers/ProveedorController.php',
     'venta' => 'controllers/VentaController.php',

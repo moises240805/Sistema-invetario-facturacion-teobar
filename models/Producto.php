@@ -23,7 +23,8 @@ class Producto extends Conexion{
     private $peso2;
     private $peso3;
     private $imagen;
-    private $marca;
+    private $id_marca;
+    private $id_proveedor;
 
     // Constructor
     public function __construct() {
@@ -53,48 +54,49 @@ class Producto extends Conexion{
         $this->nombre_producto = $nombre;
     
         // Validar marca (opcional, si existe validar max 30 caracteres)
-        $marca = trim($producto['marca'] ?? '');
-        if ($marca !== '' && !preg_match($exp_nombre_marca, $marca)) {
-            return ['status' => false, 'msj' => 'Marca inválida o demasiado larga (máx 30 caracteres)'];
-        }
-        $this->marca = $marca;
+        if (!is_numeric($producto['id_marca']) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+
+        $this->id_marca = (int)$producto['id_marca'];
+        
+
+            if (!is_numeric($producto['id_proveedor']) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+        $this->id_proveedor = (int)$producto['id_proveedor'];
+        
     
         // Validar presentacion (obligatorio, entero positivo)
-        $presentacion = $producto['presentacion'] ?? null;
+        $presentacion = $producto['presentacion'];
         if ($presentacion === null || !preg_match($exp_entero, strval($presentacion))) {
             return ['status' => false, 'msj' => 'Presentación inválida'];
         }
         $this->presentacion = (int)$presentacion;
 
-        $categoria = $producto['categoria'] ?? null;
+        $categoria = $producto['categoria'];
         if ($categoria === null || !preg_match($exp_entero, strval($categoria))) {
             return ['status' => false, 'msj' => 'Presentación inválida'];
         }
         $this->categoria = (int)$categoria;
     
         // Validar fechas (opcional, si existen validar formato)
-        $fecha_venc = $producto['fecha_vencimiento'] ?? null;
-        if ($fecha_venc !== null && $fecha_venc !== '') {
+        $fecha_venc = $producto['fecha_vencimiento'];
             if (!preg_match($exp_fecha, $fecha_venc) || !strtotime($fecha_venc)) {
                 return ['status' => false, 'msj' => 'Fecha de vencimiento inválida (debe ser YYYY-MM-DD)'];
             }
-            $this->fech_vencimiento = $fecha_venc;
-        } else {
-            $this->fech_vencimiento = null;
-        }
+            $this->fech_vencimiento = $producto["fecha_vencimiento"];
+        
     
-        $fecha_reg = $producto['fecha_registro'] ?? null;
-        if ($fecha_reg !== null && $fecha_reg !== '') {
+        $fecha_reg = $producto['fecha_registro'];
             if (!preg_match($exp_fecha, $fecha_reg) || !strtotime($fecha_reg)) {
                 return ['status' => false, 'msj' => 'Fecha de registro inválida (debe ser YYYY-MM-DD)'];
             }
             $this->fecha_registro = $fecha_reg;
-        } else {
-            $this->fecha_registro = null;
-        }
+        
     
         // Validar cantidades (obligatorio, entero positivo)
-        $cant1 = $producto['cantidad_producto'] ?? null;
+        $cant1 = $producto['cantidad_producto'];
         if ($cant1 === null || !preg_match($exp_entero, strval($cant1))) {
             return ['status' => false, 'msj' => 'Cantidad de producto inválida'];
         }
@@ -185,12 +187,18 @@ class Producto extends Conexion{
         }
         $this->nombre_producto = $nombre;
     
-        // Validar marca (opcional, si existe validar max 30 caracteres)
-        $marca = trim($producto['marca'] ?? '');
-        if ($marca !== '' && !preg_match($exp_nombre_marca, $marca)) {
-            return ['status' => false, 'msj' => 'Marca inválida o demasiado larga (máx 30 caracteres)'];
+            // Validar marca (opcional, si existe validar max 30 caracteres)
+        if (!is_numeric($producto['id_marca']) ) {
+        return ['status' => false, 'msj' => 'ID invalida'];
+    }
+
+        $this->id_marca = (int)$producto['id_marca'];
+        
+        if (!is_numeric($producto['id_marca']) ) {
+            return ['status' => false, 'msj' => 'ID invalida'];
         }
-        $this->marca = $marca;
+        $this->id_proveedor = (int)$producto['id_proveedor'];
+        
     
         // Validar presentacion (obligatorio, entero positivo)
         $presentacion = $producto['presentacion'] ?? null;
@@ -206,25 +214,21 @@ class Producto extends Conexion{
         $this->categoria = (int)$categoria;
     
         // Validar fechas (opcional, si existen validar formato)
-        $fecha_venc = $producto['fecha_vencimiento'] ?? null;
+        $fecha_venc = $producto['fecha_vencimiento'];
         if ($fecha_venc !== null && $fecha_venc !== '') {
             if (!preg_match($exp_fecha, $fecha_venc) || !strtotime($fecha_venc)) {
                 return ['status' => false, 'msj' => 'Fecha de vencimiento inválida (debe ser YYYY-MM-DD)'];
             }
             $this->fech_vencimiento = $fecha_venc;
-        } else {
-            $this->fech_vencimiento = null;
-        }
+        } 
     
-        $fecha_reg = $producto['fecha_registro'] ?? null;
+        $fecha_reg = $producto['fecha_registro'];
         if ($fecha_reg !== null && $fecha_reg !== '') {
             if (!preg_match($exp_fecha, $fecha_reg) || !strtotime($fecha_reg)) {
                 return ['status' => false, 'msj' => 'Fecha de registro inválida (debe ser YYYY-MM-DD)'];
             }
             $this->fecha_registro = $fecha_reg;
-        } else {
-            $this->fecha_registro = null;
-        }
+        } 
     
         // Validar cantidades (obligatorio, entero positivo)
         $cant1 = $producto['cantidad_producto'] ?? null;
@@ -537,16 +541,17 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, enlace, status) 
-                      VALUES (:nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :categoria, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, enlace, status) 
+                      VALUES (:nombre_producto, :fech_vencimiento, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
-            $stmt->bindParam(":fech_venci", $this->fech_vencimiento);
+            $stmt->bindParam(":fech_vencimiento", $this->fech_vencimiento);
             $stmt->bindParam(":fecha_registro", $this->fecha_registro);
             $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
             $stmt->bindParam(":categoria", $this->categoria, PDO::PARAM_STR);
             $stmt->bindParam(":imagen", $this->imagen);
-            $stmt->bindParam(":marca", $this->marca);
+            $stmt->bindParam(":id_marca", $this->id_marca);
+            $stmt->bindParam(":id_proveedor", $this->id_proveedor);
 
             if (!$stmt->execute()) {
                 $conn->rollBack();
@@ -603,8 +608,8 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, marca, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, enlace, status) 
-                      VALUES (:nombre_producto, :marca, :fech_venci, :fecha_registro, :presentacion, :categoria, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, enlace, status) 
+                      VALUES (:nombre_producto, :fech_venci, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
             $stmt->bindParam(":fech_venci", $this->fech_vencimiento);
@@ -612,7 +617,8 @@ class Producto extends Conexion{
             $stmt->bindParam(":presentacion", $this->presentacion, PDO::PARAM_STR);
             $stmt->bindParam(":categoria", $this->categoria, PDO::PARAM_STR);
             $stmt->bindParam(":imagen", $this->imagen);
-            $stmt->bindParam(":marca", $this->marca);
+            $stmt->bindParam(":id_marca", $this->id_marca);
+            $stmt->bindParam(":id_proveedor", $this->id_proveedor);
 
             if (!$stmt->execute()) {
                 $conn->rollBack();
@@ -666,13 +672,17 @@ class Producto extends Conexion{
                         a.nombre_motivo,
                         s.presentacion,
                         c.nombre_categoria,
-                        cp.id_unidad_medida
+                        cp.id_unidad_medida,
+                        b.nombre_marca,
+                        d.nombre_proveedor
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
                       LEFT JOIN categoria c ON p.id_categoria = c.ID
+                      LEFT JOIN marca b ON p.id_marca = b.ID
+                      LEFT JOIN proveedor d ON p.id_proveedor = d.id_proveedor
                       WHERE p.status=1 GROUP BY p.id_producto ";
 
             $stmt = $conn->prepare($query);
@@ -704,7 +714,8 @@ class Producto extends Conexion{
                         GROUP_CONCAT(m.nombre_medida SEPARATOR '\n ') AS nombre_medida, 
                         GROUP_CONCAT(cp.id_unidad_medida SEPARATOR '\n ') AS id_medida, 
                         a.nombre_motivo,
-                        s.presentacion
+                        s.presentacion,
+                        b.nombre_marca
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
@@ -760,12 +771,15 @@ class Producto extends Conexion{
         try {
             $conn = $this->getConnection();
 
-            $query = "SELECT p.*, a.nombre_motivo, cp.cantidad AS cantidad, cp.precio, cp.peso, s.presentacion, m.nombre_medida AS nombre_medida 
+            $query = "SELECT p.*, d.nombre_proveedor, b.nombre_marca, c.nombre_categoria, a.nombre_motivo, cp.cantidad AS cantidad, cp.precio, cp.peso, s.presentacion, m.nombre_medida AS nombre_medida 
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
                       LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida  
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+                      LEFT JOIN categoria c ON p.id_categoria = c.ID
+                      LEFT JOIN marca b ON p.id_marca = b.ID
+                      LEFT JOIN proveedor d ON p.id_proveedor = d.id_proveedor
                       WHERE cp.id_producto = :id_producto;";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":id_producto", $id_producto, PDO::PARAM_INT);
@@ -795,12 +809,14 @@ class Producto extends Conexion{
                 return ['status' => false, 'msj' => 'JSON inválido'];
             }
             }
-           $query = "UPDATE producto SET nombre = :nombre, marca = :marca, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto";
+           $query = "UPDATE producto SET nombre = :nombre, id_proveedor = :id_proveedor, id_marca = :id_marca, id_categoria = :categoria, id_presentacion = :presentacion, fecha_vencimiento = :fecha_vencimiento, id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto";
             $stmt = $conn->prepare($query);
 
             $stmt->bindParam(":id_producto", $producto['id_producto']);
             $stmt->bindParam(":nombre",$producto['nombre_producto']);
-            $stmt->bindParam(":marca", $producto['marca']);
+            $stmt->bindParam(":id_marca", $producto['id_marca']);
+            $stmt->bindParam(":id_proveedor", $producto['id_proveedor']);
+            $stmt->bindParam(":categoria", $producto['categoria']);
             $stmt->bindParam(":fecha_vencimiento", $producto['fech_vencimiento']);
             $stmt->bindParam(":id_actualizacion", $producto['id_actualizacion']);
             $stmt->bindParam(":presentacion", $producto['presentacion']);

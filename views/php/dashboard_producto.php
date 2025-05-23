@@ -90,6 +90,7 @@
                         <th>Marca</th>
                         <th>Presentación</th>
                         <th>Categoria</th>
+                        <th>Proveedor</th>
                         <th>F.R</th>
                         <th>F.V</th>
                         <th>Cantidad</th>
@@ -110,9 +111,10 @@
                     ?>
                         <tr>
                             <td><?php echo $producto['nombre']; ?></td>
-                            <td><?php echo $producto['marca']; ?></td>
+                            <td><?php echo $producto['nombre_marca']; ?></td>
                             <td><?php echo $producto['presentacion']; ?></td>
                             <td><?php echo $producto['nombre_categoria']; ?></td>
+                            <td><?php echo $producto['nombre_proveedor']; ?></td>
                             <td><?php echo $producto['fecha_registro']; ?></td>
                             <td><?php echo $producto['fecha_vencimiento']; ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?></td>
@@ -156,9 +158,13 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="marca" class="col-md-3">Marca del Producto</label>
+                <label for="marca" class="col-md-3">marca del Producto</label>
                 <div class="col-md-9">
-                    <input class="form-control" type="text" name="marca" maxlength='50' value="<?php echo $producto['marca']; ?>" required>
+                    <select class="form-control" name="marca">
+                        <?php foreach ($marcas as $marca): ?> 
+                            <option value="<?php echo $marca['ID'] ?>"><?php echo $marca['nombre_marca'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="form-group row">
@@ -166,7 +172,7 @@
                 <div class="col-md-9">
                     <select class="form-control" name="presentacion">
                         <?php foreach ($tipos as $tipo): ?> 
-                            <option value="<?php echo $tipo['id_presentacion'] ?>" <?php echo ($tipo['id_presentacion'] == $producto['id_presentacion']) ? 'selected' : ''; ?>><?php echo $tipo['presentacion'] ?></option>
+                            <option value="<?php echo $tipo['id_presentacion'] ?>"><?php echo $tipo['presentacion'] ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -176,7 +182,17 @@
                 <div class="col-md-9">
                     <select class="form-control" name="categoria">
                         <?php foreach ($categorias as $cat): ?> 
-                            <option value="<?php echo $cat['ID'] ?>" <?php echo ($cat['ID'] == $producto['id_categoria']) ? 'selected' : ''; ?>><?php echo $cat['nombre_categoria'] ?></option>
+                            <option value="<?php echo $cat['ID'] ?>"><?php echo $cat['nombre_categoria'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="presentacion" class="col-md-3">Proveedor del Producto</label>
+                <div class="col-md-9">
+                    <select class="form-control" name="proveedor">
+                        <?php foreach ($proveedores as $provedor): ?> 
+                            <option value="<?php echo $provedor['id_proveedor'] ?>"><?php echo $provedor['nombre_proveedor'] ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -270,9 +286,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="marca" class="col-md-3">Marca del Producto</label>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" id="marca" name="marca" maxlength='50' placeholder="Marca del Producto" required>
+                        <label for="presentacion" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="marca" name="marca">
+                                <?php foreach ($marcas as $marca): ?>
+                                    <option value="<?php echo $marca['ID'] ?>"><?php echo $marca['nombre_marca'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarMarcaModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -295,6 +316,17 @@
                                     <?php endforeach; ?>
                                 </select>
                                 <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarCategoriaModal">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                <label for="presentacion" class="col-md-3">Proveedor del Producto</label>
+                    <div class="col-md-9" style="display:flex">
+                        <select class="form-control" id="proveedor" name="proveedor">
+                            <?php foreach ($proveedores as $provedor): ?> 
+                                <option value="<?php echo $provedor['id_proveedor'] ?>"><?php echo $provedor['nombre_proveedor'] ?></option>
+                                <?php endforeach; ?>
+                             </select>
+                             <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarProveedorModal">+</button>
                         </div>
                     </div>
                     <fieldset><legend>Cantidades y precios del producto por:</legend></fieldset>
@@ -391,9 +423,14 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="marca" class="col-md-3">Marca del Producto</label>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control" id="marca2" name="marca" maxlength='50' placeholder="Marca del Producto" required>
+                        <label for="presentacion" class="col-md-3">Marca del Producto</label>
+                        <div class="col-md-9" style="display:flex">
+                            <select class="form-control"  id="marca" name="marca">
+                                <?php foreach ($marcas as $marca): ?>
+                                    <option value="<?php echo $marca['ID'] ?>"><?php echo $marca['nombre_marca'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarMarcaModal">+</button>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -418,6 +455,17 @@
                                 <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarCategoriaModal">+</button>
                         </div>
                     </div>
+                    <div class="form-group row">
+                <label for="presentacion" class="col-md-3">Proveedor del Producto</label>
+                <div class="col-md-9" style="display:flex">
+                    <select class="form-control" id="proveedor" name="proveedor">
+                        <?php foreach ($proveedores as $provedor): ?> 
+                            <option value="<?php echo $provedor['id_proveedor'] ?>"><?php echo $provedor['nombre_proveedor'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarProveedorModal">+</button>
+                </div>
+            </div>
                     <div class="form-group row">
                         <label for="cantidad" class="col-md-3">Cantidad</label>
                         <div class="col-md-9">
@@ -448,13 +496,13 @@
                     <div class="form-group row">
                         <label for="fech_venci" class="col-md-3">Fecha de Vencimiento</label>
                         <div class="col-md-9">
-                            <input class="form-control" type="date" id="fech_venci" name="fecha_vencimiento" placeholder="Fecha de Vencimiento" required oninput="validarFechaVencimiento();">
+                            <input class="form-control" type="date" id="fecha_venci" name="fecha_vencimiento" placeholder="Fecha de Vencimiento" required oninput="validarFechaVencimiento2();">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="fech_registro" class="col-md-3">Fecha de Registro</label>
                         <div class="col-md-9">
-                            <input class="form-control" type="date" id="fecha_registro" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual()" required>
+                            <input class="form-control" type="date" id="fecha_registro2" name="fecha_registro" placeholder="Fecha de Registro" oninput="setFechaActual2()" required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -558,6 +606,168 @@
     </div>
 </div>
 
+
+
+
+
+<!-- Modal para Agregar marca Producto -->
+<div class="modal fade show" id="agregarMarcaModal" tabindex="-1" role="dialog" aria-labelledby="agregarMarcaModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarMarcaModalLabel">Agregar Marca de Producto</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=marca&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-21">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tipo_producto" style="font-size: 18px;">Marca de Producto</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="marca" name="marca"  maxlength="70"  onkeypress="return onlyLetters(event)" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade show" id="agregarProveedorModal" tabindex="-1" role="dialog" aria-labelledby="agregarProveedorModalLabel" aria-hidden="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="titulo_form text-center" id="agregarProveedorModalLabel">Agregar Proveedor</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="formulario" action="index.php?action=proveedor&a=agregar" method="post" name="form">
+                <div class="modal-body">
+                    <div class="container text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10">
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="id" style="font-size: 18px;">RIF del Proveedor</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="input-group">
+                                            <select name="tipo" class="form-control">
+                                                <option value="J-">J-</option>
+                                                <option value="G-">G-</option>
+                                            </select>
+                                            <input onkeypress="return SoloNumeros(event)" type="text" class="form-control" id="id2" name="id" placeholder="RIF del Proveedor" maxlength="7" required oninput="validateId2()">
+                                        </div>
+                                        <span id="idError2" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="nombre" style="font-size: 18px;">Nombre del Proveedor</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="nombrep" name="nombre" placeholder="Nombre del Proveedor" maxlength="40" onkeypress="return onlyLetters(event)" required oninput="validateAddress2()">
+                                        <span id="addressError2" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="direccion" style="font-size: 18px;">Dirección del Proveedor</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Dirección del Proveedor" maxlength="100" required oninput="validateAddress()">
+                                        <span id="addressError" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tlf" style="font-size: 18px;">Tlf del Proveedor</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="input-group">
+                                            <select name="codigo_tlf" class="form-control">
+                                                <option value="0412">0412</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424">0424</option>
+                                            </select>
+                                            <input type="text" class="form-control" id="numero_tlf" name="numero_tlf" placeholder="Tlf del Proveedor" maxlength="7"onkeypress="return SoloNumeros(event)" required oninput="validatePhone()">
+                                        </div>
+                                        <span id="phoneError" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="id_representante" style="font-size: 18px;">CI del Representante Legal</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="input-group">
+                                            <select name="tipo2" class="form-control">
+                                                <option value="V-">V-</option>
+                                                <option value="E-">E-</option>
+                                            </select>
+                                            <input type="text" class="form-control" id="id" name="id_representante" placeholder="CI o RIF" maxlength="8" required oninput="validateId()" onkeypress="return SoloNumeros(event)"> 
+                                        </div>
+                                        <span id="idError" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="nombre_representante" style="font-size: 18px;">Nombre del Representante Legal</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" id="nombre" name="nombre_representante" placeholder="Nombre" maxlength="40" required oninput="validateName()">
+                                        <span id="nameError" class="error-message"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row justify-content-center mb-4">
+                                    <div class="col-md-10 text-center">
+                                        <label for="tlf_representante" style="font-size: 18px;">Tlf del Representante Legal</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <div class="input-group">
+                                            <select name="codigo_tlf_representante" class="form-control">
+                                                <option value="0412">0412</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424">0424</option>
+                                                <option value="0251">0251</option>
+                                            </select>
+                                            <input type="text" class="form-control" id="numero_tlf2" name="numero_tlf_representante" placeholder="Tlf del representante" maxlength="7" onkeypress="return SoloNumeros(event)" required oninput="validatePhone2()">
+                                        </div>
+                                        <span id="phoneError2" class="error-message"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()" data-dismiss="modal">Cancelar</button>
+                    <input onclick="return validateForm()" class="btn btn-primary" type="submit" value="Registrar">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <script src="views/js/modal_producto.js"></script>

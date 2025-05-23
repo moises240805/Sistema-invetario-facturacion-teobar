@@ -1,7 +1,9 @@
 <?php
 // Incluye el archivo del modelo Producto
 require_once "models/Producto.php";
+require_once "models/Proveedor.php";
 require_once 'models/Tipo.php';
+require_once 'models/Marca.php';
 require_once 'models/Categoria.php';
 require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
@@ -11,6 +13,8 @@ require_once 'views/php/utils.php';
 //Se instancia los modelos
 $controller = new Producto();
 $tipo = new Tipo();
+$proveedor = new Proveedor();
+$marca = new Marca();
 $bitacora = new Bitacora();
 $usuario = new Roles();
 $categoria = new Categoria();
@@ -50,7 +54,7 @@ switch ($action) {
         break;
     case "d":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            consultarProducto($controller, $usuario, $modulo, $tipo, $categoria);
+            consultarProducto($controller, $usuario, $modulo, $tipo, $categoria, $marca, $proveedor);
         }
         break;
     //default:
@@ -70,6 +74,7 @@ function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
         // Sanitiza y valida
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $proveedor = filter_input(INPUT_POST, 'proveedor', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -135,7 +140,7 @@ function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
 
 
         // Validar que los campos obligatorios no estén vacíos
-        if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($fecha_registro) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+        if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($marca)  || empty($proveedor)|| empty($fecha_vencimiento) || empty($fecha_registro) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
             setError("Todos los campos son requeridos");
             header("Location: index.php?action=producto&a=d");
             exit();
@@ -172,7 +177,8 @@ function agregarProducto($controller, $tipo, $bitacora, $usuario, $modulo) {
             'peso2' => $peso2,
             'peso3' => $peso3,
             'imagen' => $rutaSubida,
-            'marca' => $marca
+            'id_marca' => $marca,
+            'id_proveedor' => $proveedor
         ]);
 
         try {
@@ -230,6 +236,7 @@ function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
             // Sanitiza y valida datos
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $proveedor = filter_input(INPUT_POST, 'proveedor', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -286,7 +293,7 @@ function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
                 $imagenProducto = ''; // Si no se sube imagen, deja este campo vacío
             }
 
-            if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+            if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($marca) || empty($proveedor) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
                 setError("Todos los campos son requeridos");
                 header("Location: index.php?action=producto&a=d");
                 exit();
@@ -302,7 +309,8 @@ function agregarProducto2($controller, $bitacora, $usuario, $modulo) {
                 'precio_producto' => $precio_producto,
                 'uni_medida' => $uni_medida,
                 'imagen' => $rutaSubida,
-                'marca' => $marca
+                'id_marca' => $marca,
+                'id_proveedor' => $proveedor
             ]);//echo $producto;
         try {
 
@@ -375,6 +383,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $marca = filter_input(INPUT_POST, 'proveedor', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -392,7 +401,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         $id_actualizacion = filter_input(INPUT_POST, 'id_actualizacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         //$imagen = $_FILES['imagen'];
 
-    if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
+    if (empty($nombre_producto) || empty($presentacion) || empty($categoria) || empty($proveedor) || empty($marca) || empty($fecha_vencimiento) || empty($cantidad_producto) || empty($precio_producto) || empty($uni_medida)) {
         setError("Todos los campos son requeridos");
         header("Location: index.php?action=producto&a=d");
         exit();
@@ -423,7 +432,8 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
             'peso' => $peso,
             'peso2' => $peso2,
             'peso3' => $peso3,
-            'marca' => $marca,
+            'id_marca' => $marca,
+            'id_proveedor' => $proveedor,
             'id_actualizacion' => $id_actualizacion
         ]);//echo $producto;
 
@@ -539,7 +549,7 @@ function eliminarProducto($controller, $bitacora, $usuario, $modulo) {
 
 
 // Función para consultar Productos
-function consultarProducto($controller, $usuario, $modulo, $tipo, $categoria) {
+function consultarProducto($controller, $usuario, $modulo, $tipo, $categoria, $marca, $proveedor) {
 
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -551,6 +561,8 @@ function consultarProducto($controller, $usuario, $modulo, $tipo, $categoria) {
         $producto =$controller->manejarAccion("consultar",null);
         $tipos =$tipo->manejarAccion("consultar",null);
         $categorias =$categoria->manejarAccion("consultar",null);
+        $marcas =$marca->manejarAccion("consultar",null);
+        $proveedores =$proveedor->manejarAccion("consultar",null);
         require_once 'views/php/dashboard_producto.php';
         exit();
     }

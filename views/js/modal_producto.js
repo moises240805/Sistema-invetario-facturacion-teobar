@@ -58,7 +58,9 @@ function abrirModalModificar(id_producto) {
             // Establecer los campos del formulario con los datos recibidos
             document.getElementsByName('id_producto')[0].value = data.id_producto;
             document.getElementsByName('nombre')[0].value = data.nombre;
-            document.getElementsByName('marca')[0].value = data.marca;
+            document.getElementsByName('marca')[0].value = data.id_marca;
+            document.getElementsByName('proveedor')[0].value = data.id_proveedor;
+            document.getElementsByName('categoria')[0].value = data.id_categoria;
             document.getElementsByName('presentacion')[0].value = data.id_presentacion;
 
             // Cantidad y precio para diferentes variantes
@@ -84,6 +86,27 @@ function abrirModalModificar(id_producto) {
             for (var i = 0; i < selectPresentacion.options.length; i++) {
                 if (selectPresentacion.options[i].value === data.id_presentacion) {
                     selectPresentacion.options[i].selected = true;
+                }
+            }
+
+            var selectCategoria = document.getElementsByName('categoria')[0];
+            for (var i = 0; i < selectCategoria.options.length; i++) {
+                if (selectCategoria.options[i].value === data.id_categoria) {
+                    selectCategoria.options[i].selected = true;
+                }
+            }
+
+            var selectMarca = document.getElementsByName('marca')[0];
+            for (var i = 0; i < selectMarca.options.length; i++) {
+                if (selectMarca.options[i].value === data.id_marca) {
+                    selectMarca.options[i].selected = true;
+                }
+            }
+
+            var selectProveedor = document.getElementsByName('proveedor')[0];
+            for (var i = 0; i < selectProveedor.options.length; i++) {
+                if (selectProveedor.options[i].value === data.id_proveedor) {
+                    selectProveedor.options[i].selected = true;
                 }
             }
 
@@ -161,7 +184,6 @@ function cerrarModalModificarProducto() {
 
 
 
-
        
 
 
@@ -169,9 +191,35 @@ function cerrarModalModificarProducto() {
 const today = new Date().toISOString().split('T')[0];
 document.getElementById('fecha_registro').value = today;
 
+const today2 = new Date().toISOString().split('T')[0];
+document.getElementById('fecha_registro2').value = today2;
+
 // Función para validar la fecha de vencimiento
 function validarFechaVencimiento() {
 const fechaVencimientoInput = document.getElementById('fech_venci');
+
+
+// Escuchar el evento de cambio en el campo de fecha
+fechaVencimientoInput.addEventListener('change', function() {
+const fechaVencimiento = new Date(this.value);
+const fechaActual = new Date();
+
+// Establecer la fecha mínima como 15 días a partir de hoy
+const fechaMinima = new Date(fechaActual);
+fechaMinima.setDate(fechaActual.getDate() + 15);
+
+// Validar si la fecha de vencimiento es menor que la fecha mínima
+if (fechaVencimiento < fechaMinima) {
+    alert('La fecha de vencimiento debe ser al menos 15 días a partir de hoy.');
+    this.value = ''; // Limpiar el campo si no es válido
+}
+});
+}
+
+
+function validarFechaVencimiento2() {
+const fechaVencimientoInput = document.getElementById('fecha_venci');
+
 
 // Escuchar el evento de cambio en el campo de fecha
 fechaVencimientoInput.addEventListener('change', function() {
@@ -192,6 +240,7 @@ if (fechaVencimiento < fechaMinima) {
 
 // Llamar a la función al cargar la página
 validarFechaVencimiento();
+validarFechaVencimiento2();
 
 
 
