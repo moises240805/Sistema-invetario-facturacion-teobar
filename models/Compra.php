@@ -280,6 +280,17 @@ class Compra extends Conexion{
         try { 
             $conn=$this->getConnection();
             $this->conn->beginTransaction(); 
+
+            // Registrar la compra 
+                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, rif_proveedor, fecha, pago, monto, status) VALUES (:id_compra,  :id_proveedor,  :fech_emision, :id_modalidad_pago, :monto, 1)"); 
+                $stmt2->bindParam(':id_compra', $this->id_compra);  
+                $stmt2->bindParam(':id_proveedor', $this->id_proveedor); 
+                $stmt2->bindParam(':fech_emision', $this->fech_emision); 
+                $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
+                $stmt2->bindParam(':monto', $this->monto); 
+                $stmt2->execute(); 
+
+
             // Recorrer los arrays de productos y medidas
             for ($i = 0; $i < count($this->id_producto); $i++) {
                 $producto_id = $this->id_producto[$i];
@@ -300,22 +311,12 @@ class Compra extends Conexion{
                     return ['status' => false, 'msj' => "Producto no encontrado: ID $producto_id"];
                 }
     
-                // Registrar la compra 
-                $stmt2 = $this->conn->prepare("INSERT INTO compra (id_compra, id_producto, rif_proveedor, cantidad_compra, fecha, pago, monto, status) VALUES (:id_compra, :id_producto, :id_proveedor, :cantidad, :fech_emision, :id_modalidad_pago, :monto, 1)"); 
-                $stmt2->bindParam(':id_compra', $this->id_compra); 
-                $stmt2->bindParam(':id_producto', $producto_id); 
-                $stmt2->bindParam(':id_proveedor', $this->id_proveedor); 
-                $stmt2->bindParam(':cantidad', $cantidad); 
-                $stmt2->bindParam(':fech_emision', $this->fech_emision); 
-                $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
-                $stmt2->bindParam(':monto', $this->monto); 
-                $stmt2->execute(); 
+                
     
-                $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor (id_detalleCompraProveedor, id_facturaProveedor, id_producto, cantidad_compra) VALUES (:id_detalleproducto, :id_compra, :id_producto, :cantidad)"); 
+                $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor ( id_facturaProveedor, id_producto, cantidad_compra) VALUES ( :id_compra, :id_producto, :cantidad)"); 
                 $stmt3->bindParam(':id_compra', $this->id_compra); 
                 $stmt3->bindParam(':id_producto', $producto_id); 
                 $stmt3->bindParam(':cantidad', $cantidad); 
-                $stmt3->bindParam(':id_detalleproducto', $this->id_compra); 
                 $stmt3->execute(); 
         
                 // Sumar la cantidad al stock del producto
@@ -330,7 +331,7 @@ class Compra extends Conexion{
             $n = 5;
             $m = $this->id_modalidad_pago;
             if ($m == $n) {
-                $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_pagar (id_cuentaPagar, id_compra, fecha_cuentaPagar, monto_cuentaPagar) VALUES (:id_cuentaCobrar, :id_compra, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
+                $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_pagar (id_cuentaPagar, id_compra, fecha_cuentaPagar, monto_cuentaPagar, status) VALUES (:id_cuentaCobrar, :id_compra, :fecha_cuentaCobrar, :monto_cuentaCobrar, 1)"); 
                 $stmt5->bindParam(':id_compra', $this->id_compra); 
                 $stmt5->bindParam(':id_cuentaCobrar', $this->id_compra);
                 $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
@@ -383,11 +384,13 @@ class Compra extends Conexion{
                         m.nombre_modalidad,
                         v.monto,
                         GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
-                        GROUP_CONCAT(v.cantidad_compra SEPARATOR '\n ') AS cantidad
+                        GROUP_CONCAT(dp.cantidad_compra SEPARATOR '\n ') AS cantidad
                     FROM 
                         compra v 
                     LEFT JOIN 
-                        producto p ON p.id_producto = v.id_producto
+                        detalle_compra_proveedor dp ON dp.id_facturaProveedor = v.id_compra
+                    LEFT JOIN 
+                        producto p ON p.id_producto = dp.id_producto
                     LEFT JOIN 
                         proveedor c ON c.id_proveedor = v.rif_proveedor
                     LEFT JOIN 
@@ -405,7 +408,7 @@ class Compra extends Conexion{
         } 
         catch (PDOException $e) {
             // Deshacer la transacción en caso de excepción
-            $this->conn->rollBack();
+            
             echo "Error en la consulta: " . $e->getMessage();
             return false;
         }

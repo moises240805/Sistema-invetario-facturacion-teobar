@@ -104,6 +104,14 @@ class Manejo extends Conexion{
                     return $this->Guardar_Movimiento();
                 }
                 break;
+            case 'obtener':
+                $validacion=$this->setValideId($ingreso_data);
+                if(!$validacion['status']){
+                    return $validacion;
+                }else{
+                    return $this->Obtener_Movimiento($ingreso_data);
+                }
+                break;
 
             case 'consultar':
 
@@ -188,7 +196,7 @@ class Manejo extends Conexion{
         try{
             $conn=$this->getConnection();
             // Consulta SQL para seleccionar todos los registros de la tabla bitacora
-            $query = "SELECT * FROM movimientos_caja m
+            $query = "SELECT m.*,p.nombre_modalidad,c.nombre_caja FROM movimientos_caja m
             LEFT JOIN cajas c ON m.id_cajas=c.ID
             LEFT JOIN modalidad_de_pago p ON m.id_pago=p.id_modalidad_pago";
             // Prepara la consulta
@@ -197,6 +205,31 @@ class Manejo extends Conexion{
             $stmt->execute();
             // Retorna los resultados como un arreglo asociativo
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+
+
+
+        private function Obtener_Movimiento($id) {
+        $this->closeConnection();
+        try{
+            $conn=$this->getConnection();
+            // Consulta SQL para seleccionar todos los registros de la tabla bitacora
+            $query = "SELECT m.*,p.nombre_modalidad,c.nombre_caja FROM movimientos_caja m
+            LEFT JOIN cajas c ON m.id_cajas=c.ID
+            LEFT JOIN modalidad_de_pago p ON m.id_pago=p.id_modalidad_pago WHERE m.ID= :id";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id", $id);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } 
         catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];

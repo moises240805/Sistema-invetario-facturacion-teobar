@@ -340,110 +340,171 @@ class Venta extends Conexion{
 
 
 
-    private function Guardar_Venta() 
-    { 
-        $this->closeConnection();
-        try {
-            $conn = $this->getConnection(); 
-            $this->conn->beginTransaction(); 
-            
-            // Recorrer los arrays de productos y medidas
-            for ($i = 0; $i < count($this->id_producto); $i++) {
-                $producto_id = $this->id_producto[$i];
-                $medida_id = $this->id_medida[$i];
-                $cantidad = $this->cantidad[$i]; // Suponiendo que cantidad también es un array
-    
-                // Verificar la cantidad disponible del producto 
-                $stmt = $this->conn->prepare("SELECT cantidad FROM cantidad_producto WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-                $stmt->bindParam(':id_producto', $producto_id); 
-                $stmt->bindParam(':id_medida', $medida_id); 
-                $stmt->execute(); 
-                
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC); 
-                
-                // Verificar si se encontró el producto
-                if (!$producto) {
-                    // No se encontró el producto, hacer rollback y retornar error
-                    $this->conn->rollBack();
-                    return ['status' => false, 'msj' => "Producto no encontrado: ID $producto_id"];
-                }
+  private function Guardar_Venta() 
+{ 
+    // Cerrar conexión previa para evitar conflictos
+    $this->closeConnection();
+
+    try {
+        // Abrir nueva conexión a la base de datos
+        $conn = $this->getConnection(); 
+
+        // Iniciar transacción para asegurar integridad de datos
+        $this->conn->beginTransaction();
         
-                // Comprobar si hay suficiente cantidad
-                if ($producto['cantidad'] < $cantidad) { 
-                    $this->conn->rollBack();
-                    return ['status' => false, 'msj' => "Cantidad insuficiente para el producto ID $producto_id"];
-                } 
-                
-                // Registrar la venta 
-                $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_producto, id_cliente, cantidad, fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf, status) VALUES (:id_venta, :id_producto, :id_cliente, :cantidad, :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf, 1)"); 
-                $stmt2->bindParam(':id_venta', $this->id_venta); 
-                $stmt2->bindParam(':tipo_compra', $this->tipo_compra); 
-                $stmt2->bindParam(':tlf', $this->tlf); 
-                $stmt2->bindParam(':id_producto', $producto_id); 
-                $stmt2->bindParam(':id_cliente', $this->id_cliente); 
-                $stmt2->bindParam(':cantidad', $cantidad); 
-                $stmt2->bindParam(':fech_emision', $this->fech_emision);
-                $stmt2->bindParam(':fech_vencimiento', $this->fech_vencimiento);
-                $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago); 
-                $stmt2->bindParam(':monto', $this->monto); // Asegúrate de que el monto sea correcto para cada producto
-                $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega); 
-                $stmt2->bindParam(':rif_banco', $this->rif_banco); 
-                $stmt2->execute();
+         // Registrar la venta en la tabla 'venta'
+            $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_cliente,  fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf, status) VALUES (:id_venta, :id_cliente,  :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf, 1)");
+            $stmt2->bindParam(':id_venta', $this->id_venta);
+            $stmt2->bindParam(':tipo_compra', $this->tipo_compra);
+            $stmt2->bindParam(':tlf', $this->tlf);
+            $stmt2->bindParam(':id_cliente', $this->id_cliente);
+            $stmt2->bindParam(':fech_emision', $this->fech_emision);
+            $stmt2->bindParam(':fech_vencimiento', $this->fech_vencimiento);
+            $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago);
+            $stmt2->bindParam(':monto', $this->monto);
+            $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega);
+            $stmt2->bindParam(':rif_banco', $this->rif_banco);
+            $stmt2->execute();
+        
+        // Recorrer todos los productos que se están vendiendo
+        for ($i = 0; $i < count($this->id_producto); $i++) {
+            $producto_id = $this->id_producto[$i];   // ID del producto actual
+            $medida_id = $this->id_medida[$i];       // Unidad de medida de la venta (bulto, kg, gramos)
+            $cantidad = $this->cantidad[$i];         // Cantidad vendida en esa unidad
+
+            // Obtener la equivalencia en kg del producto (ejemplo: 1 bulto = 12 kg)
+            $stmtEquiv = $this->conn->prepare("SELECT equiv_kg FROM producto WHERE id_producto = :id_producto");
+            $stmtEquiv->bindParam(':id_producto', $producto_id);
+            $stmtEquiv->execute();
+            $productoEquiv = $stmtEquiv->fetch(PDO::FETCH_ASSOC);
+
+            // Si no se encuentra el producto, revertir y devolver error
+            if (!$productoEquiv) {
+                $this->conn->rollBack();
+                return ['status' => false, 'msj' => "Producto no encontrado para equivalencia: ID $producto_id"];
+            }
+
+            $equiv_kg = $productoEquiv['equiv_kg']; // Valor de equivalencia (kg por bulto)
+
+
+            
+            // Registrar el detalle de la venta en 'detalle_producto'
+            $stmt3 = $this->conn->prepare("INSERT INTO detalle_producto ( id_venta, id_producto, cantidad_producto, id_medida_especifica, precio) VALUES ( :id_venta, :id_producto, :cantidad, :id_medida, :monto)");
+            $stmt3->bindParam(':id_venta', $this->id_venta);
+            $stmt3->bindParam(':id_producto', $producto_id);
+            $stmt3->bindParam(':id_medida', $medida_id);
+            $stmt3->bindParam(':cantidad', $cantidad);
+ // Aquí usas id_venta como id_detalle_producto (podría mejorarse)
+            $stmt3->bindParam(':monto', $this->monto);
+            $stmt3->execute();
+
+            // Obtener todas las filas de inventario para el producto, con sus unidades de medida
+            $stmtCantidades = $this->conn->prepare("SELECT id_unidad_medida, cantidad FROM cantidad_producto WHERE id_producto = :id_producto");
+            $stmtCantidades->bindParam(':id_producto', $producto_id);
+            $stmtCantidades->execute();
+            $cantidadesProducto = $stmtCantidades->fetchAll(PDO::FETCH_ASSOC);
+
+            // Calcular la cantidad total a descontar en kilogramos según la unidad de venta
+            if ($medida_id == 3 ) { // Venta en bultos
+                $cantidadDescontarKg = $cantidad * $equiv_kg; // Convertir bultos a kg
+            } elseif ($medida_id == 7 ) { // Venta en kg
+                $cantidadDescontarKg = $cantidad * $equiv_kg;; // Ya está en kg
+            } elseif ($medida_id == 4) { // Venta en kg
+                $cantidadDescontarKg = $cantidad * $equiv_kg;; // Ya está en kg
+            } elseif ($medida_id == 1) { // Venta en kg
+                $cantidadDescontarKg = $cantidad; // Ya está en kg
+            } elseif ($medida_id == 5) { // Venta en kg
+                $cantidadDescontarKg = $cantidad; // Ya está en kg
+            } elseif ($medida_id == 2) { // Venta en gramos
+                $cantidadDescontarKg = $cantidad / 1000; // Convertir gramos a kg
+            } elseif ($medida_id == 6) { // Venta en gramos
+                $cantidadDescontarKg = $cantidad / 1000; // Convertir gramos a kg
+            }
+
+            // Recorrer cada unidad de inventario y descontar la cantidad proporcional
+            foreach ($cantidadesProducto as $fila) {
+                $unidadMedida = $fila['id_unidad_medida']; // Unidad de medida en inventario
+                $cantidadActual = $fila['cantidad'];       // Cantidad disponible en inventario
+                $cantidadADescontar = 0;
+
+                // Calcular la cantidad a descontar según la unidad de inventario
+                if ($unidadMedida == 1) { // kg
+                    $cantidadADescontar = $cantidadDescontarKg;
+                } elseif ($unidadMedida == 5) { // l
+                    $cantidadADescontar = $cantidadDescontarKg;
+                } elseif ($unidadMedida == 2) { // gramos
+                    $cantidadADescontar = $cantidadDescontarKg * 1000;
+                } elseif ($unidadMedida == 6) { // ml
+                    $cantidadADescontar = $cantidadDescontarKg * 1000;
+                } elseif ($unidadMedida == 3) { // bulto
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } elseif ($unidadMedida == 4) { // saco
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } elseif ($unidadMedida == 7) { // galon
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } else {
+                    $cantidadADescontar = 0; // Otras unidades (puedes agregar lógica)
+                }
 
                 
-                $stmt3 = $this->conn->prepare("INSERT INTO detalle_producto (id_detalle_producto, id_venta, id_producto, cantidad_producto, id_medida_especifica, precio) VALUES (:id_detalleproducto, :id_venta, :id_producto, :cantidad, :id_medida, :monto)"); 
-                $stmt3->bindParam(':id_venta', $this->id_venta); 
-                $stmt3->bindParam(':id_producto', $producto_id); 
-                $stmt3->bindParam(':id_medida', $medida_id); 
-                $stmt3->bindParam(':cantidad', $cantidad); 
-                $stmt3->bindParam(':id_detalleproducto', $this->id_venta); 
-                $stmt3->bindParam(':monto', $this->monto); // Asegúrate que monto sea correcto para cada producto 
-                $stmt3->execute(); 
-        
-                // Descontar la cantidad del producto 
-                $nueva_cantidad = $producto['cantidad'] - $cantidad; 
-                $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-                $stmt4->bindParam(':nueva_cantidad', $nueva_cantidad); 
-                $stmt4->bindParam(':id_producto', $producto_id); 
-                $stmt4->bindParam(':id_medida', $medida_id); 
-                $stmt4->execute(); 
+                /*
+                if ($cantidadActual < $cantidadADescontar) {
+                    $this->conn->rollBack();
+                    return ['status' => false, 'msj' => "Cantidad insuficiente para producto ID $producto_id en unidad de medida $unidadMedida"];
+                }
+                */
+
+                // Calcular nueva cantidad en inventario después del descuento
+                $nuevaCantidad = $cantidadActual - $cantidadADescontar;
+
+                // Actualizar la cantidad en inventario para esa unidad
+                $stmtUpdate = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida");
+                $stmtUpdate->bindParam(':nueva_cantidad', $nuevaCantidad);
+                $stmtUpdate->bindParam(':id_producto', $producto_id);
+                $stmtUpdate->bindParam(':id_medida', $unidadMedida);
+                $stmtUpdate->execute();
             }
-    
-            // Si tipo_compra es igual a 5 (según tu lógica)
-            $n = 5;
-            $m = $this->tipo_compra;
-            if ($m == $n) {
-                $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_cobrar (id_cuentaCobrar, id_venta, fecha_cuentaCobrar, monto_cuentaCobrar) VALUES (:id_cuentaCobrar, :id_venta, :fecha_cuentaCobrar, :monto_cuentaCobrar)"); 
-                $stmt5->bindParam(':id_venta', $this->id_venta); 
-                $stmt5->bindParam(':id_cuentaCobrar', $this->id_venta);
-                $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision); 
-                $stmt5->bindParam(':monto_cuentaCobrar', $this->monto); // Asegúrate que monto sea correcto
-                $stmt5->execute();  
-            }
-    
-            $id_actualizacion = 1;
-            $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
-            $stmt6->bindParam(':id_actualizacion', $id_actualizacion); 
-            $stmt6->bindParam(':id_producto', $producto_id); 
-            $stmt6->execute(); 
-    
-            // Confirmar la transacción solo si todas las operaciones fueron exitosas
-            if ($this->conn->inTransaction()) {
-                $this->conn->commit(); 
-            }
-            
-            return ['status' => true, 'msj' => 'Venta registrada correctamente']; 
-    
-        } catch (Exception $e) { 
-            // Revertir la transacción en caso de error 
-            if ($this->conn->inTransaction()) { 
-                $this->conn->rollBack(); 
-            } 
-            return ['status' => false, 'msj' => 'Error al registrar la venta: ' . $e->getMessage()]; 
-        } finally {
-            $this->closeConnection();
-        } 
+        }
+
+        // Si la modalidad de compra es tipo 5, registrar cuenta por cobrar
+        if ($this->tipo_compra == 5) {
+            $stmt5 = $this->conn->prepare("INSERT INTO cuenta_por_cobrar (id_cuentaCobrar, id_venta, fecha_cuentaCobrar, monto_cuentaCobrar, status) VALUES (:id_cuentaCobrar, :id_venta, :fecha_cuentaCobrar, :monto_cuentaCobrar,1)");
+            $stmt5->bindParam(':id_venta', $this->id_venta);
+            $stmt5->bindParam(':id_cuentaCobrar', $this->id_venta);
+            $stmt5->bindParam(':fecha_cuentaCobrar', $this->fech_emision);
+            $stmt5->bindParam(':monto_cuentaCobrar', $this->monto);
+            $stmt5->execute();
+        }
+
+        // Actualizar motivo de actualización del producto (marca que se actualizó inventario)
+        $id_actualizacion = 1;
+        $stmt6 = $this->conn->prepare("UPDATE producto SET id_motivoActualizacion = :id_actualizacion WHERE id_producto = :id_producto");
+        $stmt6->bindParam(':id_actualizacion', $id_actualizacion);
+        $stmt6->bindParam(':id_producto', $producto_id);
+        $stmt6->execute();
+
+        // Confirmar la transacción si todo fue exitoso
+        if ($this->conn->inTransaction()) {
+            $this->conn->commit();
+        }
+
+        // Retornar éxito
+        return ['status' => true, 'msj' => 'Venta registrada correctamente'];
+
+    } catch (Exception $e) {
+        // En caso de error, revertir transacción
+        if ($this->conn->inTransaction()) {
+            $this->conn->rollBack();
+        }
+        // Retornar error con mensaje
+        return ['status' => false, 'msj' => 'Error al registrar la venta: ' . $e->getMessage()];
+    } finally {
+        // Cerrar conexión al finalizar
+        $this->closeConnection();
     }
+}
+
+
     
     
 
@@ -454,7 +515,10 @@ class Venta extends Conexion{
         $conn = $this->getConnection();
         // Consulta SQL para seleccionar todos los registros de la tabla venta
         $query = "SELECT 
-                    v.id_venta, 
+                    v.*,
+                    dp.id_venta, 
+                    dp.id_producto,
+                    dp.cantidad_producto,
                     v.fech_emision, 
                     c.nombre_cliente AS nombre_cliente,
                     c.id_cliente,
@@ -463,16 +527,18 @@ class Venta extends Conexion{
                     c.direccion,
                     v.tipo_entrega,
                     b.nombre_banco,
-                    p.nombre AS nombre,
                     m.nombre_modalidad,
                     v.monto,
                     v.tlf,
-                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
-                    GROUP_CONCAT(v.cantidad SEPARATOR '\n ') AS cantidad
+                    p.nombre,
+                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombres,
+                    GROUP_CONCAT(dp.cantidad_producto SEPARATOR '\n ') AS cantidad
                   FROM 
                     venta v 
                   LEFT JOIN 
-                    producto p ON p.id_producto = v.id_producto
+                    detalle_producto dp ON dp.id_venta = v.id_venta
+                LEFT JOIN 
+                    producto p ON p.id_producto = dp.id_producto
                   LEFT JOIN 
                     cliente c ON c.id_cliente = v.id_cliente
                   LEFT JOIN 

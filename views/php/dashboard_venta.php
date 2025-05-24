@@ -108,7 +108,7 @@
                     ?>
                     <tr>
                         <td><?php echo htmlspecialchars($venta['id_venta']); ?></td>
-                        <td><?php echo nl2br(htmlspecialchars($venta['nombre'])); ?></td>
+                        <td><?php echo nl2br(htmlspecialchars($venta['nombres'])); ?></td>
                         <td><?php echo htmlspecialchars($venta['id_cliente']) . " " . htmlspecialchars($venta['nombre_cliente']); ?></td>
                         <td><?php echo nl2br(htmlspecialchars($venta['cantidad'])); ?></td>
                         <td><?php echo htmlspecialchars($venta['fech_emision']); ?></td>

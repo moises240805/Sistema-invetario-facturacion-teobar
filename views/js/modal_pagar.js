@@ -52,7 +52,7 @@ function abrirModal(id) {
         .then(data => {
            // Llenar los campos del formulario con los datos obtenidos
            document.getElementById('id_cuenta').value = data[0].id_cuentaPagar;
-           document.getElementById('proveedor').value = data[0].nombre_proveedor + ' ' + data[0].rif_proveedor;
+           document.getElementById('proveedor').value = data[0].nombre_proveedor + ' ' + data[0].tipo_id +'' + data[0].rif_proveedor;
        })
        .catch(error => console.error('Error:', error));
 }

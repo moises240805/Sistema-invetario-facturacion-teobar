@@ -103,7 +103,7 @@
             ?>
             <tr>
                 <td><?php echo $venta['id_cuentaPagar']; ?></td>
-                <td><?php echo $venta['rif_proveedor'] . " " . $venta['nombre_proveedor']; ?></td>
+                <td><?php echo $venta['tipo_id'].$venta['rif_proveedor'] . " " . $venta['nombre_proveedor']; ?></td>
                 <td><?php echo $venta['fecha_cuentaPagar']; ?></td>
                 <td><?php echo $venta['monto_cuentaPagar']; ?></td>
                 <td><?php echo $venta['nombre_modalidad']; ?></td>
@@ -156,7 +156,7 @@
                             <label for="monto" style="font-size: 18px;">Proveedor</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="text"  class="form-control" name="cliente" id="proveedor"  maxlength = "11" required>
+                            <input type="text"  class="form-control" name="cliente" id="proveedor"  maxlength = "11" required readonly>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center mb-4">

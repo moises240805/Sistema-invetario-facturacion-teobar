@@ -9,6 +9,7 @@ require_once 'models/Bitacora.php';
 require_once 'models/Roles.php';
 require_once "models/Caja.php";
 require_once 'views/php/utils.php';
+require_once "ReportController.php";
 date_default_timezone_set('America/Caracas');
 
 $ingreso = new Manejo();
@@ -134,6 +135,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         ]);
         // Convertir nuevamente a JSON
         $venta = json_encode($venta);
+        echo $venta;
         
 
         try {
@@ -158,6 +160,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
                     $bitacora->setBitacoraData($bitacora_data);
                     $bitacora->Guardar_Bitacora();
                     $ingreso->manejarAccion("agregar",$ingreso_data); 
+                    FacturaPDF($venta);
 
                     /*// Verificar stock después de la venta
                         $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
@@ -187,7 +190,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
             //setError("Error en operación");
         }
 
-        header("Location: index.php?action=venta&a=v"); // Redirect
+            require_once 'views/php/dashboard_venta.php';//header("Location: index.php?action=venta&a=v"); // Redirect
         exit();
     }
     //muestra un modal de info que dice acceso no permitido

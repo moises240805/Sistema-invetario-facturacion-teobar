@@ -28,6 +28,12 @@ switch ($action) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             agregarManejo($controller);
         }
+        break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerManejo($controller);
+        }
+        break;
     case "":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             consultarManejo($controller, $ingresoegreso, $cajas, $roles, $modulo);
@@ -36,8 +42,24 @@ switch ($action) {
     default:
         consultarManejo($controller, $ingresoegreso, $cajas, $roles, $modulo);
         break;
-
 }
+
+
+
+    function obtenerManejo($controller) {
+    $id = $_GET['ID'];
+    if (!filter_var($id, FILTER_VALIDATE_INT)) {
+        setError("ID inválido");
+        header("Location: index.php?actio=movimiento");
+        exit();
+    }
+
+    $accion="obtener";
+    $movimiento = $controller->manejarAccion($accion,$id);
+    header('Content-Type: application/json');
+    echo json_encode($movimiento);
+}
+
 
     function consultarManejo($controller, $ingresoegreso, $cajas, $roles, $modulo){
 

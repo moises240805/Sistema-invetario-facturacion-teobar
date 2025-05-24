@@ -383,7 +383,7 @@ function actualizarProducto($controller, $bitacora, $usuario, $modulo) {
         $id_producto = filter_input(INPUT_POST, 'id_producto', FILTER_VALIDATE_INT);
         $nombre_producto = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $marca = filter_input(INPUT_POST, 'marca', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $marca = filter_input(INPUT_POST, 'proveedor', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $proveedor = filter_input(INPUT_POST, 'proveedor', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $presentacion = filter_input(INPUT_POST, 'presentacion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $categoria = filter_input(INPUT_POST, 'categoria', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $fecha_registro = filter_input(INPUT_POST, 'fecha_registro', FILTER_SANITIZE_FULL_SPECIAL_CHARS);

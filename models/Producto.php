@@ -541,8 +541,8 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, enlace, status) 
-                      VALUES (:nombre_producto, :fech_vencimiento, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg enlace, status) 
+                      VALUES (:nombre_producto, :fech_vencimiento, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :peso, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
             $stmt->bindParam(":fech_vencimiento", $this->fech_vencimiento);
@@ -552,6 +552,7 @@ class Producto extends Conexion{
             $stmt->bindParam(":imagen", $this->imagen);
             $stmt->bindParam(":id_marca", $this->id_marca);
             $stmt->bindParam(":id_proveedor", $this->id_proveedor);
+            $stmt->bindParam(":peso", $this->peso);
 
             if (!$stmt->execute()) {
                 $conn->rollBack();
@@ -608,8 +609,8 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, enlace, status) 
-                      VALUES (:nombre_producto, :fech_venci, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :imagen, 1)";
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg enlace, status) 
+                      VALUES (:nombre_producto, :fech_venci, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, 1, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
             $stmt->bindParam(":fech_venci", $this->fech_vencimiento);

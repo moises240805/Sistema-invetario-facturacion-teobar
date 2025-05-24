@@ -986,4 +986,83 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $pdf->Output('D', 'reporte_compras_DE.pdf');
     }
+
+    function FacturaPDF($data) {
+        require_once 'libs/fpdf.php';
+        $datos = json_decode($data, true);
+
+        $pdf = new FPDF(); 
+        $pdf->AddPage(); 
+    
+
+    // --- Encabezado ---
+    $pdf->Image('views/img/logo.jpeg', 10, 10, 30);
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(0, 10, 'TEOBAR.CA.', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(0, 6, 'Venta de Materia Prima para Panaderia', 0, 1, 'C');
+    $pdf->Cell(0, 6, 'Calle 48 entre Carrera 13 y Callejon 11 Casa Nro 12-47 Zona Oeste - Barquisimeto, Estado Lara', 0, 1, 'C');
+    $pdf->Cell(0, 6, 'Telefono: (0424) 561-48-48', 0, 1, 'C');
+    $pdf->Cell(0, 6, 'RIF: J-31036859-7', 0, 1, 'C');
+    $pdf->Ln(5);
+
+    // --- Datos de la factura ---
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Cell(0, 10, 'FACTURA ELECTRÓNICA', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 10);
+
+    // Fecha y número de factura desde el JSON
+    $fechaFactura = date('d/m/Y', strtotime($data['fecha']));
+    $numeroFactura = $data['numeroFactura'];
+    $pdf->Cell(100, 6, "Fecha: $fechaFactura", 0, 0, 'L');
+    $pdf->Cell(0, 6, "Factura N°: $numeroFactura", 0, 1, 'R');
+    $pdf->Ln(5);
+
+    // Datos del cliente desde el JSON
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(0, 6, 'Datos del Cliente:', 0, 1);
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(0, 6, 'Nombre: ' . utf8_decode($data['cliente']['nombre']), 0, 1);
+    $pdf->Cell(0, 6, 'RIF/C.I.: ' . $data['cliente']['rif'], 0, 1);
+    $pdf->Cell(0, 6, 'Dirección: ' . utf8_decode($data['cliente']['direccion']), 0, 1);
+    $pdf->Cell(0, 6, 'Teléfono: ' . $data['cliente']['telefono'], 0, 1);
+    $pdf->Ln(8);
+
+    // --- Tabla de productos ---
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetFillColor(200, 200, 200);
+    $pdf->Cell(20, 10, 'Cant.', 1, 0, 'C', true);
+    $pdf->Cell(90, 10, 'Descripción', 1, 0, 'C', true);
+    $pdf->Cell(30, 10, 'Precio Unit.', 1, 0, 'C', true);
+    $pdf->Cell(30, 10, 'Total', 1, 1, 'C', true);
+
+    $pdf->SetFont('Arial', '', 10);
+
+    $totalFactura = 0;
+    foreach ($data['productos'] as $prod) {
+        $total = $prod['cantidad'] * $prod['precio_unit'];
+        $totalFactura += $total;
+
+        $pdf->Cell(20, 8, $prod['cantidad'], 1, 0, 'C');
+        $pdf->Cell(90, 8, utf8_decode($prod['descripcion']), 1);
+        $pdf->Cell(30, 8, number_format($prod['precio_unit'], 2, ',', '.'), 1, 0, 'R');
+        $pdf->Cell(30, 8, number_format($total, 2, ',', '.'), 1, 1, 'R');
+    }
+
+    // --- Totales ---
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(140, 10, 'TOTAL', 1, 0, 'R', true);
+    $pdf->Cell(30, 10, number_format($totalFactura, 2, ',', '.'), 1, 1, 'R', true);
+
+    $pdf->Ln(10);
+
+    // --- Pie de página ---
+    $pdf->SetFont('Arial', 'I', 9);
+    $pdf->Cell(0, 6, 'Gracias por su compra.', 0, 1, 'C');
+    $pdf->Cell(0, 6, 'Factura generada electrónicamente y válida sin firma.', 0, 1, 'C');
+
+    // Salida del PDF (descarga directa)
+    $pdf->Output('D', 'Factura_Electronica.pdf');
+
+    }
 ?>

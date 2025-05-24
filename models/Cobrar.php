@@ -234,6 +234,15 @@ private function Actualizar_Cuenta()
             $stmtUpdate->bindParam(":monto", $nuevoMonto);
 
             if ($stmtUpdate->execute()) {
+
+                // Si el nuevo monto es cero, actualizar el estatus a 0
+                if ($nuevoMonto == 0) {
+                    $queryStatusUpdate = "UPDATE cuenta_por_cobrar SET status = 0 WHERE id_cuentaCobrar = :id_cuenta";
+                    $stmtStatusUpdate = $conn->prepare($queryStatusUpdate);
+                    $stmtStatusUpdate->bindParam(":id_cuenta", $this->id_cuenta);
+                    $stmtStatusUpdate->execute();
+                }
+
                 // Confirmar la transacción
                 $conn->commit();
                 return ['status' => true, 'msj' => 'Cuenta actualizada correctamente'];

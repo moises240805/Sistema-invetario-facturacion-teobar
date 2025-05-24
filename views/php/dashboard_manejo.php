@@ -106,6 +106,7 @@
                 <th>Tipo de pago</th>
                 <th>Descripcion</th>
                 <th>Fecha</th>
+                <th>Accion</th>
             </tr>
         </thead>
         <tbody>
@@ -124,6 +125,11 @@
                 <td><?php echo $movimiento['nombre_modalidad']; ?></td>
                 <td><?php echo $movimiento['concepto']; ?></td>
                 <td><?php echo $movimiento['fecha']; ?></td>
+                <td>
+                    <a onclick="abrirModalModificar(<?php echo $movimiento['ID']; ?>)" title="Modificar">
+                        <img src="views/img/edit.png" width="30px" height="30px">
+                    </a>
+                </td>
 
             </tr>
             <?php
@@ -151,8 +157,9 @@
           <div class="row mb-3">
             <!-- Columna botones -->
             <div class="col-md-3 d-flex flex-column gap-2">
-              <form action="index.php?action=caja&a=open" method="post">
-                <button class="btn btn-primary w-100" type="submit">Aperturar Caja</button>
+              <button id="btnAperturarCaja" class="btn btn-primary w-100" type="button">Aperturar Caja</button>
+              <form id="formAperturarCaja" action="index.php?action=caja&a=open" method="post" style="display:none;">
+                <input type="hidden" name="status" id="statusInput" value="">
               </form>
               <form action="index.php?action=caja&a=close" method="post">
                 <button class="btn btn-primary w-100" type="submit">Cerrar Caja</button>
@@ -203,13 +210,13 @@
                 <tbody>
                   <?php 
                   if(isset($status) && is_array($status) && !empty($status)){
-                    foreach ($status as $item): ?>
+                    foreach ($status as $items): ?>
                       <tr>
-                        <td><?php echo htmlspecialchars($item["ID"]); ?></td>
-                        <td><?php echo htmlspecialchars($item["nombre_caja"]); ?></td>
-                        <td><?php echo htmlspecialchars($item['tipo_movimiento']); ?></td>
-                        <td><?php echo htmlspecialchars($item['monto']); ?></td>
-                        <td><?php echo htmlspecialchars($item['Fecha_hora']); ?></td>
+                        <td><?php echo htmlspecialchars($items["ID"]); ?></td>
+                        <td><?php echo htmlspecialchars($items["nombre_caja"]); ?></td>
+                        <td><?php echo htmlspecialchars($items['tipo_movimiento']); ?></td>
+                        <td><?php echo htmlspecialchars($items['monto']); ?></td>
+                        <td><?php echo htmlspecialchars($items['Fecha_hora']); ?></td>
                       </tr>
                   <?php
                     endforeach; 
@@ -232,7 +239,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="ingresosEgresosModal" tabindex="-1" aria-labelledby="ingresosEgresosModalLabel" aria-hidden="true">
+<div class="modal fade " id="ingresosEgresosModal" tabindex="-1" aria-labelledby="ingresosEgresosModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl "> <!-- modal-xl para mayor ancho, scrollable para scroll si hay mucho contenido -->
     <div class="modal-content">
       <div class="modal-header">
@@ -289,11 +296,77 @@
 </div>
 
 
+<div id="modalModificar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalModificarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="titulo_form text-center" id="modalModificarLabel">Movimiento Seleccionado</h1>
+              <button type="button" class="close" onclick="cerrarModalModificar()">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form id="formMovimiento" autocomplete="off">
+  <div class="mb-3">
+    <label for="id" class="form-label">Nro de movimiento</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="id" name="id" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="caja" class="form-label">Caja</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="caja" name="caja" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="movimiento" class="form-label">Tipo de Movimiento</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="movimiento" name="movimiento" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="monto" class="form-label">Monto</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="monto" name="monto" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="modalidad" class="form-label">Modalidad</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="modalidad" name="modalidad" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="concepto" class="form-label">Concepto</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="concepto" name="concepto" readonly>
+  </div>
+  <div class="mb-3">
+    <label for="fecha" class="form-label">Fecha</label>
+    <input style="width: 26rem;" type="text" class="form-control" id="fecha" name="fecha" readonly>
+  </div>
+  <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalModificar()">Cancelar</button>
+                </div>
+</form>
+</div>
+    </div>   
+</div>
 
 
+<script>
+document.getElementById('btnAperturarCaja').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Confirmar apertura',
+        text: '¿Desea aperturar la caja en $0.00?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, aperturar',
+        cancelButtonText: 'No, cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('statusInput').value = '1';
+            document.getElementById('formAperturarCaja').submit();
+        } else {
+            document.getElementById('statusInput').value = '0';
+            document.getElementById('formAperturarCaja').submit();
+        }
+    });
+});
+</script>
  
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>
+<script src="views/js/modal_movimiento.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>
 
 </body>

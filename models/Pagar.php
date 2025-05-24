@@ -150,6 +150,15 @@ class Pagar extends Conexion{
             $stmtUpdate->bindParam(":monto", $nuevoMonto);
 
             if ($stmtUpdate->execute()) {
+
+                // Si el nuevo monto es cero, actualizar el estatus a 0
+                if ($nuevoMonto == 0) {
+                    $queryStatusUpdate = "UPDATE cuenta_por_pagar SET status = 0 WHERE id_cuentaPagar = :id_cuenta";
+                    $stmtStatusUpdate = $conn->prepare($queryStatusUpdate);
+                    $stmtStatusUpdate->bindParam(":id_cuenta", $this->id_cuenta);
+                    $stmtStatusUpdate->execute();
+                }
+
                 // Confirmar la transacción
                 $conn->commit();
                 return ['status' => true, 'msj' => 'Cuenta actualizada correctamente'];
@@ -177,6 +186,7 @@ class Pagar extends Conexion{
                     c.monto_cuentaPagar,
                     p.nombre_proveedor, 
                     v.rif_proveedor,
+                    p.tipo_id,
                     m.nombre_modalidad,
                     GROUP_CONCAT(v.id_compra SEPARATOR '\n ') AS id_venta,
                     GROUP_CONCAT(v.fecha SEPARATOR '\n ') AS fechas_ventas,
@@ -208,7 +218,8 @@ private function obtenerCuentasID($id_cuenta) {
                 c.fecha_cuentaPagar, 
                 c.monto_cuentaPagar,
                 p.nombre_proveedor, 
-                v.rif_proveedor
+                v.rif_proveedor,
+                p.tipo_id
               FROM 
                 cuenta_por_pagar c
               LEFT JOIN 

@@ -148,7 +148,7 @@ class Caja extends Conexion{
                 return $this->Mostrar_Movimiento_Caja();
             break;
             case 'open':
-                return $this->Open_Caja();
+                return $this->Open_Caja($caja);
             break;
             case 'close':
                 return $this->Close_Caja();
@@ -223,12 +223,65 @@ class Caja extends Conexion{
         $this->closeConnection();
     }
 
-    private function Open_Caja() {
+    private function Open_Caja($caja) {
         $this->closeConnection();
         try {
             $conn = $this->getConnection();
             $conn->beginTransaction();
     
+            if($caja==1){
+
+
+               // 1. Actualizar cajas cerradas a abiertas
+            $updateQuery = "UPDATE cajas SET status=1 WHERE status=0";
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->execute();
+    
+            // Verificar si se actualizaron filas
+            $rowCount = $updateStmt->rowCount();
+            if ($rowCount === 0) {
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'No hay cajas cerradas para abrir'];
+            }
+    
+            // 2. Obtener TODAS las cajas 
+            $selectQuery = "SELECT * FROM cajas";
+            $selectStmt = $conn->prepare($selectQuery);
+            $selectStmt->execute();
+            $cajas = $selectStmt->fetchAll(PDO::FETCH_ASSOC); 
+    
+            if (count($cajas) < 2) { // Verificar que haya al menos 2 cajas
+                $conn->rollBack();
+                return ['status' => false, 'msj' => 'Se necesitan al menos 2 cajas abiertas'];
+            }
+    
+            // 3. Acceder correctamente a los datos del array
+            $saldo1 = 0.00; // Primer elemento del array
+            $saldo2 = 0.00; // Segundo elemento del array
+            $id_cajas1 = $cajas[0]['ID']; 
+            $id_cajas2 = $cajas[1]['ID'];
+            $movimiento = "Apertura";
+            $fecha = date('Y-m-d H:i:s');
+    
+            $insertQuery = "INSERT INTO AperturaCierreCaja 
+                            (id_cajas, tipo_movimiento, monto, Fecha_hora) 
+                            VALUES  
+                            (:id_cajas1, :movimiento, :saldo1, :fecha),
+                            (:id_cajas2, :movimiento, :saldo2, :fecha)";
+    
+            $insertStmt = $conn->prepare($insertQuery);
+            $insertStmt->bindParam(":id_cajas1", $id_cajas1);
+            $insertStmt->bindParam(":id_cajas2", $id_cajas2);
+            $insertStmt->bindParam(":movimiento", $movimiento);
+            $insertStmt->bindParam(":saldo1", $saldo1);
+            $insertStmt->bindParam(":saldo2", $saldo2);
+            $insertStmt->bindParam(":fecha", $fecha);
+            $insertStmt->execute();
+
+            $conn->commit();
+            return ['status' => true, 'msj' => 'Cajas abiertas en $0.00 y registros creados correctamente'];
+
+            }
             // 1. Actualizar cajas cerradas a abiertas
             $updateQuery = "UPDATE cajas SET status=1 WHERE status=0";
             $updateStmt = $conn->prepare($updateQuery);

@@ -233,7 +233,7 @@ function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $pro
         $pagos = $modelo->manejarAccion("obtenerPagos", null);
 
         // 1. Compras por mes
-        $comprasPorMes = [];
+        /*$comprasPorMes = [];
         foreach ($compras as $c) {
             $mes = date('F', strtotime($c['fecha'])); // Ejemplo: "January"
             if (!isset($comprasPorMes[$mes])) {
@@ -278,7 +278,7 @@ function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $pro
             $comprasPorProducto[$producto] += $c['monto'];
         }
         $labelsProductoCompra = array_keys($comprasPorProducto);
-        $dataProductoCompra = array_values($comprasPorProducto);
+        $dataProductoCompra = array_values($comprasPorProducto);*/
 
         require_once "views/php/dashboard_compra.php";
     } else {

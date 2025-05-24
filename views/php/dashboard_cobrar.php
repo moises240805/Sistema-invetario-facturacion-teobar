@@ -156,7 +156,7 @@
                             <label for="monto" style="font-size: 18px;">Cliente</label>
                         </div>
                         <div class="col-md-10">
-                            <input type="text"  class="form-control" name="cliente" id="cliente"  maxlength = "11" required>
+                            <input type="text"  class="form-control" name="cliente" id="cliente"  maxlength = "11" required readonly>
                         </div>
                     </div>
                     <div class="form-group row justify-content-center mb-4">
