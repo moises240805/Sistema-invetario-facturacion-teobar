@@ -496,16 +496,18 @@ class Compra extends Conexion{
                         m.nombre_modalidad,
                         v.monto,
                         GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
-                        GROUP_CONCAT(v.cantidad_compra SEPARATOR '\n ') AS cantidad
+                        GROUP_CONCAT(dp.cantidad_compra SEPARATOR '\n ') AS cantidad
                     FROM 
                         compra v 
                     LEFT JOIN 
-                        producto p ON p.id_producto = v.id_producto
+                        detalle_compra_proveedor dp ON dp.id_facturaProveedor = v.id_compra
+                    LEFT JOIN 
+                        producto p ON p.id_producto = dp.id_producto
                     LEFT JOIN 
                         proveedor c ON c.id_proveedor = v.rif_proveedor
                     LEFT JOIN 
                         modalidad_de_pago m ON m.id_modalidad_pago = v.pago
-                    WHERE v.pago=$compra
+                    WHERE v.status=1 AND v.pago=$compra
                     GROUP BY 
                         v.id_compra"; 
         
@@ -517,8 +519,7 @@ class Compra extends Conexion{
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } 
         catch (PDOException $e) {
-            // Deshacer la transacción en caso de excepción
-            $this->conn->rollBack();
+            
             echo "Error en la consulta: " . $e->getMessage();
             return false;
         }

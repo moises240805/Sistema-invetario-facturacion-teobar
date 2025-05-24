@@ -68,8 +68,8 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Compras</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#reporteModal"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</button>
                     </div>
 
                     <!-- Content Row -->
@@ -501,15 +501,126 @@ document.addEventListener('DOMContentLoaded', () => {
   const labelsCompra = <?php echo json_encode($labelsCompra); ?>;
   const dataCompra = <?php echo json_encode($dataCompra); ?>;
 
+  const labelsProductoCompra = <?php echo json_encode($labelsProductoCompra); ?>;
+  const dataProductoCompra = <?php echo json_encode($dataProductoCompra); ?>;
+
   const labelsProveedor = <?php echo json_encode($labelsProveedor); ?>;
   const dataProveedor = <?php echo json_encode($dataProveedor); ?>;
 
   const labelsModalidadCompra = <?php echo json_encode($labelsModalidadCompra); ?>;
   const dataModalidadCompra = <?php echo json_encode($dataModalidadCompra); ?>;
-
-  const labelsProductoCompra = <?php echo json_encode($labelsProductoCompra); ?>;
-  const dataProductoCompra = <?php echo json_encode($dataProductoCompra); ?>;
 </script>
+
+
+<div class="modal fade" id="reporteModal" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Reporte de Compras</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" >
+        <div class="row justify-content-center  align-items-center">
+          <!-- Columna de botones -->
+          <div class="col-md-5 col-lg-8 mb-4">
+            <div class="d-flex flex-column gap-3">
+                <button type="button" data-toggle="modal" data-target="#reporteModal1" class="btn btn-outline-primary btn-lg mb-3">Compras Por Mes</button>
+                <button type="button" data-toggle="modal" data-target="#reporteModal2" class="btn btn-outline-primary btn-lg mb-3">Compras Por Productos</button>
+                <button type="button" data-toggle="modal" data-target="#reporteModal3" class="btn btn-outline-primary btn-lg mb-3">Compras Por Proveedores</button>
+                <button type="button" data-toggle="modal" data-target="#reporteModal4" class="btn btn-outline-primary btn-lg">Compras por Modalidad de Pago</button>
+            </div>
+          </div>
+          <!-- Columna de tarjeta -->
+         <div class="col-md-5 col-lg-8 mb-4">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <h4 class="text-center">Compras</h4>
+                            <form method="POST" action="index.php?action=reportes">
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" type="submit" name="compras_pdf"><b>PDF</b></button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="opciones">Filtrar por:</label>
+                                    <select name="option" id="opciones" class="form-control">
+                                        <option value="">...</option>
+                                        <option value="trans_c">Transferencias</option>
+                                        <option value="movil_c">Pago móvil</option>
+                                        <option value="divisa_c">Divisa y efectivo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-secondary btn-block" type="submit" name="enviar_opcion"><b>Filtrar</b></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+      <div class="modal-footer justify-content-center">
+        <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="reporteModal1" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Compras por Mes</h5>
+      </div>
+            <canvas id="graficaVentas" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="reporteModal2" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Compras por Producto</h5>
+      </div>
+            <canvas id="graficaProducto" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="reporteModal3" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Compras por Proveedor</h5>
+      </div>
+            <canvas id="graficaCliente" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="reporteModal4" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel4" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Compras por Modalidad de Pago</h5>
+      </div>
+            <canvas id="graficaModalidad" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
 
 
 <script>
@@ -547,6 +658,7 @@ function actualizarProductosPorProveedor() {
 
 
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
+<script src="views/js/reports/Compra.js"></script>
 <script src="views/js/jquery.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>
 </body>

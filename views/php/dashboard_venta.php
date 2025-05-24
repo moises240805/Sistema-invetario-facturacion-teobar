@@ -68,8 +68,8 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Ventas</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#reporteModal"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</button>
                     </div>
 
                     <!-- Content Row -->
@@ -80,6 +80,7 @@
             <button type="button" id="myBtn" class="btn btn-primary" data-toggle="modal" data-target="#agregarVentaModal">
     Agregar Venta +
 </button>
+            
         </div>
         <div class="card-body">
         <div class="table-responsive">
@@ -511,22 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-
-
-
-<h2>Ventas por Mes</h2>
-    <canvas id="graficaVentas" width="400" height="200"></canvas>
-
-    <h2>Ventas por Producto</h2>
-    <canvas id="graficaProducto" width="400" height="200"></canvas>
-
-    <h2>Ventas por Cliente</h2>
-    <canvas id="graficaCliente" width="400" height="200"></canvas>
-
-    <h2>Ventas por Modalidad de Pago</h2>
-    <canvas id="graficaModalidad" width="400" height="200"></canvas>
-
-    <!-- Paso las variables PHP a JavaScript en un bloque script -->
+<!-- Paso las variables PHP a JavaScript en un bloque script -->
     <script>
       const labels = <?php echo json_encode($labels); ?>;
       const data = <?php echo json_encode($data); ?>;
@@ -541,8 +527,39 @@ document.addEventListener('DOMContentLoaded', () => {
       const dataModalidad = <?php echo json_encode($dataModalidad); ?>;
     </script>
 
-<div class="row justify-content-center">
-                <div class="col-md-4 mb-4">
+    
+
+    <h2></h2>
+
+
+    <h2></h2>
+
+
+<div class="modal fade" id="reporteModal" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Reporte de Ventas</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" >
+        <div class="row justify-content-center  align-items-center">
+          <!-- Columna de botones -->
+          <div class="col-md-5 col-lg-8 mb-4">
+            <div class="d-flex flex-column gap-3">
+              <button type="button" data-toggle="modal" data-target="#reporteModal1" class="btn btn-outline-primary btn-lg mb-3">Ventas Por Mes</button>
+              <button type="button" data-toggle="modal" data-target="#reporteModal2" class="btn btn-outline-primary btn-lg mb-3">Ventas Por Productos</button>
+              <button type="button" data-toggle="modal" data-target="#reporteModal3" class="btn btn-outline-primary btn-lg mb-3">Ventas Por Clientes</button>
+              <button type="button" data-toggle="modal" data-target="#reporteModal4" class="btn btn-outline-primary btn-lg">Ventas por Modalidad de Pago</button>
+            </div>
+          </div>
+          <!-- Columna de tarjeta -->
+          <div class="row justify-content-center">
+                <div class="col-md-5 col-lg-8 mb-4">
                     <div class="card shadow">
                         <div class="card-body">
                             <h4 class="text-center">Ventas</h4>
@@ -566,10 +583,67 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                 </div>
+        </div>
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="reporteModal1" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Ventas por Mes</h5>
+      </div>
+            <canvas id="graficaVentas" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="reporteModal2" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Ventas por Producto</h5>
+      </div>
+            <canvas id="graficaProducto" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="reporteModal3" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Ventas por Cliente</h5>
+      </div>
+            <canvas id="graficaCliente" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
 
 
 
 
+<div class="modal fade" id="reporteModal4" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel4" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Ventas por Modalidad de Pago</h5>
+      </div>
+            <canvas id="graficaModalidad" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
                 
                 
 

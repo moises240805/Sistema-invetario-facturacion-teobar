@@ -73,6 +73,63 @@ switch ($action) {
             $ingresosegresos = $ingresoegreso->manejarAccion("consultar",null);
             $caja = $cajas->manejarAccion("consultar",null);
             $status = $cajas->manejarAccion("movimiento",null);
+
+
+            // Inicializamos arreglo para acumular por mes (formato YYYY-MM)
+            $totalesPorMes = [];
+
+            foreach ($movimiento as $mov) {
+                $fecha = $mov['fecha']; // o el nombre real del campo fecha
+                $mes = date('Y-m', strtotime($fecha)); // extraemos año-mes
+
+                $tipo = strtolower($mov['tipo_movimiento']); // ingreso o egreso (normalizamos a minúsculas)
+                $monto = floatval($mov['monto_movimiento']); // monto convertido a float
+
+                if (!isset($totalesPorMes[$mes])) {
+                    $totalesPorMes[$mes] = ['ingreso' => 0, 'egreso' => 0];
+                }
+
+                if ($tipo === 'ingreso') {
+                    $totalesPorMes[$mes]['ingreso'] += $monto;
+                } elseif ($tipo === 'egreso') {
+                    $totalesPorMes[$mes]['egreso'] += $monto;
+                }
+            }
+
+            // Ahora $totalesPorMes tiene estructura:
+            // [
+            //   "2025-03" => ['ingreso' => 500, 'egreso' => 50],
+            //   "2025-04" => ['ingreso' => 300, 'egreso' => 0],
+            //   ...
+            // ]
+
+            // Opcional: preparar arrays para etiquetas y datos para Chart.js
+            $labels = array_keys($totalesPorMes);
+            $ingresos = array_column($totalesPorMes, 'ingreso');
+            $egresos = array_column($totalesPorMes, 'egreso');
+
+            $datosGrafico = [
+    'labels' => $labels,
+    'datasets' => [
+        [
+            'label' => 'Ingresos',
+            'backgroundColor' => 'rgba(75, 192, 192, 0.6)',
+            'borderColor' => 'rgba(75, 192, 192, 1)',
+            'borderWidth' => 1,
+            'data' => $ingresos,
+        ],
+        [
+            'label' => 'Egresos',
+            'backgroundColor' => 'rgba(255, 99, 132, 0.6)',
+            'borderColor' => 'rgba(255, 99, 132, 1)',
+            'borderWidth' => 1,
+            'data' => $egresos,
+        ]
+    ]
+];
+
+
+
             require_once 'views/php/dashboard_manejo.php';
             exit();
             }

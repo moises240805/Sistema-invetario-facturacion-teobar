@@ -323,9 +323,8 @@ class Venta extends Conexion{
                 break;
 
             case 'eliminar':
-
-                    return $this->Eliminar_Venta($venta);
-                
+                return $this->Eliminar_Venta($venta);
+                break;
 
             case 'consultar':
                 return $this->Mostrar_Venta();
@@ -568,7 +567,10 @@ class Venta extends Conexion{
         $conn = $this->getConnection();
         // Consulta SQL para seleccionar todos los registros de la tabla venta
         $query = "SELECT 
-                    v.id_venta, 
+                    v.*,
+                    dp.id_venta, 
+                    dp.id_producto,
+                    dp.cantidad_producto,
                     v.fech_emision, 
                     c.nombre_cliente AS nombre_cliente,
                     c.id_cliente,
@@ -577,23 +579,25 @@ class Venta extends Conexion{
                     c.direccion,
                     v.tipo_entrega,
                     b.nombre_banco,
-                    p.nombre AS nombre,
                     m.nombre_modalidad,
                     v.monto,
                     v.tlf,
-                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombre,
-                    GROUP_CONCAT(v.cantidad SEPARATOR '\n ') AS cantidad
+                    p.nombre,
+                    GROUP_CONCAT(p.nombre SEPARATOR '\n ') AS nombres,
+                    GROUP_CONCAT(dp.cantidad_producto SEPARATOR '\n ') AS cantidad
                   FROM 
                     venta v 
                   LEFT JOIN 
-                    producto p ON p.id_producto = v.id_producto
+                    detalle_producto dp ON dp.id_venta = v.id_venta
+                LEFT JOIN 
+                    producto p ON p.id_producto = dp.id_producto
                   LEFT JOIN 
                     cliente c ON c.id_cliente = v.id_cliente
                   LEFT JOIN 
                     bancos b ON b.rif_banco = v.rif_banco
                   LEFT JOIN 
                     modalidad_de_pago m ON m.id_modalidad_pago = v.id_modalidad_pago
-                  WHERE v.id_modalidad_pago=$venta 
+                  WHERE v.status = 1 AND v.id_modalidad_pago=$venta 
                   GROUP BY 
                     v.id_venta"; 
     

@@ -69,8 +69,8 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Movimientos</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#reporteModal"><i
+                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</button>
                     </div>
 <!-- Botón para abrir el modal -->
 <center>
@@ -363,9 +363,67 @@ document.getElementById('btnAperturarCaja').addEventListener('click', function()
     });
 });
 </script>
+
+
+
+<script>
+  const datosMovimientos = <?php echo json_encode($datosGrafico, JSON_NUMERIC_CHECK); ?>;
+</script>
+
+
+
+<div class="modal fade" id="reporteModal" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Reporte de Compras</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body" >
+        <div class="row justify-content-center  align-items-center">
+          <!-- Columna de botones -->
+          <div class="col-md-5 col-lg-8 mb-4">
+            <div class="d-flex flex-column gap-3">
+                <button type="button" data-toggle="modal" data-target="#reporteModal1" class="btn btn-outline-primary btn-lg mb-3">Ingresos / Egresos Por Mes</button>
+        
+            </div>
+          </div>
+          <!-- Columna de tarjeta -->
+         
+
+      <div class="modal-footer justify-content-center">
+        <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="reporteModal1" tabindex="-1" role="dialog" aria-labelledby="reporteModalLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reporteModalLabel">Ingresos / Egresos por Mes</h5>
+      </div>
+        <canvas id="graficaMovimientos"></canvas>
+
+        <div class="modal-footer justify-content-center">
+        <button type="button" onclick="cerrarModal()" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
  
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>
+<script src="views/js/reports/Movimiento.js"></script>
 <script src="views/js/modal_movimiento.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>
 
