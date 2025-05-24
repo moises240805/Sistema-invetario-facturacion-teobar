@@ -120,7 +120,7 @@
                             <td><?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?></td>
                             <td><?php echo nl2br(htmlspecialchars($producto['peso'])); ?></td>
-                            <td><?php echo nl2br(htmlspecialchars($producto['precio'])); ?></td>
+                            <td class="precio-dolar"><?php echo nl2br(htmlspecialchars($producto['precio'])); ?></td>
                             <td><?php echo $producto['nombre_motivo']; ?></td>
                             <td>
                                 <a onclick="abrirModalModificar(<?php echo $producto['id_producto']; ?>)" title="Modificar"><img src="views/img/edit.png" width="30px" height="30px"></a>
@@ -779,6 +779,27 @@
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>
+<script>
+fetch("https://ve.dolarapi.com/v1/dolares/oficial")
+.then(response => response.json())
+.then(data => {
+    const precioDolar = parseFloat(data.promedio);
+
+    const preciosDolar = document.querySelectorAll('.precio-dolar');
+
+    preciosDolar.forEach(celda => {
+        let precioUSD = parseFloat(celda.textContent.replace(/[^0-9.]/g, ''));
+        if (!isNaN(precioUSD)) {
+            let precioEnBs = (precioUSD * precioDolar).toFixed(2);
+            celda.textContent = `${precioUSD.toFixed(2)} USD / Bs ${precioEnBs}`;
+        } else {
+            celda.textContent = "N/A";
+        }
+    });
+})
+
+</script>
+
 
 </body>
 </html>
