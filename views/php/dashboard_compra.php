@@ -143,68 +143,60 @@
             <form class="formulario2" action="index.php?action=compra&a=agregar" method="post" name="form">
                 <div class="modal-body">
                     <div class="container-fluid">
-                        <table class="table table-bordered" id="tablaFormulario">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="form-group">
-                                            <label for="id_venta">Nro Compra</label>
-                                            <input type="text" class="form-control" name="id_compra" placeholder="Nro Compra" maxlength="11"required oninput="validateInput(this)">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_compra">Nro Compra</label>
+                                    <input type="text" class="form-control" name="id_compra" placeholder="Nro Compra" maxlength="11" required oninput="validateInput(this)" value="<?=$numero_compra; ?>" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="id_proveedor">Proveedor</label>
+                                    <div class="input-group">
+                                        <select name="id_proveedor" id="id_proveedor" class="form-control" onchange="actualizarProductosPorProveedor()">
+                                            <option value="">Seleccione Proveedor</option>
+                                            <?php foreach ($proveedores as $proveedor): ?>
+                                                <option value="<?php echo $proveedor['id_proveedor']; ?>">
+                                                    <?php echo $proveedor['nombre_proveedor']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <div class="input-group-append">
+                                            <a class="btn btn-success" style="text-decoration: none;" href="crud_proveedor.php?action=formulario">+</a>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <label for="id_cliente">Proveedor</label>
-                                            <div class="input-group">
-                                                <select name="id_proveedor" class="form-control">
-                                                    <option value="">Seleccione Proveedor</option>
-                                                    <?php foreach ($proveedores as $proveedor): ?>
-                                                        <option value="<?php echo $proveedor['id_proveedor']; ?>">
-                                                            <?php echo $proveedor['nombre_proveedor']; ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                                <div class="input-group-append">
-                                                    <a class="btn btn-success" style="text-decoration: none;" href="crud_proveedor.php?action=formulario">+</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <label>Tipo de pago</label>
-                                            <select name="id_modalidad_pago" class="form-control">
-                                                <option value="">Seleccione pago</option>
-                                                <?php foreach ($pagos as $pago): ?>
-                                                    <option value="<?php echo $pago['id_modalidad_pago']; ?>">
-                                                        <?php echo $pago['nombre_modalidad']; ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-group">
-                                            <label for="id_banco">Banco</label>
-                                            <select name="rif_banco" class="form-control">
-                                                <option value="">Seleccione Banco</option>
-                                                <?php foreach ($bancos as $banco): ?>
-                                                    <option value="<?php echo $banco['rif_banco']; ?>">
-                                                        <?php echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
-                                                    </option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tipo de pago</label>
+                                    <select id="id_modalidad_pago" name="id_modalidad_pago" class="form-control">
+                                        <option value="">Seleccione pago</option>
+                                        <?php foreach ($pagos as $pago): ?>
+                                            <option value="<?php echo $pago['id_modalidad_pago']; ?>">
+                                                <?php echo $pago['nombre_modalidad']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="row">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="fech_emision">F/E</label>
-                                            <input type="date" id="fecha_registro" name="fech_emision" class="form-control" placeholder="fecha_emision" required>
+                                            <input type="date" id="fecha_registro" name="fech_emision" class="form-control" required>
                                         </div>
-                                    </td>
-                                    <td>
+                                    </div>
+                                                                        <div class="col-md-4" id="campo_caducidad" >
+                                        <div class="form-group">
+                                            <label for="fecha_caducidad">F/C</label>
+                                            <input type="date" id="fecha_caducidad" name="fecha_caducidad" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="tipo_entrega">Tipo entrega</label>
                                             <select name="tipo_entrega" class="form-control">
@@ -213,53 +205,83 @@
                                                 <option value="Delivery">Delivery</option>
                                             </select>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="rif_banco">Banco</label>
+                                            <select name="rif_banco" id="rif_banco" class="form-control">
+                                                <option value="">Seleccione Banco</option>
+                                                <?php foreach ($bancos as $banco): ?>
+                                                    <option value="<?php echo $banco['rif_banco']; ?>">
+                                                        <?php echo $banco['rif_banco'] . ' ' . $banco['nombre_banco']; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                        </div>
+                        <hr>
+
+                        <table class="table table-bordered" id="tablaFormulario">
+                            <thead>
                                 <tr>
-                                    <td colspan="3"><hr></td>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Monto</th>
+                                    <th>Acciones</th>
                                 </tr>
+                            </thead>
+                            <tbody>
                                 <tr id="filaTemplate">
                                     <td>
                                         <div class="form-group">
-                                            <label>Producto</label>
-                                            <select name="id_producto[]" class="form-control" oninput="obtenerPrecioProducto()">
+                                            <select name="id_producto[]" id="id_producto" class="form-control productoSelect" oninput="obtenerPrecioProducto()">
                                                 <option>Seleccione un producto</option>
-                                                <?php foreach ($productos as $producto): ?>
-                                                    <option value="<?php echo htmlspecialchars(json_encode(['id_producto' => $producto['id_producto'], 'id_unidad_medida' => $producto['id_unidad_medida']])); ?>">
-                                                        <?php echo $producto['nombre'] . ' ' . $producto['presentacion'] . ' ' . ($producto['nombre_medida']); ?>
-                                                    </option>
-                                                <?php endforeach; ?>
+                                                <!-- Opciones llenadas dinámicamente -->
                                             </select>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <label>Cantidad</label>
-                                            <input type="text" name="cantidad[]" class="form-control" placeholder="cantidad" maxlength="11" required oninput="obtenerPrecioProducto()">
+                                            <input type="number" name="cantidad[]" class="form-control cantidadInput" maxlength="10" placeholder="Cantidad" oninput="obtenerPrecioProducto()" required value="1">
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <label>Monto</label>
-                                            <input type="text" step="0.01" name="monto" class="form-control" placeholder="monto" maxlength="11" required>
+                                            <input type="number" step="0.01" name="monto" class="form-control montoInput" maxlength="11" placeholder="Monto" required readonly>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="form-group">
-                                            <input type="button" class="btn btn-danger" value="Eliminar" onclick="eliminarFila(this)">
-                                            <input type="button" class="btn btn-success" value="Agregar fila" onclick="agregarFila()">
+                                            <button type="button" style="display:none;" class="btn btn-danger eliminarFilaBtn" onclick="eliminarFila(this)">Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="form-group">
-                            <label for="subtotal">Sub Total</label>
-                            <input type="text" name="subtotal" class="form-control" maxlength="11"> 
-                        </div>
-                        <div class="form-group">
-                            <label for="monto">Total</label>
-                            <input type="text" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" maxlength="11" required>
+
+                        <button type="button" class="btn btn-success" onclick="agregarFila()">Agregar Producto</button>
+
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="subtotal">Sub Total</label>
+                                    <input type="number" name="subtotal" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-check-input" id="checkboxIva" checked>
+                                    <label class="form-check-label" for="checkboxIva">Aplicar IVA (16%)</label>
+                                    <input type="number" name="iva" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="total">Total</label>
+                                    <input type="number" step="0.01" name="total" class="form-control" placeholder="MONTO TOTAL" required readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -275,84 +297,202 @@
 
 
 
+
     <script src="views/js/modal_compra.js"></script>
     <script>
+// Función para actualizar el monto de una fila específica
+function actualizarMontoFila(element) {
+    const fila = element.closest('tr');
+    const selectProducto = fila.querySelector("select[name='id_producto[]']");
+    const inputCantidad = fila.querySelector("input[name='cantidad[]']");
+    const inputMonto = fila.querySelector("input[name='monto']");
+
+    const selectedOption = selectProducto.options[selectProducto.selectedIndex];
+    if (!selectedOption || !selectedOption.value) {
+        inputMonto.value = '';
+        calcularSubtotalYTotal();
+        return;
+    }
+
+    try {
+        const producto = JSON.parse(selectedOption.value);
+        const precio = producto.precio || 0;
+        const cantidad = parseFloat(inputCantidad.value) || 0;
+        const monto = cantidad * precio;
+        inputMonto.value = monto.toFixed(2);
+    } catch (error) {
+        console.error("Error al parsear producto:", error);
+        inputMonto.value = '';
+    }
+    calcularSubtotalYTotal();
+}
+
+// Función para agregar una nueva fila
 function agregarFila() {
-  const tabla = document.getElementById("tablaFormulario");
-  const nuevaFila = document.getElementById("filaTemplate").cloneNode(true);
+    const tabla = document.getElementById("tablaFormulario");
+    const filaTemplate = document.getElementById("filaTemplate");
+    const nuevaFila = filaTemplate.cloneNode(true);
+    nuevaFila.removeAttribute('id');
 
-            // No limpiar los valores en la nueva fila clonada
-            // Solo asegurarse de que el evento se asigne correctamente
-            const nuevoSelect = nuevaFila.querySelector("select[name='id_producto[]']");
-            nuevoSelect.addEventListener('change', function() {
-                obtenerPrecioProducto(nuevaFila);
-            });
+    // Mostrar botón eliminar en filas nuevas
+    const botonEliminar = nuevaFila.querySelector('.eliminarFilaBtn');
+    if (botonEliminar) {
+        botonEliminar.style.display = 'inline-block';
+    }
 
-            const inputCantidad = nuevaFila.querySelector('input[name="cantidad[]"]');
-            inputCantidad.addEventListener('input', function() {
-                obtenerPrecioProducto(nuevaFila);
-            });
+    // Limpiar valores
+    const selectProducto = nuevaFila.querySelector("select[name='id_producto[]']");
+    const inputCantidad = nuevaFila.querySelector("input[name='cantidad[]']");
+    const inputMonto = nuevaFila.querySelector("input[name='monto']");
+    selectProducto.selectedIndex = 0;
+    inputCantidad.value = 1;
+    inputMonto.value = '';
 
-            tabla.appendChild(nuevaFila);
-        }
+    // Añadir eventos para actualizar monto al cambiar producto o cantidad
+    selectProducto.addEventListener('change', () => actualizarMontoFila(selectProducto));
+    inputCantidad.addEventListener('input', () => actualizarMontoFila(inputCantidad));
+
+    tabla.querySelector('tbody').appendChild(nuevaFila);
+
+    // Actualizar totales al agregar fila
+    calcularSubtotalYTotal();
+}
+
+// Función para eliminar fila
 function eliminarFila(boton) {
-    const fila = boton.parentNode.parentNode; // Obtiene la fila padre del botón
-    fila.parentNode.removeChild(fila); // Elimina la fila
+    const fila = boton.closest('tr');
+    if (fila) {
+        fila.remove();
+        calcularSubtotalYTotal();
+    }
 }
 
-
-
-function obtenerPrecioProducto(fila) {
-  const selectProducto = document.querySelector('select[name="id_producto[]"]');
-  const inputCantidad = document.querySelector('input[name="cantidad[]"]');
-  const inputMonto = document.querySelector('input[name="monto"]');
-  const subtotalInput = document.querySelector('input[name="subtotal"]');
-  const totalInput = document.querySelector('input[name="total"]');
-
-  const selectedIndex = selectProducto.selectedIndex;
-  const selectedOption = selectProducto.options[selectedIndex];
-  const producto = JSON.parse(selectedOption.value);
-  const precio = producto.precio;
-
-  const cantidad = parseInt(inputCantidad.value);
-  const monto = cantidad * precio;
-
-  inputMonto.value = monto.toFixed(2);
-
-  // Calculate subtotal, VAT, and total
-  calcularSubtotalYTotal(); // Llamar a la función para actualizar subtotal y total
-}
-
+// Función para calcular subtotal, iva y total con control de checkbox IVA
 function calcularSubtotalYTotal() {
-            let subtotal = 0;
-            document.querySelectorAll('input[name="monto"]').forEach(montoInput => {
-                subtotal += parseFloat(montoInput.value) || 0;
-            });
-            
-            const iva = subtotal * 0.16;
-            const total = subtotal + iva;
+    let subtotal = 0;
+    document.querySelectorAll('input[name="monto"]').forEach(input => {
+        subtotal += parseFloat(input.value) || 0;
+    });
 
-            document.querySelector('input[name="subtotal"]').value = subtotal.toFixed(2);
-            document.querySelector('input[name="total"]').value = total.toFixed(2);
+    const checkboxIva = document.getElementById('checkboxIva');
+    const aplicarIva = checkboxIva ? checkboxIva.checked : true; // Por defecto aplica IVA si no encuentra checkbox
+    let iva = 0;
+    let total = subtotal;
+
+    if (aplicarIva) {
+        iva = subtotal * 0.16;
+        total = subtotal + iva;
+    }
+
+    const inputSubtotal = document.querySelector('input[name="subtotal"]');
+    const inputIva = document.querySelector('input[name="iva"]');
+    const inputTotal = document.querySelector('input[name="total"]');
+
+    if (inputSubtotal) inputSubtotal.value = subtotal.toFixed(2);
+    if (inputIva) inputIva.value = iva.toFixed(2);
+    if (inputTotal) inputTotal.value = total.toFixed(2);
+}
+
+// Validaciones de inputs
+function validateInput(input) {
+    if (input.value.length > 11) {
+        alert("Por favor, ingresa un número de compra de hasta 11 caracteres.");
+        input.value = input.value.slice(0, 11);
+    }
+}
+
+function validatePhoneNumber(input) {
+    if (input.value.length > 11) {
+        alert("Por favor, ingresa un número de teléfono de hasta 11 caracteres.");
+        input.value = input.value.slice(0, 11);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Fecha actual en campo fecha_registro
+    const fechaRegistro = document.getElementById('fecha_registro');
+    if (fechaRegistro) {
+        fechaRegistro.value = new Date().toISOString().split('T')[0];
+    }
+
+    // Inicializar fila template (la primera fila)
+    const filaTemplate = document.getElementById('filaTemplate');
+    if (filaTemplate) {
+        const selectProducto = filaTemplate.querySelector('select[name="id_producto[]"]');
+        const inputCantidad = filaTemplate.querySelector('input[name="cantidad[]"]');
+
+        function actualizarMontoInicial() {
+            if (!selectProducto) return;
+            const selectedOption = selectProducto.options[selectProducto.selectedIndex];
+            if (!selectedOption || !selectedOption.value) {
+                filaTemplate.querySelector('input[name="monto"]').value = '';
+                calcularSubtotalYTotal();
+                return;
+            }
+            try {
+                const producto = JSON.parse(selectedOption.value);
+                const precio = producto.precio || 0;
+                const cantidad = parseFloat(inputCantidad.value) || 0;
+                const monto = cantidad * precio;
+                filaTemplate.querySelector('input[name="monto"]').value = monto.toFixed(2);
+            } catch (error) {
+                console.error("Error al parsear producto en fila inicial:", error);
+                filaTemplate.querySelector('input[name="monto"]').value = '';
+            }
+            calcularSubtotalYTotal();
         }
 
-        function validatePhoneNumber(input) {
-    const value = input.value;
-    // Convert the number to a string to check its length
-    if (value.toString().length > 11) {
-        alert("Por favor, ingresa un número de teléfono de hasta 11 caracteres.");
-        input.value = value.toString().slice(0, 11); // Truncate the input to the first 11 characters
-    }
-}
+        selectProducto.addEventListener('change', actualizarMontoInicial);
+        inputCantidad.addEventListener('input', actualizarMontoInicial);
 
-function validateInput(input) {
-    const value = input.value;
-    if (value.length > 11) {
-        alert("Por favor, ingresa un número de compra de hasta 11 caracteres.");
+        actualizarMontoInicial();
     }
-}
 
+    // Listener para checkbox IVA
+    const checkboxIva = document.getElementById('checkboxIva');
+    if (checkboxIva) {
+        checkboxIva.addEventListener('change', calcularSubtotalYTotal);
+    }
+
+    // Manejo de visibilidad y lógica para tipo de pago (especialmente crédito)
+    const tipoPagoSelect = document.getElementById('id_modalidad_pago');
+    const filaBanco = document.getElementById('rif_banco') ? document.getElementById('rif_banco').closest('.form-group') : null;
+    const campoCaducidad = document.getElementById('campo_caducidad');
+    const fechaCaducidad = document.getElementById('fecha_caducidad');
+
+    function manejarTipoPago() {
+        const tipoPago = tipoPagoSelect.value;
+
+        if (tipoPago === '5' || tipoPago === '1' || tipoPago === '2') { // Crédito
+            if (filaBanco) filaBanco.style.display = 'none';
+            if (campoCaducidad) {
+                campoCaducidad.style.display = 'block';
+                if (fechaRegistro && fechaCaducidad) {
+                    const fechaEmision = new Date(fechaRegistro.value);
+                    fechaEmision.setDate(fechaEmision.getDate() + 7);
+                    fechaCaducidad.value = fechaEmision.toISOString().split('T')[0];
+                }
+            }
+        } else {
+            if (filaBanco) filaBanco.style.display = 'block';
+            if (campoCaducidad) campoCaducidad.style.display = 'none';
+        }
+    }
+
+    if (fechaRegistro) {
+        fechaRegistro.addEventListener('change', () => {
+            if (tipoPagoSelect.value === '5') {
+                manejarTipoPago();
+            }
+        });
+    }
+
+    if (tipoPagoSelect) tipoPagoSelect.addEventListener('change', manejarTipoPago);
+
+    manejarTipoPago();
+});
 </script>
+
 <script src="views/js/validate.js"></script>
 
 
@@ -370,6 +510,41 @@ function validateInput(input) {
   const labelsProductoCompra = <?php echo json_encode($labelsProductoCompra); ?>;
   const dataProductoCompra = <?php echo json_encode($dataProductoCompra); ?>;
 </script>
+
+
+<script>
+function actualizarProductosPorProveedor() {
+    var proveedorId = document.getElementById('id_proveedor').value;
+    var productoSelect = document.getElementById('id_producto');
+    productoSelect.innerHTML = '<option>Cargando productos...</option>';
+
+    if (proveedorId === "") {
+        productoSelect.innerHTML = '<option>Seleccione un producto</option>';
+        return;
+    }
+
+    fetch('index.php?action=compra&a=obtener_proveedor&id_proveedor=' + proveedorId)
+        .then(response => response.json())
+        .then(data => {
+            productoSelect.innerHTML = '<option>Seleccione un producto</option>';
+            data.forEach(function(producto) {
+                var option = document.createElement('option');
+                option.value = JSON.stringify({
+                    id_producto: producto.id_producto,
+                    id_unidad_medida: producto.id_unidad_medida,
+                    precio: producto.precio
+                });
+                option.text = producto.nombre + ' ' + producto.presentacion + ' ' + producto.nombre_medida + ' ' + producto.id_unidad_medida;
+                productoSelect.appendChild(option);
+            });
+        })
+        .catch(function(error) {
+            productoSelect.innerHTML = '<option>Error al cargar productos</option>';
+            console.error('Error:', error);
+        });
+}
+</script>
+
 
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/jquery.js"></script>

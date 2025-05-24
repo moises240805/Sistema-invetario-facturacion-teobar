@@ -256,7 +256,10 @@ class Compra extends Conexion{
                 
             case 'obtenerPagos':
                     return $this->obtenerPagos();
-                    
+                
+            case 'obtenerNumeroCompra':
+                return $this->obtenerNumeroCompra();
+                break;
 
             case 'eliminar':
 
@@ -296,37 +299,95 @@ class Compra extends Conexion{
                 $producto_id = $this->id_producto[$i];
                 $medida_id = $this->id_medida[$i];
                 $cantidad = $this->cantidad[$i]; // Suponiendo que cantidad también es un array
-    
-                // Verificar la cantidad disponible del producto 
-                $stmt = $this->conn->prepare("SELECT cantidad FROM cantidad_producto WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-                $stmt->bindParam(':id_producto', $producto_id); 
-                $stmt->bindParam(':id_medida', $medida_id); 
-                $stmt->execute(); 
-                
-                $producto = $stmt->fetch(PDO::FETCH_ASSOC); 
-                
-                // Verificar si se encontró el producto
-                if (!$producto) {
-                    $this->conn->rollBack();
-                    return ['status' => false, 'msj' => "Producto no encontrado: ID $producto_id"];
-                }
-    
-                
-    
-                $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor ( id_facturaProveedor, id_producto, cantidad_compra) VALUES ( :id_compra, :id_producto, :cantidad)"); 
+
+                 // Obtener la equivalencia en kg del producto (ejemplo: 1 bulto = 12 kg)
+            $stmtEquiv = $this->conn->prepare("SELECT equiv_kg FROM producto WHERE id_producto = :id_producto");
+            $stmtEquiv->bindParam(':id_producto', $producto_id);
+            $stmtEquiv->execute();
+            $productoEquiv = $stmtEquiv->fetch(PDO::FETCH_ASSOC);
+
+            // Si no se encuentra el producto, revertir y devolver error
+            if (!$productoEquiv) {
+                $this->conn->rollBack();
+                return ['status' => false, 'msj' => "Producto no encontrado para equivalencia: ID $producto_id"];
+            }
+
+            $equiv_kg = $productoEquiv['equiv_kg']; // Valor de equivalencia (kg por bulto)
+
+
+            $stmt3 = $this->conn->prepare("INSERT INTO detalle_compra_proveedor ( id_facturaProveedor, id_producto, cantidad_compra) VALUES ( :id_compra, :id_producto, :cantidad)"); 
                 $stmt3->bindParam(':id_compra', $this->id_compra); 
                 $stmt3->bindParam(':id_producto', $producto_id); 
                 $stmt3->bindParam(':cantidad', $cantidad); 
-                $stmt3->execute(); 
+                $stmt3->execute();
+    
+                // Obtener todas las filas de inventario para el producto, con sus unidades de medida
+            $stmtCantidades = $this->conn->prepare("SELECT id_unidad_medida, cantidad FROM cantidad_producto WHERE id_producto = :id_producto");
+            $stmtCantidades->bindParam(':id_producto', $producto_id);
+            $stmtCantidades->execute();
+            $cantidadesProducto = $stmtCantidades->fetchAll(PDO::FETCH_ASSOC);
         
-                // Sumar la cantidad al stock del producto
-                $nueva_cantidad = $producto['cantidad'] + $cantidad; 
-                $stmt4 = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida"); 
-                $stmt4->bindParam(':nueva_cantidad', $nueva_cantidad); 
-                $stmt4->bindParam(':id_producto', $producto_id); 
-                $stmt4->bindParam(':id_medida', $medida_id); 
-                $stmt4->execute(); 
+               // Calcular la cantidad total a incrementar en kilogramos según la unidad de venta
+            if ($medida_id == 3 ) { // Venta en bultos
+                $cantidadDescontarKg = $cantidad * $equiv_kg; // Convertir bultos a kg
+            } elseif ($medida_id == 7 ) { // Venta en kg
+                $cantidadDescontarKg = $cantidad * $equiv_kg;; // Ya está en kg
+            } elseif ($medida_id == 4) { // Venta en kg
+                $cantidadDescontarKg = $cantidad * $equiv_kg;; // Ya está en kg
+            } elseif ($medida_id == 1) { // Venta en kg
+                $cantidadDescontarKg = $cantidad; // Ya está en kg
+            } elseif ($medida_id == 5) { // Venta en kg
+                $cantidadDescontarKg = $cantidad; // Ya está en kg
+            } elseif ($medida_id == 2) { // Venta en gramos
+                $cantidadDescontarKg = $cantidad / 1000; // Convertir gramos a kg
+            } elseif ($medida_id == 6) { // Venta en gramos
+                $cantidadDescontarKg = $cantidad / 1000; // Convertir gramos a kg
             }
+
+            // Recorrer cada unidad de inventario y descontar la cantidad proporcional
+            foreach ($cantidadesProducto as $fila) {
+                $unidadMedida = $fila['id_unidad_medida']; // Unidad de medida en inventario
+                $cantidadActual = $fila['cantidad'];       // Cantidad disponible en inventario
+                $cantidadADescontar = 0;
+
+                // Calcular la cantidad a descontar según la unidad de inventario
+                if ($unidadMedida == 1) { // kg
+                    $cantidadADescontar = $cantidadDescontarKg;
+                } elseif ($unidadMedida == 5) { // l
+                    $cantidadADescontar = $cantidadDescontarKg;
+                } elseif ($unidadMedida == 2) { // gramos
+                    $cantidadADescontar = $cantidadDescontarKg * 1000;
+                } elseif ($unidadMedida == 6) { // ml
+                    $cantidadADescontar = $cantidadDescontarKg * 1000;
+                } elseif ($unidadMedida == 3) { // bulto
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } elseif ($unidadMedida == 4) { // saco
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } elseif ($unidadMedida == 7) { // galon
+                    $cantidadADescontar = $cantidadDescontarKg / $equiv_kg;
+                } else {
+                    $cantidadADescontar = 0; // Otras unidades (puedes agregar lógica)
+                }
+
+                
+                /*
+                if ($cantidadActual < $cantidadADescontar) {
+                    $this->conn->rollBack();
+                    return ['status' => false, 'msj' => "Cantidad insuficiente para producto ID $producto_id en unidad de medida $unidadMedida"];
+                }
+                */
+
+                // Calcular nueva cantidad en inventario después del descuento
+                $nuevaCantidad = $cantidadActual + $cantidadADescontar;
+
+                // Actualizar la cantidad en inventario para esa unidad
+                $stmtUpdate = $this->conn->prepare("UPDATE cantidad_producto SET cantidad = :nueva_cantidad WHERE id_producto = :id_producto AND id_unidad_medida = :id_medida");
+                $stmtUpdate->bindParam(':nueva_cantidad', $nuevaCantidad);
+                $stmtUpdate->bindParam(':id_producto', $producto_id);
+                $stmtUpdate->bindParam(':id_medida', $unidadMedida);
+                $stmtUpdate->execute();
+            }
+        }
     
             $n = 5;
             $m = $this->id_modalidad_pago;
@@ -609,6 +670,25 @@ class Compra extends Conexion{
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } 
         catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
+
+
+       private function obtenerNumeroCompra() {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "SELECT MAX(id_compra) as id_compra FROM compra LIMIT 1";
+            // Prepara la consulta
+            $stmt = $this->conn->prepare($query);
+            // Ejecuta la consulta
+            $stmt->execute();
+            // Retorna los resultados como un arreglo asociativo
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
             return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
         } finally {
             $this->closeConnection();

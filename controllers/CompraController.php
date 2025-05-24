@@ -36,6 +36,11 @@ switch ($action) {
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             eliminarCompra($modelo, $bitacora, $usuario, $modulo);
         }
+    case "obtener_proveedor":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerProveedor($producto, $bitacora, $usuario, $modulo);
+        }
+        break;
         break;
     case "c":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
@@ -59,54 +64,71 @@ function agregarCompra($modelo, $bitacora, $usuario, $modulo, $producto, $ingres
         // Ejecutar acción permitida
 
         // Sanitizar los datos del formulario
-        $id_compra = htmlspecialchars($_POST['id_compra']);
-        $id_proveedor = htmlspecialchars($_POST['id_proveedor']);
-        $cantidad = array_map('htmlspecialchars', $_POST['cantidad']);
-        $fech_emision = htmlspecialchars($_POST['fech_emision']);
-        $id_modalidad_pago = htmlspecialchars($_POST['id_modalidad_pago']);
-        $monto = htmlspecialchars($_POST['total']);
-        $tipo_entrega = htmlspecialchars($_POST['tipo_entrega']);
-        $rif_banco = htmlspecialchars($_POST['rif_banco']);
-        $productos = [
-            'id_producto' => [],
-            'id_medida' => []
-        ];
+        // Sanitizar los datos del formulario
+$id_compra = htmlspecialchars($_POST['id_compra']);
+$id_proveedor = htmlspecialchars($_POST['id_proveedor']);
+$cantidad = array_map('htmlspecialchars', $_POST['cantidad']);
+$fech_emision = htmlspecialchars($_POST['fech_emision']);
+$id_modalidad_pago = htmlspecialchars($_POST['id_modalidad_pago']);
+$monto = htmlspecialchars($_POST['total']);
+$tipo_entrega = htmlspecialchars($_POST['tipo_entrega']);
+$rif_banco = htmlspecialchars($_POST['rif_banco']);
+$fech_vencimiento = isset($_POST['fecha_caducidad']) ? htmlspecialchars($_POST['fecha_caducidad']) : null;
 
-        // Armar array de productos 
-        foreach ($_POST['id_producto'] as $item) {
-            $prod = json_decode($item);
-            $productos['id_producto'][] = $prod->id_producto;
-            $productos['id_medida'][] = $prod->id_unidad_medida;
-        }
+// Inicializa el array productos vacío
+$productos = [
+    'id_producto' => [],
+    'id_medida' => []
+];
 
-        $compra = [
-            'id_compra' => $id_compra,
-            'id_proveedor' => $id_proveedor,
-            'cantidad' => $cantidad,
-            'fech_emision' => $fech_emision,
-            'id_modalidad_pago' => $id_modalidad_pago,
-            'monto' => $monto,
-            'tipo_entrega' => $tipo_entrega,
-            'rif_banco' => $rif_banco,
-            'productos' => $productos
-        ];
+// Recorre los productos enviados desde el formulario y llena el array productos
+foreach ($_POST['id_producto'] as $item) {
+    $producto = json_decode($item);
+    if (isset($producto->id_producto) && isset($producto->id_unidad_medida) 
+        && !empty($producto->id_producto) && !empty($producto->id_unidad_medida)) {
+        $productos['id_producto'][] = (int)$producto->id_producto;
+        $productos['id_medida'][] = (int)$producto->id_unidad_medida;
+    }
+}
 
-        // Lógica de caja según modalidad de pago
-        if ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) {
-            $id_cajas = 1;
-        } else {
-            $id_cajas = 2;
-        }
+// Arma el array completo de compra con los productos ya llenados
+$compra = [
+    'id_compra' => $id_compra,
+    'id_proveedor' => $id_proveedor,
+    'cantidad' => $cantidad,
+    'fech_emision' => $fech_emision,
+    'fech_vencimiento' => $fech_vencimiento,
+    'id_modalidad_pago' => $id_modalidad_pago,
+    'monto' => $monto,
+    'tipo_entrega' => $tipo_entrega,
+    'rif_banco' => $rif_banco,
+    'productos' => $productos
+];
 
-        $ingreso_data = json_encode([
-            'id_cajas' => $id_cajas,
-            'movimiento' => "egreso",
-            'fecha' => $fech_emision,
-            'fechav' => $fech_vencimiento,
-            'monto' => $monto,
-            'id_pago' => $id_modalidad_pago,
-            'descripcion' => "Compra de productos"
-        ]);
+// Lógica de caja según modalidad de pago
+if ($id_modalidad_pago == 1 || $id_modalidad_pago == 2) {
+    $id_cajas = 1;
+} else {
+    $id_cajas = 2;
+}
+
+$ingreso_data = json_encode([
+    'id_cajas' => $id_cajas,
+    'movimiento' => "egreso",
+    'fecha' => $fech_emision,
+    'fechav' => $fech_vencimiento,
+    'monto' => $monto,
+    'id_pago' => $id_modalidad_pago,
+    'descripcion' => "Compra de productos"
+]);
+
+// Codifica el array compra a JSON para su procesamiento posterior
+$compra_json = json_encode($compra);
+
+// Para depuración:
+//print_r($_POST['id_producto']);
+//print_r($productos);
+//echo $compra_json;
 
         try {
             $res = $caja->manejarAccion("status",null);
@@ -223,17 +245,39 @@ function eliminarCompra($modelo, $bitacora, $usuario, $modulo){
 }
 
 
+function obtenerProveedor($producto, $bitacora, $usuario, $modulo) {
+    $id_proveedor = $_GET['id_proveedor'];
+    if (!filter_var($id_proveedor, FILTER_VALIDATE_INT)) {
+        setError("ID inválido");
+        header("Location: index.php?action=compra&a=c");
+        exit();
+    }
+
+    $accion = "obtener";
+    $producto = $producto->manejarAccion('obtener2', $id_proveedor);
+    echo json_encode($producto);
+}
+
+
 // funcion para consultar compras
 function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $producto, $ingreso, $notificacion) {
     if ($usuario->verificarPermiso($modulo, "consultar", $_SESSION['s_usuario']['id_rol'])) {
+
         $compras = $modelo->manejarAccion("consultar", null);
         $proveedores = $proveedor->manejarAccion("consultar", null);
         $productos = $producto->manejarAccion("obtenerProductos", null);
         $bancos = $modelo->manejarAccion("obtenerBancos", null);
         $pagos = $modelo->manejarAccion("obtenerPagos", null);
+        $numero_compras = $modelo->manejarAccion("obtenerNumeroCompra", null);
+        if(count($numero_compras)>0){
+            $numero_compra=$numero_compras[0]['id_compra'];
+        }else{
+            $numero_compra=0;
+        }
+        $numero_compra++;
 
         // 1. Compras por mes
-        /*$comprasPorMes = [];
+        $comprasPorMes = [];
         foreach ($compras as $c) {
             $mes = date('F', strtotime($c['fecha'])); // Ejemplo: "January"
             if (!isset($comprasPorMes[$mes])) {
@@ -247,7 +291,7 @@ function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $pro
         // 2. Compras por proveedor
         $comprasPorProveedor = [];
         foreach ($compras as $c) {
-            $proveedor = $c['nombre_proveedor'];
+            $proveedor = $c['nombre_cliente'];
             if (!isset($comprasPorProveedor[$proveedor])) {
                 $comprasPorProveedor[$proveedor] = 0;
             }
@@ -259,7 +303,7 @@ function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $pro
         // 3. Compras por modalidad de pago
         $comprasPorModalidad = [];
         foreach ($compras as $c) {
-            $modalidad = $c['pago']; // Ajusta el campo si es necesario
+            $modalidad = $c['nombre_modalidad']; // Ajusta el campo si es necesario
             if (!isset($comprasPorModalidad[$modalidad])) {
                 $comprasPorModalidad[$modalidad] = 0;
             }
@@ -278,7 +322,7 @@ function consultarCompra($modelo, $bitacora, $usuario, $modulo, $proveedor, $pro
             $comprasPorProducto[$producto] += $c['monto'];
         }
         $labelsProductoCompra = array_keys($comprasPorProducto);
-        $dataProductoCompra = array_values($comprasPorProducto);*/
+        $dataProductoCompra = array_values($comprasPorProducto);
 
         require_once "views/php/dashboard_compra.php";
     } else {

@@ -196,7 +196,7 @@
                         </table>
 
                         <button type="button" class="btn btn-success" onclick="agregarFila()">Agregar Producto</button>
-
+                        
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -206,7 +206,8 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="iva">IVA (16%)</label>
+                                    <input type="checkbox" class="form-check-input" id="checkboxIva" checked>
+                                    <label class="form-check-label" for="checkboxIva">Aplicar IVA (16%)</label>
                                     <input type="number" name="iva" class="form-control" readonly>
                                 </div>
                             </div>
@@ -338,76 +339,94 @@
 
     <script src="views/js/modal_venta.js"></script>
     <script>
+// Función para actualizar el monto de una fila específica
+function actualizarMontoFila(element) {
+    const fila = element.closest('tr');
+    const selectProducto = fila.querySelector("select[name='id_producto[]']");
+    const inputCantidad = fila.querySelector("input[name='cantidad[]']");
+    const inputMonto = fila.querySelector("input[name='monto']");
+
+    const selectedOption = selectProducto.options[selectProducto.selectedIndex];
+    if (!selectedOption || !selectedOption.value) {
+        inputMonto.value = '';
+        calcularSubtotalYTotal();
+        return;
+    }
+
+    try {
+        const producto = JSON.parse(selectedOption.value);
+        const precio = parseFloat(producto.precio);
+        const cantidad = parseInt(inputCantidad.value) || 0;
+        const monto = cantidad * precio;
+        inputMonto.value = monto.toFixed(2);
+    } catch (error) {
+        console.error("Error parsing producto JSON:", error);
+        inputMonto.value = '';
+    }
+
+    calcularSubtotalYTotal();
+}
+
+// Función para agregar una nueva fila
 function agregarFila() {
     const tabla = document.getElementById("tablaFormulario");
     const filaTemplate = document.getElementById("filaTemplate");
     const nuevaFila = filaTemplate.cloneNode(true);
-    nuevaFila.removeAttribute('id'); // Remove id to avoid duplicate IDs
+    nuevaFila.removeAttribute('id');
 
-    // Obtener referencia al botón de eliminar en la nueva fila
+    // Mostrar botón eliminar
     const botonEliminar = nuevaFila.querySelector('.eliminarFilaBtn');
-
-    // Si el botón de eliminar existe, lo mostramos
     if (botonEliminar) {
-        botonEliminar.style.display = ''; // O 'block' según tu estilo
+        botonEliminar.style.display = '';
     }
 
-    // Get references to the select and input elements in the new row
-    const nuevoSelect = nuevaFila.querySelector("select[name='id_producto[]']");
-    const inputCantidad = nuevaFila.querySelector('input[name="cantidad[]"]');
-    const inputMonto = nuevaFila.querySelector('input[name="monto"]');
-    // Function to update monto
-    function actualizarMonto() {
-        const selectedIndex = nuevoSelect.selectedIndex;
-        if (selectedIndex === -1) return; // No product selected
+    // Limpiar valores
+    const selectProducto = nuevaFila.querySelector("select[name='id_producto[]']");
+    const inputCantidad = nuevaFila.querySelector("input[name='cantidad[]']");
+    const inputMonto = nuevaFila.querySelector("input[name='monto']");
+    selectProducto.selectedIndex = 0;
+    inputCantidad.value = 1;
+    inputMonto.value = '';
 
-        const selectedOption = nuevoSelect.options[selectedIndex];
-        if (!selectedOption || !selectedOption.value) return;
-
-        try {
-            const producto = JSON.parse(selectedOption.value);
-            const precio = producto.precio;
-            const cantidad = parseInt(inputCantidad.value || 0);
-            const monto = cantidad * precio;
-
-            inputMonto.value = monto.toFixed(2);
-        } catch (error) {
-            console.error("Error parsing product data:", error);
-            inputMonto.value = '';
-        }
-
-        calcularSubtotalYTotal();
-    }
-
-    // Attach event listeners to the new row elements
-    nuevoSelect.addEventListener('change', actualizarMonto);
-    inputCantidad.addEventListener('input', actualizarMonto);
-
-    // Make sure initial event is triggered
-    actualizarMonto();
+    // Añadir eventos para actualizar monto al cambiar producto o cantidad
+    selectProducto.addEventListener('change', () => actualizarMontoFila(selectProducto));
+    inputCantidad.addEventListener('input', () => actualizarMontoFila(inputCantidad));
 
     tabla.querySelector('tbody').appendChild(nuevaFila);
+
+    // Actualizar totales al agregar fila
+    calcularSubtotalYTotal();
 }
 
+// Función para eliminar fila
 function eliminarFila(boton) {
-    const fila = boton.closest('tr'); // Gets the closest <tr> ancestor of the button
-    fila.parentNode.removeChild(fila); // Removes the row
-    calcularSubtotalYTotal(); // Recalculate totals after removing a row
+    const fila = boton.closest('tr');
+    fila.parentNode.removeChild(fila);
+    calcularSubtotalYTotal();
 }
 
+// Función para calcular subtotal, iva y total
 function calcularSubtotalYTotal() {
     let subtotal = 0;
-    document.querySelectorAll('input[name="monto"]').forEach(montoInput => {
-        subtotal += parseFloat(montoInput.value) || 0;
+    document.querySelectorAll('input[name="monto"]').forEach(inputMonto => {
+        subtotal += parseFloat(inputMonto.value) || 0;
     });
-    
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva;
+
+    const aplicarIva = document.getElementById('checkboxIva').checked;
+    let iva = 0;
+    let total = subtotal;
+
+    if (aplicarIva) {
+        iva = subtotal * 0.16;
+        total = subtotal + iva;
+    }
 
     document.querySelector('input[name="subtotal"]').value = subtotal.toFixed(2);
+    document.querySelector('input[name="iva"]').value = iva.toFixed(2);
     document.querySelector('input[name="total"]').value = total.toFixed(2);
 }
 
+// Validaciones de inputs
 function validateInput(input) {
     const value = input.value;
     if (value.length > 11) {
@@ -424,50 +443,28 @@ function validatePhoneNumber(input) {
     }
 }
 
+// Inicialización al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('fecha_registro').value = today;
 
-    // Inicializar la fila template
-    const initialSelect = document.querySelector('#filaTemplate select[name="id_producto[]"]');
-    const initialCantidadInput = document.querySelector('#filaTemplate input[name="cantidad[]"]');
+    // Inicializar eventos en fila template
+    const filaTemplate = document.getElementById("filaTemplate");
+    const selectProducto = filaTemplate.querySelector("select[name='id_producto[]']");
+    const inputCantidad = filaTemplate.querySelector("input[name='cantidad[]']");
 
-    function actualizarMontoInicial() {
-        if (!initialSelect) return;
-        const selectedIndex = initialSelect.selectedIndex;
-        if (selectedIndex === -1) return;
+    selectProducto.addEventListener('change', () => actualizarMontoFila(selectProducto));
+    inputCantidad.addEventListener('input', () => actualizarMontoFila(inputCantidad));
 
-        const selectedOption = initialSelect.options[selectedIndex];
-        if (!selectedOption || !selectedOption.value) return;
+    actualizarMontoFila(selectProducto);
 
-        try {
-            const producto = JSON.parse(selectedOption.value);
-            const precio = producto.precio;
-            const cantidad = parseInt(initialCantidadInput.value || 0);
-            const monto = cantidad * precio;
+    // Listener para checkbox IVA
+    document.getElementById('checkboxIva').addEventListener('change', calcularSubtotalYTotal);
 
-            document.querySelector('#filaTemplate input[name="monto"]').value = monto.toFixed(2);
-        } catch (error) {
-            console.error("Error parsing product data:", error);
-            document.querySelector('#filaTemplate input[name="monto"]').value = '';
-        }
-        calcularSubtotalYTotal();
-    }
-
-    initialSelect.addEventListener('change', actualizarMontoInicial);
-    initialCantidadInput.addEventListener('input', actualizarMontoInicial);
-
-    actualizarMontoInicial(); // Llama a la función al cargar la página
-});
-
-      
-      
-
-document.addEventListener('DOMContentLoaded', () => {
+    // Configurar visibilidad según tipo de compra y pago
     const tipoCompraSelect = document.querySelector('select[name="tipo_compra"]');
     const tipoPagoSelect = document.querySelector('select[name="id_modalidad_pago"]');
 
-    // Función para manejar el tipo de compra
     function manejarTipoCompra() {
         const tipoCompra = tipoCompraSelect.value;
         const filaTipoPago = document.querySelector('#id_modalidad_pago').closest('.form-group');
@@ -479,12 +476,12 @@ document.addEventListener('DOMContentLoaded', () => {
             filaBanco.style.display = 'none';
             filaTlf.style.display = 'none';
             filaTipoEntrega.style.display = 'none';
-        } else if (tipoCompra === '6') { // Descontado
+        } else if (tipoCompra === '6') { // Contado
             filaTipoPago.style.display = 'block';
             filaBanco.style.display = 'block';
             filaTlf.style.display = 'block';
             filaTipoEntrega.style.display = 'block';
-        } else { // Sin selección
+        } else {
             filaTipoPago.style.display = 'block';
             filaBanco.style.display = 'block';
             filaTlf.style.display = 'block';
@@ -492,7 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Función para manejar el tipo de pago
     function manejarTipoPago() {
         const tipoPago = tipoPagoSelect.value;
         const filaBanco = document.querySelector('#banco').closest('.form-group');
@@ -501,21 +497,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tipoPago === '1' || tipoPago === '2') { // Divisas o Efectivo
             filaBanco.style.display = 'none';
             filaTlf.style.display = 'none';
-        } else { // Otras opciones
+        } else {
             filaBanco.style.display = 'block';
             filaTlf.style.display = 'block';
         }
     }
 
-    // Agregar listeners para cambios en los selectores
     tipoCompraSelect.addEventListener('change', manejarTipoCompra);
     tipoPagoSelect.addEventListener('change', manejarTipoPago);
 
-    // Llamar las funciones al inicio para configurar según la selección inicial
     manejarTipoCompra();
     manejarTipoPago();
 });
 </script>
+
 
 
 

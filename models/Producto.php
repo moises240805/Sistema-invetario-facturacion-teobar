@@ -506,6 +506,13 @@ class Producto extends Conexion{
                     return $validacion;
                 }
                 return $this->Obtener_Producto($producto);
+            
+            case 'obtener2':
+                $validacion = $this->setValideId($producto);
+                if (!$validacion['status']) {
+                    return $validacion;
+                }
+                return $this->Obtener_Proveedor($producto);
 
             case 'obtenerProductos':
                 return $this->Mostrar_Producto2();
@@ -776,7 +783,7 @@ class Producto extends Conexion{
                       FROM producto p  
                       LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
                       LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
-                      LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida  
+                      LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida 
                       LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
                       LEFT JOIN categoria c ON p.id_categoria = c.ID
                       LEFT JOIN marca b ON p.id_marca = b.ID
@@ -799,6 +806,38 @@ class Producto extends Conexion{
         }
     }
 
+
+    private function Obtener_Proveedor($id_proveedor) {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+
+            $query = "SELECT p.*,cp.id_unidad_medida ,d.nombre_proveedor, b.nombre_marca, c.nombre_categoria, a.nombre_motivo, cp.cantidad AS cantidad, cp.precio, cp.peso, s.presentacion, m.nombre_medida AS nombre_medida 
+                      FROM producto p  
+                      LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
+                      LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
+                      LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida  
+                      LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+                      LEFT JOIN categoria c ON p.id_categoria = c.ID
+                      LEFT JOIN marca b ON p.id_marca = b.ID
+                      LEFT JOIN proveedor d ON p.id_proveedor = d.id_proveedor
+                      WHERE p.id_proveedor = :id_proveedor AND p.status=1";
+            $stmt = $conn->prepare($query);
+            $stmt->bindParam(":id_proveedor", $id_proveedor, PDO::PARAM_INT);
+
+            if (!$stmt->execute()) {
+                return ['status' => false, 'msj' => 'Error al obtener producto'];
+            }
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            //return ['status' => true, 'data' => $result];
+
+        } catch (PDOException $e) {
+            return ['status' => false, 'msj' => 'Error en la consulta: ' . $e->getMessage()];
+        } finally {
+            $this->closeConnection();
+        }
+    }
 
     private function Actualizar_Producto($producto) {
         $this->closeConnection();

@@ -135,7 +135,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
         ]);
         // Convertir nuevamente a JSON
         $venta = json_encode($venta);
-        echo $venta;
+        //echo $venta;
         
 
         try {
@@ -190,7 +190,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
             //setError("Error en operación");
         }
 
-            require_once 'views/php/dashboard_venta.php';//header("Location: index.php?action=venta&a=v"); // Redirect
+        header("Location: index.php?action=venta&a=v"); // Redirect
         exit();
     }
     //muestra un modal de info que dice acceso no permitido
