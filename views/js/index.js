@@ -27,3 +27,7 @@ function calcularCantidad() {
         uniMedida2Select.value = "1"; // Seleccionamos Kilogramos
     }
 }
+
+
+
+

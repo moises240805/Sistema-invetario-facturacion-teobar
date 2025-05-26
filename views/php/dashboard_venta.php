@@ -114,7 +114,7 @@
                         <td><?php echo nl2br(htmlspecialchars($venta['cantidad'])); ?></td>
                         <td><?php echo htmlspecialchars($venta['fech_emision']); ?></td>
                         <td><?php echo htmlspecialchars($venta['nombre_modalidad']) . ' ' . htmlspecialchars($venta['tlf']); ?></td>
-                        <td><?php echo htmlspecialchars($venta['monto']); ?></td>
+                        <td class="precio-dolar"><?php echo nl2br(htmlspecialchars($venta['monto'])); ?></td>
                         <td><?php echo htmlspecialchars($venta['tipo_entrega']); ?></td>
                         <td><?php echo htmlspecialchars($venta['nombre_banco']); ?></td>
                         <td>
@@ -645,7 +645,26 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
                 
-                
+ <script>
+fetch("index.php?action=tasa&a=mid_form")
+.then(response => response.json())
+.then(data => {
+    const precioDolar = parseFloat(data.valor);
+
+    const preciosDolar = document.querySelectorAll('.precio-dolar');
+
+    preciosDolar.forEach(celda => {
+        let precioUSD = parseFloat(celda.textContent.replace(/[^0-9.]/g, ''));
+        if (!isNaN(precioUSD)) {
+            let precioEnBs = (precioUSD * precioDolar).toFixed(2);
+            celda.textContent = `${precioUSD.toFixed(2)} USD / Bs ${precioEnBs}`;
+        } else {
+            celda.textContent = "N/A";
+        }
+    });
+})
+
+</script>               
 
 <script src="views/js/validate2.js"></script>
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">

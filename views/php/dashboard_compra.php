@@ -111,7 +111,7 @@
                 <td><?php echo nl2br(htmlspecialchars($compra['cantidad'])); ?></td>
                 <td><?php echo htmlspecialchars($compra['fecha']); ?></td>
                 <td><?php echo htmlspecialchars($compra['nombre_modalidad']); ?></td>
-                <td><?php echo htmlspecialchars($compra['monto']); ?></td>
+                <td class="precio-dolar"><?php echo nl2br(htmlspecialchars($compra['monto'])); ?></td>
                 <td>
                     <a href="#" title="Modificar">
                         <img src="views/img/edit.png" width="30px" height="30px">
@@ -656,6 +656,27 @@ function actualizarProductosPorProveedor() {
 }
 </script>
 
+
+ <script>
+fetch("index.php?action=tasa&a=mid_form")
+.then(response => response.json())
+.then(data => {
+    const precioDolar = parseFloat(data.valor);
+
+    const preciosDolar = document.querySelectorAll('.precio-dolar');
+
+    preciosDolar.forEach(celda => {
+        let precioUSD = parseFloat(celda.textContent.replace(/[^0-9.]/g, ''));
+        if (!isNaN(precioUSD)) {
+            let precioEnBs = (precioUSD * precioDolar).toFixed(2);
+            celda.textContent = `${precioUSD.toFixed(2)} USD / Bs ${precioEnBs}`;
+        } else {
+            celda.textContent = "N/A";
+        }
+    });
+})
+
+</script> 
 
 <link rel="stylesheet" type="text/css" href="views/js/DataTables/datatables.css">
 <script src="views/js/reports/Compra.js"></script>

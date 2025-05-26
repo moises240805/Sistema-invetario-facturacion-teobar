@@ -25,6 +25,7 @@ $rutas = [
     'reportes' => 'controllers/ReportController.php',
     'roles' => 'controllers/RolesController.php',
     'pedido' => 'controllers/PedidoController.php',
+    'tasa' => 'controllers/TasaController.php',
 ];
 
 ?>

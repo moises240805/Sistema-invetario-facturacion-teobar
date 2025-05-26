@@ -548,7 +548,7 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg enlace, status) 
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg, enlace, status) 
                       VALUES (:nombre_producto, :fech_vencimiento, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, :peso, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);
@@ -616,7 +616,7 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
             $conn->beginTransaction();
 
-            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg enlace, status) 
+            $query = "INSERT INTO producto (nombre, fecha_vencimiento, fecha_registro, id_presentacion, id_categoria, id_marca, id_proveedor, equiv_kg, enlace, status) 
                       VALUES (:nombre_producto, :fech_venci, :fecha_registro, :presentacion, :categoria, :id_marca, :id_proveedor, 1, :imagen, 1)";
             $stmt = $conn->prepare($query);
             $stmt->bindParam(":nombre_producto", $this->nombre_producto, PDO::PARAM_STR);

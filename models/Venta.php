@@ -350,9 +350,15 @@ class Venta extends Conexion{
 
         // Iniciar transacción para asegurar integridad de datos
         $this->conn->beginTransaction();
+
+        $stmttasa = $this->conn->prepare("SELECT MAX(ID) AS ID FROM tasa_dia");
+        $stmttasa->execute();
+        $tasa = $stmttasa->fetch(PDO::FETCH_ASSOC);
         
          // Registrar la venta en la tabla 'venta'
-            $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_cliente,  fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, venta, tlf, status) VALUES (:id_venta, :id_cliente,  :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tlf, 1)");
+            $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_cliente,  fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, tipo_compra, id_tasa, tlf, status) 
+                                                      VALUES (:id_venta, :id_cliente,  :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tasa,:tlf, 1)");
+            
             $stmt2->bindParam(':id_venta', $this->id_venta);
             $stmt2->bindParam(':tipo_compra', $this->tipo_compra);
             $stmt2->bindParam(':tlf', $this->tlf);
@@ -361,6 +367,7 @@ class Venta extends Conexion{
             $stmt2->bindParam(':fech_vencimiento', $this->fech_vencimiento);
             $stmt2->bindParam(':id_modalidad_pago', $this->id_modalidad_pago);
             $stmt2->bindParam(':monto', $this->monto);
+            $stmt2->bindParam(':tasa', $tasa['ID']);
             $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega);
             $stmt2->bindParam(':rif_banco', $this->rif_banco);
             $stmt2->execute();
@@ -370,6 +377,18 @@ class Venta extends Conexion{
             $producto_id = $this->id_producto[$i];   // ID del producto actual
             $medida_id = $this->id_medida[$i];       // Unidad de medida de la venta (bulto, kg, gramos)
             $cantidad = $this->cantidad[$i];         // Cantidad vendida en esa unidad
+
+            // Obtener la cantidad del producto
+            $stmtcant = $this->conn->prepare("SELECT cantidad FROM cantidad_producto WHERE id_producto = :id_producto");
+            $stmtcant->bindParam(':id_producto', $producto_id);
+            $stmtcant->execute();
+            $productocant = $stmtcant->fetch(PDO::FETCH_ASSOC);
+
+            // Si no se encuentra el producto, revertir y devolver error
+            if ($cantidad>$productocant['cantidad']) {
+                $this->conn->rollBack();
+                return ['status' => false, 'msj' => "Cantidad insuficiente"];
+            }
 
             // Obtener la equivalencia en kg del producto (ejemplo: 1 bulto = 12 kg)
             $stmtEquiv = $this->conn->prepare("SELECT equiv_kg FROM producto WHERE id_producto = :id_producto");

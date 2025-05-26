@@ -780,10 +780,10 @@
 <script src="views/js/jquery.js"></script>
 <script src="views/js/DataTables/datatables.js"></script>
 <script>
-fetch("https://ve.dolarapi.com/v1/dolares/oficial")
+fetch("index.php?action=tasa&a=mid_form")
 .then(response => response.json())
 .then(data => {
-    const precioDolar = parseFloat(data.promedio);
+    const precioDolar = parseFloat(data.valor);
 
     const preciosDolar = document.querySelectorAll('.precio-dolar');
 

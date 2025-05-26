@@ -17,6 +17,7 @@ $rol = $_SESSION['s_usuario']['rol']; // Get the user's role from the session
         <?php if ($rol == 'Superusuario'): ?>
               <!-- Full Menu for Administrator -->
                 <li class="aside__item nav-item"><a href="index.php?action=dashboard" class="aside__link nav-link">Home</a></li>
+                <li class="aside__item nav-item"><a href="index.php?action=tasa" class="aside__link nav-link">Tasa $</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pedido&a=ecommerce" class="aside__link nav-link">E-conmerce</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=pagina" class="aside__link nav-link">Pagina</a></li>
                 <li class="aside__item nav-item"><a href="index.php?action=usuario&a=d" class="aside__link nav-link">Usuarios</a></li>
