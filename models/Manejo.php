@@ -131,6 +131,7 @@ class Manejo extends Conexion{
         $this->closeConnection();
         try{
             $conn=$this->getConnection();
+            $conn->beginTransaction();
     
             // Insertar el movimiento en la tabla movimientos_caja
             $query = "INSERT INTO movimientos_caja (id_cajas, tipo_movimiento, monto_movimiento, concepto, fecha, id_pago)

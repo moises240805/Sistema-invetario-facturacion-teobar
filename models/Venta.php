@@ -354,10 +354,11 @@ class Venta extends Conexion{
         $stmttasa = $this->conn->prepare("SELECT MAX(ID) AS ID FROM tasa_dia");
         $stmttasa->execute();
         $tasa = $stmttasa->fetch(PDO::FETCH_ASSOC);
+        $portal = 'Sistema';
         
          // Registrar la venta en la tabla 'venta'
-            $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_cliente,  fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, tipo_compra, id_tasa, tlf, status) 
-                                                      VALUES (:id_venta, :id_cliente,  :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tasa,:tlf, 1)");
+            $stmt2 = $this->conn->prepare("INSERT INTO venta (id_venta, id_cliente,  fech_emision, fech_vencimiento, id_modalidad_pago, monto, tipo_entrega, rif_banco, tipo_compra, id_tasa, tlf, portal, status) 
+                                                      VALUES (:id_venta, :id_cliente,  :fech_emision, :fech_vencimiento, :id_modalidad_pago, :monto, :tipo_entrega, :rif_banco, :tipo_compra, :tasa, :tlf, :portal, 1)");
             
             $stmt2->bindParam(':id_venta', $this->id_venta);
             $stmt2->bindParam(':tipo_compra', $this->tipo_compra);
@@ -370,6 +371,8 @@ class Venta extends Conexion{
             $stmt2->bindParam(':tasa', $tasa['ID']);
             $stmt2->bindParam(':tipo_entrega', $this->tipo_entrega);
             $stmt2->bindParam(':rif_banco', $this->rif_banco);
+            $stmt2->bindParam(':portal', $portal);
+
             $stmt2->execute();
         
         // Recorrer todos los productos que se están vendiendo

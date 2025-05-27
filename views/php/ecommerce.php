@@ -92,6 +92,58 @@ require_once 'link.php'; ?>
 
 
 
+<section class="products-by-category">
+    <div class="container">
+        <h2 class="section-title">Productos por Categoría</h2>
+        <?php foreach ($productos_por_categoria as $categoria => $lista): ?>
+            <div class="category-block">
+                <div class="category-header">
+                    <h3 class="category-title"><?php echo htmlspecialchars($categoria); ?></h3>
+                </div>
+                <div class="slider-wrapper">
+                    <button class="slider-btn prev-btn" aria-label="Anterior">&lt;</button>
+                    <div class="products-slider">
+                        <?php foreach ($lista as $producto): ?>
+                            <div class="product-card">
+                                <img src="<?php echo $producto['enlace']; ?>" alt="<?php echo $producto['nombre']; ?>" class="product-image">
+                                <div class="product-details">
+                                    <h5><?php echo $producto['nombre']; ?></h5>
+                                    <h6><?php echo nl2br(htmlspecialchars($producto['precio'])); ?> $</h6>
+                                    <p>
+                                        Presentación: <?php echo $producto['presentacion']; ?><br>
+                                        Cantidad: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?>
+                                    </p>
+                                </div>
+                                <!-- Botón de agregar al carrito -->
+                    <div class="product-actions">
+                        <button 
+    class="add-to-cart-button"
+    data-id="<?php echo $producto['id_producto']; ?>" 
+    data-name="<?php echo $producto['nombre']; ?>" 
+    data-price="<?php echo $producto['precio']; ?>"
+    data-presentation="<?php echo $producto['id_unidad_medida']; ?>"
+    data-presentationM="<?php echo $producto['nombre_medida']; ?>"
+    data-unidades='[{"id":1,"nombre":"Kg"},{"id":2,"nombre":"Gr"},{"id":3,"nombre":"Bulto"},{"id":4,"nombre":"Saco"},{"id":5,"nombre":"L"},{"id":6,"nombre":"ml"},{"id":7,"nombre":"Galon"}]'>
+    Agregar al carrito
+</button>
+                    </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button class="slider-btn next-btn" aria-label="Siguiente">&gt;</button>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
+
+
+
+
+
+
+
 <section class="products-section">
     <div class="container">
         <div class="products-grid">
@@ -115,15 +167,17 @@ require_once 'link.php'; ?>
                     </div>
                     <!-- Botón de agregar al carrito -->
                     <div class="product-actions">
-                        <button 
-                            class="add-to-cart-button"
-                            data-id="<?php echo $producto['id_producto']; ?>" 
-                            data-name="<?php echo $producto['nombre']; ?>" 
-                            data-price="<?php echo $producto['precio']; ?>"
-                            data-presentation="<?php echo $producto['id_unidad_medida']; ?>"
-                            data-presentationM="<?php echo $producto['nombre_medida']; ?>">
-                            Agregar al carrito
-                        </button>
+<button 
+    class="add-to-cart-button"
+    data-id="<?php echo $producto['id_producto']; ?>" 
+    data-name="<?php echo $producto['nombre']; ?>" 
+    data-price="<?php echo $producto['precio']; ?>"
+    data-presentation="<?php echo $producto['id_unidad_medida']; ?>"
+    data-presentationM="<?php echo $producto['nombre_medida']; ?>"
+    data-unidades='[{"id":1,"nombre":"Kg"},{"id":2,"nombre":"Gr"},{"id":3,"nombre":"Bulto"},{"id":4,"nombre":"Saco"},{"id":5,"nombre":"L"},{"id":6,"nombre":"ml"},{"id":7,"nombre":"Galon"}]'>
+    Agregar al carrito
+</button>
+
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -343,6 +397,164 @@ require_once 'link.php'; ?>
   });
 </script>
 
+<style>
+.products-by-category .container {
+    padding: 30px 0 10px 0;
+    background: #fafafa;
+        display: block; /* o flex con dirección columna */
+    width: 100%;
+}
+
+.category-block {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-size: 1.3em;
+    color: #2c3e50;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    border-left: 4px solid #e67e22;
+    padding-left: 10px;
+}
+
+.slider-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.slider-btn {
+    background: rgba(230,126,34,0.85);
+    border: none;
+    color: #fff;
+    font-size: 1.7em;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 50%;
+    user-select: none;
+    z-index: 10;
+    transition: background 0.2s;
+}
+
+.slider-btn:hover {
+    background: #e67e22;
+}
+
+.prev-btn { margin-right: 8px; }
+.next-btn { margin-left: 8px; }
+
+.products-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 16px;
+    padding-bottom: 10px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    flex-grow: 1;
+    /* Solo 4 productos visibles */
+    width: calc(220px * 4 + 16px * 3); /* 4 cards + 3 gaps */
+    max-width: 100%;
+}
+
+.products-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.product-card {
+    flex: 0 0 220px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(44,62,80,0.07);
+    padding: 12px;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-card:hover {
+    transform: translateY(-4px) scale(1.03);
+}
+
+.product-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.product-details h5 {
+    margin: 0 0 4px 0;
+    font-size: 1.08em;
+    color: #222;
+    font-weight: 600;
+    text-align: center;
+}
+
+.product-details h6 {
+    color: #e67e22;
+    margin-bottom: 5px;
+    font-size: 1em;
+    text-align: center;
+}
+
+.product-details p {
+    font-size: 0.95em;
+    color: #555;
+    margin: 0;
+    text-align: center;
+}
+
+/* Responsive para tablets */
+@media (max-width: 1000px) {
+    .products-slider {
+        width: calc(170px * 3 + 16px * 2);
+    }
+    .product-card { flex: 0 0 170px; }
+}
+/* Responsive para móviles */
+@media (max-width: 700px) {
+    .products-slider {
+        width: calc(120px * 2 + 16px * 1);
+    }
+    .product-card { flex: 0 0 120px; }
+    .category-title { font-size: 1.05em; }
+    .slider-btn { font-size: 1.2em; padding: 3px 7px;}
+}
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.slider-wrapper').forEach(wrapper => {
+        const slider = wrapper.querySelector('.products-slider');
+        const prevBtn = wrapper.querySelector('.prev-btn');
+        const nextBtn = wrapper.querySelector('.next-btn');
+
+        if (!slider || !prevBtn || !nextBtn) return;
+
+        // Calcula el ancho total de una tarjeta + gap
+        const card = slider.querySelector('.product-card');
+        const gap = 16; // Debe coincidir con el gap en CSS
+        const cardWidth = card ? card.offsetWidth + gap : 236;
+
+        prevBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: -cardWidth * 2, behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            slider.scrollBy({ left: cardWidth * 2, behavior: 'smooth' });
+        });
+    });
+});
+
+
+
+
+</script>
 
     <script src="views/js/carrusel.js"></script>
     <script src="views/js/carrito.js"></script>

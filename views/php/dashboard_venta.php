@@ -96,6 +96,7 @@
                 <th>Monto</th>
                 <th>Entrega</th>
                 <th>Banco</th>
+                <th>Portal</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -117,6 +118,7 @@
                         <td class="precio-dolar"><?php echo nl2br(htmlspecialchars($venta['monto'])); ?></td>
                         <td><?php echo htmlspecialchars($venta['tipo_entrega']); ?></td>
                         <td><?php echo htmlspecialchars($venta['nombre_banco']); ?></td>
+                        <td><?php echo htmlspecialchars($venta['portal']); ?></td>
                         <td>
                             <a href="#" title="Modificar">
                                 <img src="views/img/edit.png" width="30px" height="30px">
