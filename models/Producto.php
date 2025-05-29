@@ -535,6 +535,9 @@ class Producto extends Conexion{
     
             case 'consultar':
                 return $this->Mostrar_Producto();
+
+            case 'ecommerce':
+                return $this->Mostrar_ProductoE();
     
             default:
                 return ['status' => false, 'msj' => 'Acción inválida'];
@@ -714,22 +717,27 @@ class Producto extends Conexion{
             $conn = $this->getConnection();
 
             $query = "SELECT 
-                        p.*, 
-                        MAX(p.fecha_vencimiento) AS fecha_vencimiento, 
-                        GROUP_CONCAT(cp.cantidad SEPARATOR '\n ') AS cantidad, 
-                        GROUP_CONCAT(cp.precio SEPARATOR ' $ Bs\n ') AS precio, 
-                        GROUP_CONCAT(cp.peso SEPARATOR '\n ') AS peso,
-                        GROUP_CONCAT(m.nombre_medida SEPARATOR '\n ') AS nombre_medida, 
-                        GROUP_CONCAT(cp.id_unidad_medida SEPARATOR '\n ') AS id_medida, 
-                        a.nombre_motivo,
-                        s.presentacion,
-                        b.nombre_marca
-                      FROM producto p  
-                      LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
-                      LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
-                      LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
-                      LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
-                      WHERE p.status=1 GROUP BY p.id_producto ";
+    p.*, 
+    cp.cantidad, 
+    cp.precio, 
+    cp.peso,
+    m.nombre_medida, 
+    a.nombre_motivo,
+    s.presentacion,
+    c.nombre_categoria,
+    cp.id_unidad_medida,
+    b.nombre_marca,
+    d.nombre_proveedor
+FROM producto p  
+LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion   
+LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto  
+LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
+LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+LEFT JOIN categoria c ON p.id_categoria = c.ID
+LEFT JOIN marca b ON p.id_marca = b.ID
+LEFT JOIN proveedor d ON p.id_proveedor = d.id_proveedor
+WHERE p.status=1
+ORDER BY p.id_producto";
 
             $stmt = $conn->prepare($query);
             if (!$stmt->execute()) {

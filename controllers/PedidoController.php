@@ -18,6 +18,10 @@ switch ($action) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             agregar($controller,$ingreso,$usuario,$modulo);
         }
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerPedido($controller); 
+        }
     case 'ecommerce':
         ecommerce($producto);
         break;
@@ -26,7 +30,14 @@ switch ($action) {
     // Otros casos...
 }
 
-
+function obtenerPedido($controller){
+    $id = $_GET['id'];
+    
+    $accion = "obtener";
+    $venta = $controller->manejarAccion('obtener', $id);
+    echo json_encode($venta);
+    exit;
+}
 
 
 
@@ -81,7 +92,7 @@ function agregar($controller,$ingreso,$usuario,$modulo){
 }
 
 function ecommerce($producto){
-    $productos=$producto->manejarAccion('consultar',null);
+    $productos=$producto->manejarAccion('ecommerce',null);
 
     // Agrupar productos por categoría
     $productos_por_categoria = [];
@@ -93,6 +104,57 @@ foreach ($productos as $producto) {
     $productos_por_categoria[$cat][] = $producto;
 }
 
+$mapNombreId = [
+    'Bulto' => 3,
+    'kilogramos' => 2,
+    'gramos' => 1,
+    'Saco' => 4,
+    // otros si es necesario
+];
+
+foreach ($productos as &$producto) {
+    if (strpos($producto['cantidad'], ' ') !== false) {
+        $cantidades = explode(' ', $producto['cantidad']);
+
+        // Limpiar precios para eliminar símbolos y obtener solo números separados por espacios
+        $precio_limpio = preg_replace('/[^0-9.\s]/', '', $producto['precio']);
+        $precios = explode(' ', trim($precio_limpio));
+
+        $nombres_medida = explode(' ', $producto['nombre_medida']);
+
+        $unidades = [];
+        $count = min(count($cantidades), count($precios), count($nombres_medida));
+
+        for ($i = 0; $i < $count; $i++) {
+            $precio = floatval($precios[$i]);
+            $nombre = $nombres_medida[$i];
+            $id_unidad = $mapNombreId[$nombre] ?? null;
+
+            if ($id_unidad !== null) {
+                $unidades[] = [
+                    'id' => $id_unidad,
+                    'nombre' => $nombre,
+                    'precio' => $precio,
+                    'cantidad_disponible' => floatval($cantidades[$i])
+                ];
+            }
+        }
+        $producto['unidades'] = $unidades;
+    } else {
+        // Producto con una sola unidad
+        $producto['unidades'] = [[
+            'id' => $producto['id_unidad_medida'],
+            'nombre' => $producto['nombre_medida'],
+            'precio' => floatval($producto['precio']),
+            'cantidad_disponible' => floatval($producto['cantidad'])
+        ]];
+    }
+}
+unset($producto);
+
+
+
+//print_r($productos);
     require_once 'views/php/ecommerce.php';
 }
 

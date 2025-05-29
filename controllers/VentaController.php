@@ -34,6 +34,11 @@ switch ($action) {
             agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja); 
         }
         break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerVenta($modelo); 
+        }
+        break;
     case "eliminar":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             eliminarVenta($modelo, $bitacora, $usuario, $modulo);
@@ -51,6 +56,12 @@ switch ($action) {
 
 // === FUNCIONES ===
 // funcion para registrar una venta
+function obtenerVenta($modelo){
+
+}
+
+
+
 function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja) {
 
     
@@ -160,7 +171,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
                     $bitacora->setBitacoraData($bitacora_data);
                     $bitacora->Guardar_Bitacora();
                     $ingreso->manejarAccion("agregar",$ingreso_data); 
-                    FacturaPDF($venta);
+                    //FacturaPDF($venta);
 
                     /*// Verificar stock después de la venta
                         $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
