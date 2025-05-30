@@ -711,7 +711,7 @@ class Producto extends Conexion{
         }
     }
 
-    public function Mostrar_ProductoE() {
+    private function Mostrar_ProductoE() {
         $this->closeConnection();
         try {
             $conn = $this->getConnection();
@@ -928,13 +928,11 @@ ORDER BY p.id_producto";
         try {
             $conn = $this->getConnection();
 
-            $sql = "SELECT *
-        FROM producto p 
-        LEFT JOIN motivo_actualizacion a ON p.id_motivoActualizacion = a.id_motivoActualizacion  
-        LEFT JOIN cantidad_producto cp ON p.id_producto = cp.id_producto 
-        LEFT JOIN unidades_de_medida m ON cp.id_unidad_medida = m.id_unidad_medida
-        LEFT JOIN presentacion s ON s.id_presentacion = p.id_presentacion
+            $sql = "SELECT cantidad
+        FROM cantidad_producto cp 
+        LEFT JOIN producto p ON p.id_producto = cp.id_producto 
         WHERE cp.cantidad < 10";
+            //$stmt->bindParam(":id_producto", $id_producto);
 
             $stmt = $conn->prepare($sql);
             $stmt->execute();

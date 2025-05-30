@@ -79,22 +79,24 @@ class Notificacion extends Conexion {
         $query = $this->conn->prepare($sql);
         $query->bindParam(':id', $id);
         $query->execute();
-        return $query->fetch();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function mostrarNotificacion($id) {
+    public function mostrarNotificacion() {
         $sql = "SELECT * FROM notificacion";
         $query = $this->conn->prepare($sql);
         $query->execute();
-        return $query->fetchAll();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function insert($enlace, $mensaje, $id_admin, $estatus)
+    public function insert($mensaje, $id_admin, $estatus)
     {
+        $this->closeConnection();
         try {
-            $query = "INSERT INTO notificacion (enlace, mensaje, id_admin, estatus) VALUES (:enlace, :mensaje, :id_admin, :estatus)";
+            $conn = $this->getConnection();
+            $query = "INSERT INTO notificacion (titulo, id_admin, status) VALUES ( :mensaje, :id_admin, :estatus)";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":enlace", $enlace);
+            //$stmt->bindParam(":enlace", $enlace);
             $stmt->bindParam(":mensaje", $mensaje);
             $stmt->bindParam(":id_admin", $id_admin);
             $stmt->bindParam(":estatus", $estatus);
