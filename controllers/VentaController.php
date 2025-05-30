@@ -160,7 +160,7 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
                     $bitacora->setBitacoraData($bitacora_data);
                     $bitacora->Guardar_Bitacora();
                     $ingreso->manejarAccion("agregar",$ingreso_data); 
-                    FacturaPDF($venta);
+                   // FacturaPDF($venta);
 
                     /*// Verificar stock después de la venta
                         $stock_actual = $producto->obtenerStockProducto($productos_vendidos);

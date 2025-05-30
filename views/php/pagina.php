@@ -105,6 +105,54 @@
       font-weight: 700;
       font-size: 1.2rem;
     }
+    .mision-vision-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mision-column, .vision-column {
+  width: 48%; /* Cada columna ocupa casi la mitad */
+  padding: 25px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.column-space {
+  width: 4%; /* Espacio entre columnas */
+}
+
+h2 {
+  color: #1a73e8;
+  border-bottom: 2px solid #1a73e8;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+p {
+  color: #333;
+  line-height: 1.6;
+  font-style: italic; /* Para el texto en cursiva */
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .mision-vision-container {
+    flex-direction: column;
+  }
+  
+  .mision-column, .vision-column {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .column-space {
+    display: none;
+  }
+}
 
     /* Frases marketing */
     .marketing-phrases {
@@ -144,6 +192,7 @@
       border-top: 1px solid #ddd;
       margin-top: 3rem;
     }
+    
 
     /* Sección botón tienda después beneficios */
     .store-button-section {
@@ -207,23 +256,22 @@
     </section>
 
     <!-- Misión y Visión -->
-    <section class="row mb-5">
-      <article class="col-md-6 mb-4">
-        <h2>Nuestra Misión</h2>
-        <p>
-          Proveer materia prima de la más alta calidad para panificadoras, reposterías y heladerías, contribuyendo al éxito de nuestros clientes mediante un servicio personalizado, confiable y eficiente, fomentando relaciones duraderas basadas en la confianza y la excelencia.
-        </p>
-      </article>
-      <article class="col-md-6 mb-4">
-        <h2>Nuestra Visión</h2>
-        <p>
-          Ser la empresa líder en la distribución de materia prima para el sector de panadería, repostería y heladería, reconocida por la calidad de nuestros productos, innovación constante y compromiso con el crecimiento sostenible de nuestros clientes y colaboradores.
-        </p>
-      </article>
-    </section>
+     <div class="mision-vision-container">
+    <article class="row marketing-phrases">
+    <div class="mision-column">
+    <h2>Nuestra Misión</h2>
+    <p><em>Proveer materia prima de la más alta calidad, innovadores y especializados para el sector panadero y pastelero, garantizando un servicio excepcional y adaptandonos a las necesidades del mercado.</em></p>
+    </div>
+    <div class="column-space"></div>
+    <div class="vision-column">
+    <h2>Nuestra Visión</h2>
+    <p><em>Ser la empresa líder en la distribución de materia prima para el sector de panadería, repostería y heladería, reconocida por la calidad de nuestros productos, innovación constante y compromiso con el crecimiento sostenible de nuestros clientes y colaboradores., </em></p>
+    </div>
+    </div>
+    </article>
 
     <!-- Por qué elegirnos -->
-    <section class="mb-5">
+    <section class="marketing-phrases" aria-live="polite" aria-atomic="true">
       <h2 class="text-center mb-4">¿Por qué elegir Teobar?</h2>
       <ul class="benefits-list list-unstyled mx-auto" style="max-width: 700px;">
         <li>✔️ <strong>Calidad Garantizada:</strong> Solo trabajamos con proveedores certificados para asegurar la mejor materia prima.</li>
@@ -250,14 +298,14 @@
     <section class="contact-info text-center">
       <h2>Contáctanos</h2>
       <p>¿Quieres saber más o realizar un pedido?</p>
-      <p>Teléfono: <a href="tel:+1234567890">+1 234 567 890</a></p>
-      <p>Correo: <a href="mailto:contacto@teobar.com">contacto@teobar.com</a></p>
-      <p>Dirección: Calle Falsa 123, Ciudad, País</p>
+      <p>Teléfono: <a href="tel:+1234567890">+58 424 561 48 48</a></p>
+      <p>Correo: <a href="mailto:contacto@teobar.com">TEOBARC.ADISTRIBUIDORA@gmail.com</a></p>
+      <p>Dirección:  Calle 48 entre Carrera 13 y Callejon 11 Casa Nro 12-47 Zona Oeste - Barquisimeto, Estado Lara</p>
     </section>
   </main>
 
   <footer>
-    &copy; 2025 Teobar - Todos los derechos reservados
+ &copy; 2025 Teobar - Todos los derechos reservados
   </footer>
 
 </body>

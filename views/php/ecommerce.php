@@ -218,9 +218,9 @@ require_once 'link.php'; ?>
             <div class="footer-section">
                 <h5>Contacto</h5>
                 <ul>
-                    <li><a href="#">info@example.com</a></li>
-                    <li><a href="#">+1 234 567 890</a></li>
-                    <li><a href="#">Dirección: Calle Ejemplo 123, Ciudad, País</a></li>
+                    <li><a href="#">TEOBARC.ADISTRIBUIDORA@gmail.com</a></li>
+                    <li><a href="#">+58 424 561 48 48</a></li>
+                    <li><a href="#">Calle 48 entre Carrera 13 y Callejon 11 Casa Nro 12-47 Zona Oeste - Barquisimeto, Estado Lara</a></li>
                 </ul>
             </div>
 

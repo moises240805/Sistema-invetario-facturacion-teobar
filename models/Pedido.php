@@ -23,7 +23,7 @@ class Pedido extends Conexion {
         parent::__construct();
     }
 
-    // Setear datos desde el JSON recibido
+    // Establecer datos desde el JSON recibido
     private function setPedidoData($pedido) {
         if (is_string($pedido)) {
             $pedido = json_decode($pedido, true);
