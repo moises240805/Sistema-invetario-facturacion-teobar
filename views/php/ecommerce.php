@@ -55,6 +55,9 @@ require_once 'link.php'; ?>
                     <?php if ($_SESSION['s_usuario']["rol"] != "Usuario"): ?>
                     <a href="index.php?action=dashboard" class="login-button">Home</a>
                     <?php endif; ?>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cajasModal">
+        Ver Historial de pedidos
+    </button>
                 </div>
             <?php else: ?>
                 <a href="index.php?action=login" class="login-button">Iniciar Sesión</a>
@@ -91,7 +94,6 @@ require_once 'link.php'; ?>
 </header>
 
 
-
 <section class="products-by-category">
     <div class="container">
         <h2 class="section-title">Productos por Categoría</h2>
@@ -104,30 +106,34 @@ require_once 'link.php'; ?>
                     <button class="slider-btn prev-btn" aria-label="Anterior">&lt;</button>
                     <div class="products-slider">
                         <?php foreach ($lista as $producto): ?>
-                            <div class="product-card">
-                                <img src="<?php echo $producto['enlace']; ?>" alt="<?php echo $producto['nombre']; ?>" class="product-image">
-                                <div class="product-details">
-                                    <h5><?php echo $producto['nombre']; ?></h5>
-                                    <h6><?php echo nl2br(htmlspecialchars($producto['precio'])); ?> $</h6>
-                                    <p>
-                                        Presentación: <?php echo $producto['presentacion']; ?><br>
-                                        Cantidad: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?>
-                                    </p>
+                            <?php foreach ($productos as $producto): ?>
+                            <?php foreach ($producto['unidades'] as $unidad): ?>
+                                <div class="product-card">
+                                    <img src="<?php echo htmlspecialchars($producto['enlace']); ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="product-image">
+                                    <div class="product-details">
+                                        <h5><?php echo htmlspecialchars($producto['nombre']); ?></h5>
+                                        <h6>$<?php echo number_format($unidad['precio'], 2); ?></h6>
+                                        <p>
+                                            Presentación: <?php echo htmlspecialchars($producto['presentacion']); ?><br>
+                                            Cantidad: <?php echo htmlspecialchars($unidad['cantidad_disponible']); ?> <?php echo htmlspecialchars($unidad['nombre']); ?>
+                                        </p>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button 
+                                            class="add-to-cart-button"
+                                            data-id="<?php echo $producto['id_producto']; ?>" 
+                                            data-name="<?php echo htmlspecialchars($producto['nombre']); ?>" 
+                                            data-price="<?php echo $unidad['precio']; ?>"
+                                            data-presentation="<?php echo $unidad['id']; ?>"
+                                            data-presentationM="<?php echo htmlspecialchars($unidad['nombre']); ?>"
+                                            data-unidades='<?php echo json_encode([$unidad], JSON_HEX_APOS | JSON_HEX_QUOT); ?>'
+                                        >
+                                            Agregar al carrito
+                                        </button>
+                                    </div>
                                 </div>
-                                <!-- Botón de agregar al carrito -->
-                    <div class="product-actions">
-                        <button 
-    class="add-to-cart-button"
-    data-id="<?php echo $producto['id_producto']; ?>" 
-    data-name="<?php echo $producto['nombre']; ?>" 
-    data-price="<?php echo $producto['precio']; ?>"
-    data-presentation="<?php echo $producto['id_unidad_medida']; ?>"
-    data-presentationM="<?php echo $producto['nombre_medida']; ?>"
-    data-unidades='[{"id":1,"nombre":"Kg"},{"id":2,"nombre":"Gr"},{"id":3,"nombre":"Bulto"},{"id":4,"nombre":"Saco"},{"id":5,"nombre":"L"},{"id":6,"nombre":"ml"},{"id":7,"nombre":"Galon"}]'>
-    Agregar al carrito
-</button>
-                    </div>
-                            </div>
+                            <?php endforeach; ?>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
                     </div>
                     <button class="slider-btn next-btn" aria-label="Siguiente">&gt;</button>
@@ -144,45 +150,50 @@ require_once 'link.php'; ?>
 
 
 
+
 <section class="products-section">
     <div class="container">
         <div class="products-grid">
-            <?php 
-                foreach ($productos as $producto):
-            ?>
-                <div class="product-card">
-                    <!-- Imagen del producto -->
-                    <center><div class="product-image-container">
-                        <img src="<?php echo $producto['enlace']; ?>" alt="<?php echo $producto['nombre']; ?>" class="product-image">
-                    </div></center>
-                    
-                    <!-- Detalles del producto -->
-                    <div class="product-details">
-                        <h5 class="product-name"><?php echo $producto['nombre']; ?></h5>
-                        <h6 class="product-price"><?php echo nl2br(htmlspecialchars($producto['precio'])); ?> $</h6>
-                        <p class="product-description">
-                            Presentación: <?php echo $producto['presentacion']; ?><br>
-                            Cantidad Disponible: <?php echo nl2br(htmlspecialchars($producto['cantidad'])); ?> <?php echo nl2br(htmlspecialchars($producto['nombre_medida'])); ?><br>
-                        </p>
-                    </div>
-                    <!-- Botón de agregar al carrito -->
-                    <div class="product-actions">
-<button 
-    class="add-to-cart-button"
-    data-id="<?php echo $producto['id_producto']; ?>" 
-    data-name="<?php echo $producto['nombre']; ?>" 
-    data-price="<?php echo $producto['precio']; ?>"
-    data-presentation="<?php echo $producto['id_unidad_medida']; ?>"
-    data-presentationM="<?php echo $producto['nombre_medida']; ?>"
-    data-unidades='[{"id":1,"nombre":"Kg"},{"id":2,"nombre":"Gr"},{"id":3,"nombre":"Bulto"},{"id":4,"nombre":"Saco"},{"id":5,"nombre":"L"},{"id":6,"nombre":"ml"},{"id":7,"nombre":"Galon"}]'>
-    Agregar al carrito
-</button>
+            <?php foreach ($productos as $producto): ?>
+                <?php foreach ($producto['unidades'] as $unidad): ?>
+                    <div class="product-card">
+                        <!-- Imagen del producto -->
+                        <center>
+                            <div class="product-image-container">
+                                <img src="<?php echo htmlspecialchars($producto['enlace']); ?>" alt="<?php echo htmlspecialchars($producto['nombre']); ?>" class="product-image">
+                            </div>
+                        </center>
 
+                        <!-- Detalles del producto -->
+                        <div class="product-details">
+                            <h5 class="product-name"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
+                            <h6 class="product-price">$<?php echo number_format($unidad['precio'], 2); ?></h6>
+                            <p class="product-description">
+                                Presentación: <?php echo htmlspecialchars($producto['presentacion']); ?><br>
+                                Cantidad Disponible: <?php echo htmlspecialchars($unidad['cantidad_disponible']); ?> <?php echo htmlspecialchars($producto['nombre_medida']); ?><br>
+                            </p>
+                        </div>
+
+                        <!-- Botón de agregar al carrito -->
+                        <div class="product-actions">
+                            <button 
+                                class="add-to-cart-button"
+                                data-id="<?php echo $producto['id_producto']; ?>" 
+                                data-name="<?php echo htmlspecialchars($producto['nombre']); ?>" 
+                                data-price="<?php echo $unidad['precio']; ?>"
+                                data-presentation="<?php echo $unidad['id']; ?>"
+                                data-presentationM="<?php echo htmlspecialchars($unidad['nombre']); ?>"
+                                data-unidades='<?php echo json_encode([$unidad], JSON_HEX_APOS | JSON_HEX_QUOT); ?>'
+                            >
+                                Agregar al carrito
+                            </button>
+                        </div>
                     </div>
-                </div>
+                <?php endforeach; ?>
             <?php endforeach; ?>
         </div>
     </div>
+</section>
 
     <!-- Carrito de compras -->
     <div id="cart" style="display:none;">
@@ -391,6 +402,66 @@ require_once 'link.php'; ?>
 </div>
 
 
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="cajasModal" tabindex="-1" aria-labelledby="cajasModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" style="max-width: 110%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cajasModalLabel">Manejo de cajas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <!-- Fila superior: botones + tarjetas -->
+          <div class="row mb-3">
+            <!-- Columna botones -->
+            <div class="col-md-3 d-flex flex-column gap-2">
+              <label for="cedula">Ingrese Cédula
+  <input type="text" id="cedula" oninput="buscar()">
+</label>
+            </div>
+           
+          <!-- Fila inferior: tabla -->
+          <div class="row">
+            <div class="col-12 table-responsive">
+<table id="dataTable" class="table table-bordered table-striped table-hover datatablesss" style="background-color: transparent;" width="100%" cellspacing="0">
+    <thead class="thead-light">
+        <tr>
+            <th>Nro Venta</th>
+            <th>Producto</th>
+            <th>Cliente</th>
+            <th>Cantidad</th>
+            <th>F/E</th>
+            <th>Modalidad de Pago</th>
+            <th>Monto</th>
+            <th>Entrega</th>
+            <th>Banco</th>
+            <th>Portal</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody id="tabla-body">
+        <!-- Aquí se insertarán las filas dinámicamente -->
+    </tbody>
+</table>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 <script>
   document.getElementById('myBtn').addEventListener('click', function() {
     $('#registrarClienteModal').modal('show');
@@ -526,6 +597,87 @@ require_once 'link.php'; ?>
 }
 
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('cedula');
+  input.addEventListener('input', buscar);
+});
+
+function buscar() {
+{
+  const input = document.getElementById('cedula');
+  const id = input.value.trim();
+
+  const tableBody = document.getElementById('tabla-body'); // <-- corregido
+
+  if (!tableBody) {
+    console.error('No se encontró el tbody con id "tabla-body"');
+    return;
+  }
+
+  if (id === '') {
+    // Si el input está vacío, limpia la tabla y no hace fetch
+    tableBody.innerHTML = '';
+    return;
+  }
+
+  fetch('index.php?action=pedido&a=mid_form&id=' + encodeURIComponent(id))
+    .then(response => {
+      if (!response.ok) throw new Error('Error en la respuesta del servidor');
+      return response.json();
+    })
+    .then(data => {
+      tableBody.innerHTML = ''; // Limpiar tabla
+
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.id_venta || ''}</td>
+            <td>${item.id_cliente || ''}</td>
+            <td>${item.id_cliente || ''} ${item.nombre_cliente || ''}</td>
+            <td>${item.cantidad ?? 'N/A'}</td>
+            <td>${item.fech_emision || ''}</td>
+            <td>${item.id_modalidad_pago || ''} ${item.tlf || ''}</td>
+            <td>${item.monto || ''}</td>
+            <td>${item.tipo_entrega || 'N/A'}</td>
+            <td>${item.rif_banco || 'N/A'}</td>
+            <td>${item.portal || ''}</td>
+            <td><!-- acciones --></td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } else if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${data.id_venta || ''}</td>
+          <td>${data.id_cliente || ''}</td>
+          <td>${data.id_cliente || ''} ${data.nombre_cliente || ''}</td>
+          <td>${data.cantidad ?? 'N/A'}</td>
+          <td>${data.fech_emision || ''}</td>
+          <td>${data.id_modalidad_pago || ''} ${data.tlf || ''}</td>
+          <td>${data.monto || ''}</td>
+          <td>${data.tipo_entrega || 'N/A'}</td>
+          <td>${data.rif_banco || 'N/A'}</td>
+          <td>${data.portal || ''}</td>
+          <td><!-- acciones --></td>
+        `;
+        tableBody.appendChild(row);
+      } else {
+        tableBody.innerHTML = '<tr><td colspan="11">No se encontraron resultados.</td></tr>';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      tableBody.innerHTML = '<tr><td colspan="11">Error al obtener los datos.</td></tr>';
+    });
+}
+
+}
+
+
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {

@@ -8,40 +8,21 @@
 
         <!-- Usuario y Notificaciones -->
         <div class="user d-flex align-items-center position-relative" style="margin-left: 5px;">
-            <!-- Botón de notificación -->
-            <div class="notification position-relative mr-3">
-                <i class="fas fa-bell fa-lg text-dark" id="bell-icon" style="cursor: pointer;"></i>
-                <!-- Contenedor de notificaciones -->
-                <!-- Contenedor de notificaciones -->
-                <div class="notification-dropdown">
-                    <!-- Notificación 1 -->
-                    <div class="notification-item">
-                        <div class="notification-title">El arroz Mary está por agotarse</div>
-                        <div class="notification-meta">03/04/2025 12:30:00</div>
-                        <div class="notification-desc">Responsable: Juan Pérez</div>
-                        <a href="#" class="notification-link">Haz clic para más detalles</a>
-                    </div>
-                    <!-- Notificación 2 -->
-                    <div class="notification-item">
-                        <div class="notification-title">El azúcar Montalbán está por vencer</div>
-                        <div class="notification-meta">03/04/2025 11:00:00</div>
-                        <div class="notification-desc">Responsable: Laura Gómez</div>
-                        <a href="#" class="notification-link">Haz clic para más detalles</a>
-                    </div>
-                    <!-- Notificación 3 -->
-                    <div class="notification-item">
-                        <div class="notification-title">La harina de trigo está por agotarse</div>
-                        <div class="notification-meta">03/04/2025 09:15:00</div>
-                        <div class="notification-desc">Responsable: Dpto de Inventario</div>
-                        <a href="#" class="notification-link">Haz clic para más detalles</a>
-                    </div>
-                    <!-- Notificación 3 -->
-                    <div class="notification-item text-center">
-                        <a href="#" class="notification-link">Ver más notificaciones</a>
-                    </div>
-                </div>
+           <!-- Botón de notificación -->
+<div class="notification position-relative mr-3">
+    <i class="fas fa-bell fa-lg text-dark" id="bell-icon" style="cursor: pointer; position: relative;"></i>
+    <!-- Indicador de notificaciones nuevas -->
+    <span id="notification-count" 
+          style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; display: none;">
+    </span>
 
-            </div>
+    <!-- Contenedor de notificaciones -->
+    <div class="notification-dropdown" id="notification-dropdown" style="position: absolute; top: 30px; right: 0; width: 300px; max-height: 400px; overflow-y: auto; background: white; border: 1px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 100;">
+
+        <!-- Aquí se inyectarán las notificaciones -->
+    </div>
+</div>
+
             <!-- Usuario -->
             <img class="logo_user rounded-circle mr-2" src="views/img/avatar-male.png" alt="user">
             <span name="user" style="color: black;"><?php echo $_SESSION['s_usuario']['usuario']; ?></span>
@@ -116,26 +97,95 @@
     }
 </style>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const bellIcon = document.getElementById("bell-icon");
-        const dropdown = document.querySelector(".notification-dropdown");
 
-        // Alternar visibilidad al hacer clic en la campana
-        bellIcon.addEventListener("click", function(e) {
-            e.stopPropagation(); // Evita cerrar inmediatamente por el click global
-            dropdown.classList.toggle("show");
-        });
 
-        // Cerrar dropdown si se hace clic fuera
-        document.addEventListener("click", function() {
-            dropdown.classList.remove("show");
-        });
+</script>
+<script>
+ document.addEventListener("DOMContentLoaded", function() {
+    const bellIcon = document.getElementById('bell-icon');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    const notificationCount = document.getElementById('notification-count');
 
-        // Evita que se cierre si haces clic dentro del dropdown
-        dropdown.addEventListener("click", function(e) {
-            e.stopPropagation();
-        });
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        const date = new Date(dateString.replace(' ', 'T'));
+        return date.toLocaleDateString(undefined, options);
+    }
+
+    function loadNotifications() {
+        fetch('index.php?action=notificacion&a=consultar') // Ajusta esta URL si es necesario
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta de la red');
+                return response.json();
+            })
+            .then(data => {
+                console.log("Notificaciones recibidas:", data); // Para depurar
+
+                notificationDropdown.innerHTML = '';
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    notificationDropdown.innerHTML = '<div class="notification-item text-center">No hay notificaciones.</div>';
+                    notificationCount.style.display = 'none';
+                    return;
+                }
+
+                const newNotifications = data.filter(n => n.status == 1);
+                if (newNotifications.length > 0) {
+                    notificationCount.textContent = newNotifications.length;
+                    notificationCount.style.display = 'inline-block';
+                } else {
+                    notificationCount.style.display = 'none';
+                }
+
+                data.forEach(notif => {
+                    const item = document.createElement('div');
+                    item.classList.add('notification-item');
+
+                    const linkHref = notif.enlace || '#';
+
+                    item.innerHTML = `
+                        <div class="notification-title">${notif.titulo}</div>
+                        <div class="notification-meta">${formatDate(notif.fecha)}</div>
+                        <a href="${linkHref}" class="notification-link">Haz clic para más detalles</a>
+                    `;
+
+                    notificationDropdown.appendChild(item);
+                });
+
+                const verMas = document.createElement('div');
+                verMas.classList.add('notification-item', 'text-center');
+                verMas.innerHTML = `<a href="index.php?action=notificaciones" class="notification-link">Ver más notificaciones</a>`;
+                notificationDropdown.appendChild(verMas);
+            })
+            .catch(error => {
+                console.error('Error al cargar notificaciones:', error);
+                notificationDropdown.innerHTML = '<div class="notification-item text-center text-danger">Error al cargar notificaciones.</div>';
+                notificationCount.style.display = 'none';
+            });
+    }
+
+    bellIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('show');
+        if (notificationDropdown.classList.contains('show')) {
+            loadNotifications();
+        }
     });
+
+    document.addEventListener('click', function(event) {
+        if (!bellIcon.contains(event.target) && !notificationDropdown.contains(event.target)) {
+            notificationDropdown.classList.remove('show');
+        }
+    });
+
+    notificationDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Carga inicial para actualizar contador
+    loadNotifications();
+});
+
 </script>
 
 <!-- FontAwesome para el ícono de la campana -->

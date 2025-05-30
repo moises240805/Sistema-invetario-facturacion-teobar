@@ -97,6 +97,11 @@ class Pedido extends Conexion {
                     return $this->Guardar_Pedido();
                 }
                 break;
+                case 'obtener':
+                
+                    return $this->Obtener_Pedido($pedido);
+                
+                break;
             // ...otros casos como actualizar, eliminar, consultar, etc.
             default:
                 return ['status' => false, 'msj' => 'Acción inválida'];
@@ -271,4 +276,29 @@ class Pedido extends Conexion {
             $this->closeConnection();
         }
     }
+
+
+    private function Obtener_Pedido($id_pedido) {
+        $this->closeConnection();
+        try {
+            $conn = $this->getConnection();
+            $query = "SELECT * FROM venta WHERE id_cliente = :id_pedido";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id_pedido", $id_pedido, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } 
+        catch (PDOException $e) {
+            // Deshacer la transacción en caso de excepción
+            //$this->conn->rollBack();
+            echo "Error en la consulta: " . $e->getMessage();
+            return false;
+        } 
+        finally {
+            $this->closeConnection();
+        }
+    }
+
+
+
 }

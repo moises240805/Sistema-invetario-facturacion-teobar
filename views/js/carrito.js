@@ -21,15 +21,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Agregar producto al carrito
-    function addToCart(productId, productName, productPrice, unidades, unidadSeleccionadaId) {
+    function addToCart(productId, productName, unidades, unidadSeleccionadaId) {
+        // Encuentra la unidad seleccionada o la primera disponible
+        let unidadSeleccionada = unidades.find(u => u.id == (unidadSeleccionadaId || (unidades.length > 0 ? unidades[0].id : null)));
+        if (!unidadSeleccionada) unidadSeleccionada = unidades[0];
+
         if (cart[productId]) {
-            cart[productId].quantity++;
+            // Solo aumenta si no supera el stock
+            if (cart[productId].quantity < unidadSeleccionada.stock) {
+                cart[productId].quantity++;
+                // Actualiza unidad y precio si cambió la unidad seleccionada
+                cart[productId].unidad_seleccionada = unidadSeleccionada.id;
+                cart[productId].price = parseFloat(unidadSeleccionada.precio);
+                cart[productId].stock = unidadSeleccionada.stock;
+            }
         } else {
             cart[productId] = {
                 name: productName,
-                price: parseFloat(productPrice),
                 unidades: unidades,
-                unidad_seleccionada: unidadSeleccionadaId || (unidades.length > 0 ? unidades[0].id : null),
+                unidad_seleccionada: unidadSeleccionada.id,
+                price: parseFloat(unidadSeleccionada.precio),
+                stock: unidadSeleccionada.stock,
                 quantity: 1
             };
         }
@@ -46,19 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         for (let productId in cart) {
             const product = cart[productId];
-            const productTotal = product.price * product.quantity;
-            subtotal += productTotal;
-            totalProducts += product.quantity;
+            // Actualiza precio y stock según unidad seleccionada
+            const unidadSeleccionada = product.unidades.find(u => u.id == product.unidad_seleccionada);
+            product.price = parseFloat(unidadSeleccionada.precio);
+            product.stock = unidadSeleccionada.stock;
+
+            // Ajusta cantidad si es mayor al stock
+            if (product.quantity > product.stock) {
+                product.quantity = product.stock;
+            }
 
             const unidadSelectHTML = `
-                <label>Unidad:
-                    <select class="unidad-select" data-id="${productId}">
-                        ${product.unidades.map(u =>
-                            `<option value="${u.id}" ${u.id == product.unidad_seleccionada ? 'selected' : ''}>${u.nombre}</option>`
-                        ).join('')}
-                    </select>
-                </label>
-            `;
+    <label>Unidad:
+        <select class="unidad-select" data-id="${productId}" ${product.unidades.length === 3 ? 'disabled' : ''}>
+            ${product.unidades.map(u =>
+                `<option value="${u.id}" ${u.id == product.unidad_seleccionada ? 'selected' : ''}>${u.nombre} ($${parseFloat(u.precio).toFixed(2)})</option>`
+            ).join('')}
+        </select>
+    </label>
+`;
+
 
             const productHTML = `
                 <div class="cart-item">
@@ -66,13 +85,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="cart-item-unidad">${unidadSelectHTML}</div>
                     <div class="cart-item-quantity">
                         <button class="quantity-button decrease" data-id="${productId}">-</button>
-                        <input type="number" class="quantity-input" data-id="${productId}" value="${product.quantity}" min="1">
+                        <input type="number" class="quantity-input" data-id="${productId}" value="${product.quantity}" min="1" max="${product.stock}">
+                        <span style="font-size:0.9em;color:#888;">(Máx: ${product.stock})</span>
                         <button class="quantity-button increase" data-id="${productId}">+</button>
                     </div>
+                    <div class="cart-item-price">Precio: $${product.price.toFixed(2)}</div>
                     <button class="remove-from-cart" data-id="${productId}">Eliminar</button>
                 </div>
             `;
             cartContent.insertAdjacentHTML('beforeend', productHTML);
+
+            subtotal += product.price * product.quantity;
+            totalProducts += product.quantity;
         }
 
         const taxes = subtotal * 0.10;
@@ -98,8 +122,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.quantity-button.increase').forEach(button => {
             button.onclick = () => {
                 const id = button.getAttribute('data-id');
-                cart[id].quantity++;
-                updateCartUI();
+                if (cart[id].quantity < cart[id].stock) {
+                    cart[id].quantity++;
+                    updateCartUI();
+                }
             };
         });
 
@@ -122,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const id = input.getAttribute('data-id');
                 let val = parseInt(input.value);
                 if (isNaN(val) || val < 1) val = 1;
+                if (val > cart[id].stock) val = cart[id].stock;
                 cart[id].quantity = val;
                 updateCartUI();
             };
@@ -131,7 +158,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.unidad-select').forEach(select => {
             select.onchange = () => {
                 const id = select.getAttribute('data-id');
-                cart[id].unidad_seleccionada = select.value;
+                const unidadId = select.value;
+                cart[id].unidad_seleccionada = unidadId;
+                const unidad = cart[id].unidades.find(u => u.id == unidadId);
+                cart[id].price = parseFloat(unidad.precio);
+                cart[id].stock = unidad.stock;
+                // Ajusta cantidad si supera el stock
+                if (cart[id].quantity > unidad.stock) {
+                    cart[id].quantity = unidad.stock;
+                }
+                updateCartUI();
             };
         });
     }
@@ -141,10 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => {
             const id = button.getAttribute('data-id');
             const name = button.getAttribute('data-name');
-            const price = button.getAttribute('data-price');
             const unidades = JSON.parse(button.getAttribute('data-unidades'));
             const unidadSeleccionadaId = button.getAttribute('data-presentation');
-            addToCart(id, name, price, unidades, unidadSeleccionadaId);
+            addToCart(id, name, unidades, unidadSeleccionadaId);
         });
     });
 
@@ -182,66 +217,70 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             Swal.fire({
-    title: 'Ingrese su cédula y seleccione modalidad de pago',
-    html:
-        '<input id="swal-input-cedula" class="swal2-input" placeholder="Cédula">' +
-        '<select id="swal-select-pago" class="swal2-select" style="width:60%; padding:0.375rem 0.75rem; font-size:1rem; line-height:1.5; border:1px solid #d9d9d9; border-radius:0.25rem; margin-bottom:10px;">' +
-            '<option value="" disabled selected>Seleccione modalidad de pago</option>' +
-            '<option value="3">Pago móvil</option>' +
-            '<option value="4">Transferencia</option>' +
-            '<option value="2">Efectivo</option>' +
-        '</select>' +
-        '<select id="swal-select-banco" class="swal2-select" style="width:60%; padding:0.375rem 0.75rem; font-size:1rem; line-height:1.5; border:1px solid #d9d9d9; border-radius:0.25rem; margin-bottom:10px;">' +
-            '<option value="" disabled selected>Seleccione banco</option>' +
-            '<option value="102">Venezuela</option>' +
-            '<option value="104">Venezolano de Credito</option>' +
-            '<option value="105">Mercantil</option>' +
-            '<option value="108">Provincial</option>' +
-            '<option value="114">Bancaribe</option>' +
-            '<option value="115">Exteriror</option>' +
-            '<option value="116">Occidental de Descuento</option>' +
-            '<option value="128">Banco Caroni</option>' +
-            '<option value="134">Banesco</option>' +
-            '<option value="137">Banco Sofitasa</option>' +
-            '<option value="138">Banco Plaza</option>' +
-            '<option value="151">Banco Fondo Comun</option>' +
-            '<option value="156">100% Banco</option>' +
-            '<option value="157">Banco del Sur</option>' +
-            '<option value="163">Banco del Tesoro</option>' +
-            '<option value="166">Banco Agricola de Venezuela</option>' +
-            '<option value="168">Bancrecer</option>' +
-            '<option value="169">Mi Banco</option>' +
-            '<option value="172">Bancamiga</option>' +
-            '<option value="174">Banplus</option>' +
-            '<option value="175">Bicentenario del Pueblo</option>' +
-            '<option value="177">Banfanb</option>' +
-            '<option value="191">Banco Nacional de Credito</option>' +
-        '</select>' +
-        '<input id="swal-input-tlf" class="swal2-input" placeholder="Tlf o nro de referencia">',
-    focusConfirm: false,
-    showCancelButton: true,
-    confirmButtonText: 'Confirmar',
-    cancelButtonText: 'Cancelar',
-    preConfirm: () => {
-        const cedula = document.getElementById('swal-input-cedula').value.trim();
-        const tlf = document.getElementById('swal-input-tlf').value.trim();
-        const modalidadPago = document.getElementById('swal-select-pago').value;
-        const rifBanco = document.getElementById('swal-select-banco').value;
+                title: 'Ingrese su cédula y seleccione modalidad de pago',
+                html:
+                    '<input id="swal-input-cedula" class="swal2-input" placeholder="Cédula">' +
+                    '<select id="swal-select-pago" class="swal2-select" style="width:60%; padding:0.375rem 0.75rem; font-size:1rem; line-height:1.5; border:1px solid #d9d9d9; border-radius:0.25rem; margin-bottom:10px;">' +
+                        '<option value="" disabled selected>Seleccione modalidad de pago</option>' +
+                        '<option value="3">Pago móvil</option>' +
+                        '<option value="4">Transferencia</option>' +
+                        '<option value="2">Efectivo</option>' +
+                    '</select>' +
+                    '<select id="swal-select-banco" class="swal2-select" style="width:60%; padding:0.375rem 0.75rem; font-size:1rem; line-height:1.5; border:1px solid #d9d9d9; border-radius:0.25rem; margin-bottom:10px;">' +
+                        '<option value="" disabled selected>Seleccione banco</option>' +
+                        '<option value="102">Venezuela</option>' +
+                        '<option value="104">Venezolano de Credito</option>' +
+                        '<option value="105">Mercantil</option>' +
+                        '<option value="108">Provincial</option>' +
+                        '<option value="114">Bancaribe</option>' +
+                        '<option value="115">Exteriror</option>' +
+                        '<option value="116">Occidental de Descuento</option>' +
+                        '<option value="128">Banco Caroni</option>' +
+                        '<option value="134">Banesco</option>' +
+                        '<option value="137">Banco Sofitasa</option>' +
+                        '<option value="138">Banco Plaza</option>' +
+                        '<option value="151">Banco Fondo Comun</option>' +
+                        '<option value="156">100% Banco</option>' +
+                        '<option value="157">Banco del Sur</option>' +
+                        '<option value="163">Banco del Tesoro</option>' +
+                        '<option value="166">Banco Agricola de Venezuela</option>' +
+                        '<option value="168">Bancrecer</option>' +
+                        '<option value="169">Mi Banco</option>' +
+                        '<option value="172">Bancamiga</option>' +
+                        '<option value="174">Banplus</option>' +
+                        '<option value="175">Bicentenario del Pueblo</option>' +
+                        '<option value="177">Banfanb</option>' +
+                        '<option value="191">Banco Nacional de Credito</option>' +
+                    '</select>' +
+                    '<input id="swal-input-tlf" class="swal2-input" placeholder="Tlf o nro de referencia">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const cedula = document.getElementById('swal-input-cedula').value.trim();
+                    const tlf = document.getElementById('swal-input-tlf').value.trim();
+                    const modalidadPago = document.getElementById('swal-select-pago').value;
+                    const rifBanco = document.getElementById('swal-select-banco').value;
 
-        if (!cedula) {
-            Swal.showValidationMessage('Por favor ingrese su cédula');
-        }
-        if (!tlf) {
-            Swal.showValidationMessage('Por favor ingrese su tlf o nro de referencia');
-        }
-        if (!modalidadPago) {
-            Swal.showValidationMessage('Por favor seleccione modalidad de pago');
-        }
-        if (!rifBanco) {
-            Swal.showValidationMessage('Por favor seleccione un banco');
-        }
-        return { cedula, modalidadPago, tlf, rif_banco: rifBanco };
-    }
+                    if (!cedula) {
+                        Swal.showValidationMessage('Por favor ingrese su cédula');
+                        return false;
+                    }
+                    if (!tlf) {
+                        Swal.showValidationMessage('Por favor ingrese su tlf o nro de referencia');
+                        return false;
+                    }
+                    if (!modalidadPago) {
+                        Swal.showValidationMessage('Por favor seleccione modalidad de pago');
+                        return false;
+                    }
+                    if (!rifBanco) {
+                        Swal.showValidationMessage('Por favor seleccione un banco');
+                        return false;
+                    }
+                    return { cedula, modalidadPago, tlf, rif_banco: rifBanco };
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     const { cedula, modalidadPago, tlf, rif_banco } = result.value;
@@ -269,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         cedula: cedula,
                         modalidad_pago: modalidadPago,
                         tlf: tlf,
-                        rif_banco:rif_banco,
+                        rif_banco: rif_banco,
                         total: total.toFixed(2),
                         productos: productos
                     };
@@ -295,10 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(data => {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Pago procesado con éxito',
-                            text: 'Gracias por su compra.'
-                        });
+                            icon: data.success ? 'success' : 'error',
+                            title: data.success ? 'Pago procesado con éxito' : 'Error',
+                            text: data.message // mensaje dinámico del controlador
+                        })
                         cart = {};
                         updateCartUI();
                     })

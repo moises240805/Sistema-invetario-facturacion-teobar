@@ -14,7 +14,7 @@ date_default_timezone_set('America/Caracas');
 
 $ingreso = new Manejo();
 $modelo = new Venta();
-$producto = new Producto();
+$Producto = new Producto();
 $cliente = new Cliente();
 $notificacion = new Notificacion();
 $bitacora = new Bitacora();
@@ -31,7 +31,12 @@ $action = isset($_GET['a']) ? $_GET['a'] : '';
 switch ($action) {
     case "agregar":
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja); 
+            agregarVenta($modelo, $bitacora, $usuario, $modulo, $Producto, $ingreso, $notificacion, $caja); 
+        }
+        break;
+    case "mid_form":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            obtenerVenta($modelo); 
         }
         break;
     case "eliminar":
@@ -41,17 +46,23 @@ switch ($action) {
         break;
     case "v":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $producto, $ingreso, $notificacion);
+            consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $Producto, $ingreso, $notificacion);
         }
         break;
     default:
-        consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $producto, $ingreso, $notificacion);
+        consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $Producto, $ingreso, $notificacion);
         break;
 }
 
 // === FUNCIONES ===
 // funcion para registrar una venta
-function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso, $notificacion, $caja) {
+function obtenerVenta($modelo){
+
+}
+
+
+
+function agregarVenta($modelo, $bitacora, $usuario, $modulo, $Producto, $ingreso, $notificacion, $caja) {
 
     
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -162,17 +173,18 @@ function agregarVenta($modelo, $bitacora, $usuario, $modulo, $producto, $ingreso
                     $ingreso->manejarAccion("agregar",$ingreso_data); 
                    // FacturaPDF($venta);
 
-                    /*// Verificar stock después de la venta
-                        $stock_actual = $producto->obtenerStockProducto($productos_vendidos);
+                    // Verificar stock después de la venta
+                        $stock_actual = $Producto->manejarAccion("stock",null);
 
-                        if ($stock_actual <= 0) {
+                        if ($stock_actual['cantidad'] <= 20) {
                             // Notificar al administrador
                             $id_admin = $_SESSION['s_usuario']['id']; // Cambia esto si el admin tiene un ID diferente
-                            $mensaje = "El producto  se ha agotado.";
+                            $mensaje = "El producto se esta agotando.";
                             $enlace = "index.php?action=producto&a=d";
+                            $status = 1;
 
-                            $notificacion->insert($enlace,$mensaje, $id_admin, "Sin leer");
-                        }*/
+                            $notificacion->insert($mensaje, $id_admin, $status);
+                        }
                     
                 }
                 else {
@@ -266,7 +278,7 @@ function eliminarVenta($modelo, $bitacora, $usuario, $modulo){
 }
 
 
-function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $producto, $ingreso, $notificacion) {
+function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $Producto, $ingreso, $notificacion) {
 
 
     //verifica si el usuario logueado tiene permiso de realizar la ccion requerida mendiante 
@@ -276,7 +288,7 @@ function consultarVenta($modelo, $bitacora, $usuario, $modulo, $cliente, $produc
         
         $venta = $modelo->manejarAccion("consultar",null);
         $clientes =$cliente->manejarAccion("consultar",null);
-        $productos = $producto->manejarAccion("obtenerProductos",null);
+        $productos = $Producto->manejarAccion("obtenerProductos",null);
         $bancos = $modelo->manejarAccion("obtenerBancos",null);
         $pagos = $modelo->manejarAccion("obtenerPagos",null);
         $numero_ventas = $modelo->manejarAccion("obtenerNumeroVenta", null);
